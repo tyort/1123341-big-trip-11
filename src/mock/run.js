@@ -10,7 +10,7 @@ const RouteTypeList = [
   `Train`,
   `Transport`,
   `Trip`
-]
+];
 
 const RouteCityList = [
   `Brisbane`,
@@ -21,7 +21,7 @@ const RouteCityList = [
   `Norwich`,
   `Freshford`,
   `Gorey`
-]
+];
 
 const RouteDescriptionList = [
   `Lorem ipsum dolor sit amet, consectetur adipiscing elit`,
@@ -35,13 +35,13 @@ const RouteDescriptionList = [
   `Aliquam erat volutpat`,
   `Nunc fermentum tortor ac porta dapibus`,
   `In rutrum ac purus sit amet tempus`
-]
+];
 
 const RouteExtraOptionList = [
-  { name: 'Add luggage', price: `10€` },
-  { name: 'Switch to comfort class', price: `150€` },
-  { name: 'Add meal', price: `2€` }
-]
+  {name: `Add luggage`, price: `10€`},
+  {name: `Switch to comfort class`, price: `150€`},
+  {name: `Add meal`, price: `2€`}
+];
 
 const getRandomIntegerNumber = (min, max) => {
   return min + Math.floor(max * Math.random());
@@ -64,7 +64,7 @@ const generateRouteItem = () => {
     description: new Array(getRandomIntegerNumber(1, 3))
       .fill(``)
       .map(() => RouteDescriptionList[getRandomIntegerNumber(0, RouteDescriptionList.length)])
-      .join('. ') + '.',
+      .join(`. `) + `.`,
     extraOption: new Array(getRandomIntegerNumber(0, 3))
       .fill(``)
       .map(() => RouteExtraOptionList[getRandomIntegerNumber(0, RouteExtraOptionList.length)]),
@@ -72,7 +72,7 @@ const generateRouteItem = () => {
     price: getRandomIntegerNumber(20, 1000),
     days: null,
   };
-}
+};
 
 const generateRoute = (count) => {
   return new Array(count)
@@ -80,4 +80,4 @@ const generateRoute = (count) => {
     .map(generateRouteItem);
 };
 
-export { generateRouteItem, generateRoute, getRandomIntegerNumber };
+export {generateRouteItem, generateRoute, getRandomIntegerNumber};

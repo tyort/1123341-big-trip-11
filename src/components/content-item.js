@@ -1,28 +1,27 @@
-import { MonthNames } from '../const.js';
-import { getRandomIntegerNumber } from '../mock/run.js';
+import {MonthNames} from '../const.js';
+import {getRandomIntegerNumber} from '../mock/run.js';
 
-const createSpecialOffers = (extraOption) => {
-  return extraOption
-    .map((item) => {
+const createSpecialOffers = (tripExtraOption) => {
+  return tripExtraOption
+    .map((item) => (
       `<li class="event__offer">
         <span class="event__offer-title">${item.name}</span>
         &plus;&euro;&nbsp;
         <span class="event__offer-price">${item.price}</span>
       </li>`
-    })
+    ))
     .join(`\n`);
-}
-
+};
 
 const createTripEventsItem = (tripDate, tripType, tripCity, tripPrice, tripExtraOption) => {
-  const randomHours = getRandomIntegerNumber(0, 23)
-  const endHours = randomHours > tripDate.getHours() ? randomHours : tripDate.getHours() + 1
-  const endMinutes = getRandomIntegerNumber(0, 59)
-  const endTime = endHours + `:` + endMinutes
-  const passedHours = Math.floor(((endHours * 60 + endMinutes) - (tripDate.getHours() * 60 + tripDate.getMinutes())) / 60)
-  const passedMinutes = ((endHours * 60 + endMinutes) - (tripDate.getHours() * 60 + tripDate.getMinutes())) % 60
+  const randomHours = getRandomIntegerNumber(0, 23);
+  const endHours = randomHours > tripDate.getHours() ? randomHours : tripDate.getHours() + 1;
+  const endMinutes = getRandomIntegerNumber(0, 59);
+  const endTime = endHours + `:` + endMinutes;
+  const passedHours = Math.floor(((endHours * 60 + endMinutes) - (tripDate.getHours() * 60 + tripDate.getMinutes())) / 60);
+  const passedMinutes = ((endHours * 60 + endMinutes) - (tripDate.getHours() * 60 + tripDate.getMinutes())) % 60;
 
-  const specialOffers = createSpecialOffers(tripExtraOption)
+  const specialOffers = createSpecialOffers(tripExtraOption);
 
   return new Array(4)
     .fill(``)
@@ -55,12 +54,12 @@ const createTripEventsItem = (tripDate, tripType, tripCity, tripPrice, tripExtra
       </li>`
     ))
     .join(`\n`);
-}
+};
 
 export const createContentItemTemplate = (trip) => {
-  const { date, days, type, city, price, extraOption } = trip;
-  const datetime = date.getFullYear() + `-` + (date.getMonth() + 1) + `-` + date.getDate();
-  const tripEventsItem = createTripEventsItem(date, type, city, price, extraOption)
+  const {date, days, type, city, price, extraOption} = trip;
+  // const datetime = date.getFullYear() + `-` + (date.getMonth() + 1) + `-` + date.getDate();
+  const tripEventsItem = createTripEventsItem(date, type, city, price, extraOption);
   return (
     `<li class="trip-days__item  day">
       <div class="day__info">
@@ -72,4 +71,4 @@ export const createContentItemTemplate = (trip) => {
       </ul>
     </li>`
   );
-}
+};
