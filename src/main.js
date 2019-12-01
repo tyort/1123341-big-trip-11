@@ -31,7 +31,7 @@ const tripDaysElement = document.querySelector(`.trip-days`);
 
 trips.sort((a, b) => a.date.getTime() - b.date.getTime())
   .forEach((element, index, array) => (
-    element.days = index === 0 ? 1 : Math.ceil((array[index].date.getTime() - array[index - 1].date.getTime()) / (1000 * 3600 * 24))
+    element.days = index === 0 ? 1 : Math.ceil((array[index].date.getTime() - array[0].date.getTime()) / (1000 * 3600 * 24))
   ))
 
 trips.forEach((trip) => render(tripDaysElement, createContentItemTemplate(trip)))

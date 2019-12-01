@@ -38,9 +38,9 @@ const RouteDescriptionList = [
 ]
 
 const RouteExtraOptionList = [
-  { 'Add luggage': `10€` },
-  { 'Switch to comfort class': `150€` },
-  { 'Add meal': `2€` }
+  { name: 'Add luggage', price: `10€` },
+  { name: 'Switch to comfort class', price: `150€` },
+  { name: 'Add meal', price: `2€` }
 ]
 
 const getRandomIntegerNumber = (min, max) => {
@@ -48,33 +48,29 @@ const getRandomIntegerNumber = (min, max) => {
 };
 
 const getRandomDate = () => {
-  const targetDate = new Date(2013, 2, 1, 1, 10);
+  const targetDate = new Date();
   targetDate.setDate(getRandomIntegerNumber(1, 31));
   targetDate.setMonth(getRandomIntegerNumber(0, 11));
-  targetDate.setHours(getRandomIntegerNumber(0, 23));
+  targetDate.setHours(getRandomIntegerNumber(0, 20));
+  targetDate.setMinutes(getRandomIntegerNumber(0, 59));
   targetDate.setYear(2020);
   return targetDate;
 };
 
-
-const getRandomPrice = () => (
-  getRandomIntegerNumber(1, 10) * 100 + `₽`
-)
-
 const generateRouteItem = () => {
   return {
-    type: RouteTypeList[Math.floor(Math.random() * RouteTypeList.length)],
-    city: RouteCityList[Math.floor(Math.random() * RouteCityList.length)],
+    type: RouteTypeList[getRandomIntegerNumber(0, RouteTypeList.length)],
+    city: RouteCityList[getRandomIntegerNumber(0, RouteCityList.length)],
     description: new Array(getRandomIntegerNumber(1, 3))
       .fill(``)
-      .map(() => RouteDescriptionList[Math.floor(Math.random() * RouteDescriptionList.length)])
+      .map(() => RouteDescriptionList[getRandomIntegerNumber(0, RouteDescriptionList.length)])
       .join('. ') + '.',
     extraOption: new Array(getRandomIntegerNumber(0, 3))
       .fill(``)
-      .map(() => RouteExtraOptionList[Math.floor(Math.random() * RouteExtraOptionList.length)]),
+      .map(() => RouteExtraOptionList[getRandomIntegerNumber(0, RouteExtraOptionList.length)]),
     date: getRandomDate(),
-    price: getRandomPrice(),
-    days: null
+    price: getRandomIntegerNumber(20, 1000),
+    days: null,
   };
 }
 
@@ -84,4 +80,4 @@ const generateRoute = (count) => {
     .map(generateRouteItem);
 };
 
-export { generateRouteItem, generateRoute };
+export { generateRouteItem, generateRoute, getRandomIntegerNumber };

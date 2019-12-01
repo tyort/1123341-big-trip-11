@@ -1,169 +1,74 @@
-import {MonthNames} from '../const.js';
+import { MonthNames } from '../const.js';
+import { getRandomIntegerNumber } from '../mock/run.js';
 
-const createTripEventsItem = (trip) => {
-  const {type, city} = trip
+const createSpecialOffers = (extraOption) => {
+  return extraOption
+    .map((item) => {
+      `<li class="event__offer">
+        <span class="event__offer-title">${item.name}</span>
+        &plus;&euro;&nbsp;
+        <span class="event__offer-price">${item.price}</span>
+      </li>`
+    })
+    .join(`\n`);
+}
 
-  return sdrgverger
-     .map((regerger) => (
-        `<li class="trip-events__item">
-          <div class="event">
-            <div class="event__type">
-              <img class="event__type-icon" width="42" height="42" src="img/icons/${toLowerCase(type)}.png" alt="Event type icon">
-            </div>
-            <h3 class="event__title">${type} to ${city}</h3>
 
-            <div class="event__schedule">
-              <p class="event__time">
-                <time class="event__start-time" datetime="${datetime}">10:30</time>
-                &mdash;
-                <time class="event__end-time" datetime="2019-03-18T11:00">11:00</time>
-              </p>
-              <p class="event__duration">1H 30M</p>
-            </div>
+const createTripEventsItem = (tripDate, tripType, tripCity, tripPrice, tripExtraOption) => {
+  const randomHours = getRandomIntegerNumber(0, 23)
+  const endHours = randomHours > tripDate.getHours() ? randomHours : tripDate.getHours() + 1
+  const endMinutes = getRandomIntegerNumber(0, 59)
+  const endTime = endHours + `:` + endMinutes
+  const passedHours = Math.floor(((endHours * 60 + endMinutes) - (tripDate.getHours() * 60 + tripDate.getMinutes())) / 60)
+  const passedMinutes = ((endHours * 60 + endMinutes) - (tripDate.getHours() * 60 + tripDate.getMinutes())) % 60
 
-            <p class="event__price">
-              &euro;&nbsp;<span class="event__price-value">20</span>
-            </p>
+  const specialOffers = createSpecialOffers(tripExtraOption)
 
-            <h4 class="visually-hidden">Offers:</h4>
-            <ul class="event__selected-offers">
-              <li class="event__offer">
-                <span class="event__offer-title">Order Uber</span>
-                &plus;&euro;&nbsp;
-                <span class="event__offer-price">20</span>
-              </li>
-            </ul>
-
-            <button class="event__rollup-btn" type="button">
-              <span class="visually-hidden">Open event</span>
-            </button>
+  return new Array(4)
+    .fill(``)
+    .map(() => (
+      `<li class="trip-events__item">
+        <div class="event">
+          <div class="event__type">
+            <img class="event__type-icon" width="42" height="42" src="img/icons/${tripType.toLowerCase()}.png" alt="Event type icon">
           </div>
-        </li>`
-     ))
+          <h3 class="event__title">${tripType} to ${tripCity}</h3>
+          <div class="event__schedule">
+            <p class="event__time">
+              <time class="event__start-time" datetime="${tripDate}">${tripDate.getHours()}:${tripDate.getMinutes()}</time>
+              &mdash;
+              <time class="event__end-time" datetime="${tripDate}">${endTime}</time>
+            </p>
+            <p class="event__duration">${passedHours}H ${passedMinutes}M</p>
+          </div>
+          <p class="event__price">
+            &euro;&nbsp;<span class="event__price-value">${tripPrice}</span>
+          </p>
+          <h4 class="visually-hidden">Offers:</h4>
+          <ul class="event__selected-offers">
+            ${specialOffers}
+          </ul>
+          <button class="event__rollup-btn" type="button">
+            <span class="visually-hidden">Open event</span>
+          </button>
+        </div>
+      </li>`
+    ))
+    .join(`\n`);
 }
 
 export const createContentItemTemplate = (trip) => {
-  const {price, date, days} = trip;
+  const { date, days, type, city, price, extraOption } = trip;
   const datetime = date.getFullYear() + `-` + (date.getMonth() + 1) + `-` + date.getDate();
+  const tripEventsItem = createTripEventsItem(date, type, city, price, extraOption)
   return (
     `<li class="trip-days__item  day">
       <div class="day__info">
         <span class="day__counter">${days}</span>
-        <time class="day__date" datetime="${datetime}">${MonthNames[date.getMonth()]} ${date.getDate()}</time>
+        <time class="day__date" datetime="${date}">${MonthNames[date.getMonth()]} ${date.getDate()}</time>
       </div>
-
       <ul class="trip-events__list">
-
-
-        <li class="trip-events__item">
-          <div class="event">
-            <div class="event__type">
-              <img class="event__type-icon" width="42" height="42" src="img/icons/flight.png" alt="Event type icon">
-            </div>
-            <h3 class="event__title">Flight to Geneva</h3>
-
-            <div class="event__schedule">
-              <p class="event__time">
-                <time class="event__start-time" datetime="2019-03-18T12:25">12:25</time>
-                &mdash;
-                <time class="event__end-time" datetime="2019-03-18T13:35">13:35</time>
-              </p>
-              <p class="event__duration">1H 30M</p>
-            </div>
-
-            <p class="event__price">
-              &euro;&nbsp;<span class="event__price-value">160</span>
-            </p>
-
-            <h4 class="visually-hidden">Offers:</h4>
-            <ul class="event__selected-offers">
-              <li class="event__offer">
-                <span class="event__offer-title">Add luggage</span>
-                &plus;
-                &euro;&nbsp;<span class="event__offer-price">50</span>
-                </li>
-                <li class="event__offer">
-                  <span class="event__offer-title">Switch to comfort</span>
-                  &plus;
-                  &euro;&nbsp;<span class="event__offer-price">80</span>
-                </li>
-            </ul>
-
-            <button class="event__rollup-btn" type="button">
-              <span class="visually-hidden">Open event</span>
-            </button>
-          </div>
-        </li>
-
-        <li class="trip-events__item">
-          <div class="event">
-            <div class="event__type">
-              <img class="event__type-icon" width="42" height="42" src="img/icons/drive.png" alt="Event type icon">
-            </div>
-            <h3 class="event__title">Drive to Chamonix</h3>
-
-            <div class="event__schedule">
-              <p class="event__time">
-                <time class="event__start-time" datetime="2019-03-18T14:30">14:30</time>
-                &mdash;
-                <time class="event__end-time" datetime="2019-03-18T16:05">16:05</time>
-              </p>
-              <p class="event__duration">1H 10M</p>
-            </div>
-
-            <p class="event__price">
-              &euro;&nbsp;<span class="event__price-value">160</span>
-            </p>
-
-            <h4 class="visually-hidden">Offers:</h4>
-            <ul class="event__selected-offers">
-              <li class="event__offer">
-                <span class="event__offer-title">Rent a car</span>
-                &plus;
-                &euro;&nbsp;<span class="event__offer-price">200</span>
-                </li>
-            </ul>
-
-            <button class="event__rollup-btn" type="button">
-              <span class="visually-hidden">Open event</span>
-            </button>
-          </div>
-        </li>
-
-        <li class="trip-events__item">
-          <div class="event">
-            <div class="event__type">
-              <img class="event__type-icon" width="42" height="42" src="img/icons/check-in.png" alt="Event type icon">
-            </div>
-            <h3 class="event__title">Check into hotel</h3>
-
-            <div class="event__schedule">
-              <p class="event__time">
-                <time class="event__start-time" datetime="2019-03-18T12:25">12:25</time>
-                &mdash;
-                <time class="event__end-time" datetime="2019-03-18T13:35">13:35</time>
-              </p>
-              <p class="event__duration">1H 30M</p>
-            </div>
-
-            <p class="event__price">
-              &euro;&nbsp;<span class="event__price-value">600</span>
-            </p>
-
-            <h4 class="visually-hidden">Offers:</h4>
-            <ul class="event__selected-offers">
-              <li class="event__offer">
-                <span class="event__offer-title">Add breakfast</span>
-                &plus;
-                &euro;&nbsp;<span class="event__offer-price">50</span>
-                </li>
-            </ul>
-
-            <button class="event__rollup-btn" type="button">
-              <span class="visually-hidden">Open event</span>
-            </button>
-          </div>
-        </li>
+        ${tripEventsItem}
       </ul>
     </li>`
   );
