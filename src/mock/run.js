@@ -70,11 +70,11 @@ const generateEventItem = () => ({
     .fill(``)
     .map(() => RouteDescriptionList[getRandomIntegerNumber(0, RouteDescriptionList.length)])
     .join(`. `) + `.`,
+  price: getRandomIntegerNumber(20, 1000),
+  date: getRandomDate(),
   extraOption: new Array(getRandomIntegerNumber(0, 10))
     .fill(``)
-    .map(() => RouteExtraOptionList[getRandomIntegerNumber(0, RouteExtraOptionList.length)]),
-  price: getRandomIntegerNumber(20, 1000),
-  date: getRandomDate()
+    .map(() => RouteExtraOptionList[getRandomIntegerNumber(0, RouteExtraOptionList.length)])
 });
 
 const generateRoute = (count, items) => {

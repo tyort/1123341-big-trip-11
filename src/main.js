@@ -4,7 +4,7 @@ import {createFilterTemplate} from './components/filter.js';
 import {createFormTemplate} from './components/form.js';
 import {createContentTemplate} from './components/content.js';
 import {createContentItemTemplate, createTripEventsItem, createEvent} from './components/content-item.js';
-import {generateRoute, generateRouteItem, generateEventItem, getRandomIntegerNumber} from './mock/run.js';
+import {generateRoute, generateRouteItem, generateEventItem} from './mock/run.js';
 
 const TRIPS_COUNT = 3;
 let trips = generateRoute(TRIPS_COUNT, generateRouteItem);
@@ -43,9 +43,23 @@ Array.from(document.querySelectorAll(`.trip-events__list`)) // создаем м
   ));
 
 
-const ITEMS_COUNT = 20;
+const ITEMS_COUNT = 12;
 let events = generateRoute(ITEMS_COUNT, generateEventItem);
-Array.from(document.getElementsByClassName(`trip-events__item`)) // создаем массив из тегов для 12 <li>
-  .forEach((element) => render(element, createEvent(events[getRandomIntegerNumber(0, events.length)])));
+Array.from(document.querySelectorAll(`.trip-events__item`)) // создаем массив из тегов для 12 <li>
+  .forEach((element, index) => render(element, createEvent(events[index])));
 
+
+const eventSelectedOffers = document.querySelectorAll(`.event__selected-offers`);
+const buttonEventRollUp = document.querySelectorAll(`.event__rollup-btn`);
+
+eventSelectedOffers.forEach((element, index) => {
+  buttonEventRollUp[index].addEventListener(`click`, function () {
+    for (let i = 0; i < element.children.length; i++) {
+      if (element.children[i].classList.contains(`izchezni`)) {
+        element.children[i].classList.remove(`izchezni`);
+      }
+    }
+    buttonEventRollUp[index].remove();
+  });
+});
 

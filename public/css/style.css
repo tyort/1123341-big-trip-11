@@ -930,3 +930,8 @@ main {
 
 .statistics__item:not(:last-child) {
   margin-bottom: 78px; }
+
+/* пока для себя сделал */
+.izchezni {
+  display: none
+}

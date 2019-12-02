@@ -1,14 +1,18 @@
 import {MONTHS, Date} from '../const.js';
 import {getRandomIntegerNumber} from '../mock/run.js';
 
-const createSpecialOffers = (extraOption) => {
-  return extraOption
-    .map((item) => (
-      `<li class="event__offer">
+const createExtraOption = (option) => {
+
+  return option
+    .map((item, index) => {
+
+      const hideEvent = index > 2 ? `izchezni` : ``;
+
+      return (`<li class="event__offer ${hideEvent}">
         <span class="event__offer-title">${item.name}</span>
         <span class="event__offer-price">${item.price}</span>
-      </li>`
-    ))
+      </li>`);
+    })
     .join(``);
 };
 
@@ -18,14 +22,16 @@ export const createTripEventsItem = () => (
 );
 
 export const createEvent = (trip) => {
-  const {type, city, date, extraOption, price} = trip;
+  const {type, city, date, price, extraOption} = trip;
   const randomHours = getRandomIntegerNumber(0, 23);
   const endHours = randomHours > date.getHours() ? randomHours : date.getHours() + 1;
   const endMinutes = getRandomIntegerNumber(0, 59);
   const endTime = endHours + `:` + endMinutes;
   const passedHours = Math.floor(((endHours * 60 + endMinutes) - (date.getHours() * 60 + date.getMinutes())) / 60);
   const passedMinutes = ((endHours * 60 + endMinutes) - (date.getHours() * 60 + date.getMinutes())) % 60;
-  const specialOffers = createSpecialOffers(extraOption);
+  const addOption = createExtraOption(extraOption);
+  const hideButton = extraOption.length <= 3 ? `izchezni` : ``;
+
 
   return (
     `<div class="event">
@@ -46,9 +52,9 @@ export const createEvent = (trip) => {
       </p>
       <h4 class="visually-hidden">Offers:</h4>
       <ul class="event__selected-offers">
-        ${specialOffers}
+        ${addOption}
       </ul>
-      <button class="event__rollup-btn" type="button">
+      <button class="event__rollup-btn ${hideButton}" type="button">
         <span class="visually-hidden">Open event</span>
       </button>
     </div>`
