@@ -239,8 +239,8 @@ render(mainTripInfoElement, createWaybillTemplate(), `afterBegin`);
 
 const mainTripControlsElement = document.querySelector(`.trip-main__trip-controls`);
 const visuallyHiddenElement = mainTripControlsElement.querySelectorAll(`.visually-hidden`);
-render(visuallyHiddenElement[0], createMenuTemplate(), `afterBegin`);
-render(visuallyHiddenElement[1], createFilterTemplate(), `afterBegin`);
+render(visuallyHiddenElement[0], createMenuTemplate(), `afterEnd`);
+render(visuallyHiddenElement[1], createFilterTemplate(), `afterEnd`);
 
 
 const tripEventsElement = document.querySelector(`.trip-events`);
