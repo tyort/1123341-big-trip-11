@@ -1,32 +1,31 @@
-import {createRouteInfoTemplate} from './components/route-info.js';
+import {createWaybillTemplate} from './components/waybill.js';
 import {createMenuTemplate} from './components/menu.js';
 import {createFilterTemplate} from './components/filter.js';
-import {createFormTemplate} from './components/form.js';
-import {createContentTemplate} from './components/content.js';
-import {createContentItemTemplate} from './components/content-item.js';
+import {createAssortmentTemplate} from './components/assortment.js';
+import {createTripDaysTemplate} from './components/trip_days.js';
+import {createCardTemplate} from './components/card.js';
 
-const TASK_COUNT = 3;
+const CARD_COUNT = 3;
 
 const render = (element, template, place = `beforeEnd`) => element.insertAdjacentHTML(place, template);
 
-const tripMainElement = document.querySelector(`.trip-main`);
+const mainTripInfoElement = document.querySelector(`.trip-main__trip-info`);
+render(mainTripInfoElement, createWaybillTemplate(), `afterBegin`);
 
-const tripInfoElement = tripMainElement.querySelector(`.trip-main__trip-info`);
-render(tripInfoElement, createRouteInfoTemplate(), `afterBegin`);
+const mainTripControlsElement = document.querySelector(`.trip-main__trip-controls`);
+const visuallyHiddenElement = mainTripControlsElement.querySelectorAll(`.visually-hidden`);
+render(visuallyHiddenElement[0], createMenuTemplate(), `afterEnd`);
+render(visuallyHiddenElement[1], createFilterTemplate(), `afterEnd`);
 
-const tripControlsElement = tripMainElement.querySelector(`.trip-main__trip-controls`);
-const hiddenTripControlsElement = tripControlsElement.querySelector(`.visually-hidden`);
-render(hiddenTripControlsElement, createMenuTemplate(), `afterEnd`);
-render(tripControlsElement, createFilterTemplate());
 
 const tripEventsElement = document.querySelector(`.trip-events`);
-render(tripEventsElement, createFormTemplate());
-render(tripEventsElement, createContentTemplate());
+render(tripEventsElement, createAssortmentTemplate());
+render(tripEventsElement, createTripDaysTemplate());
 
 const tripDaysElement = document.querySelector(`.trip-days`);
 
-new Array(TASK_COUNT)
+new Array(CARD_COUNT)
   .fill(``)
   .forEach(
-      () => render(tripDaysElement, createContentItemTemplate())
+      () => render(tripDaysElement, createCardTemplate())
   );
