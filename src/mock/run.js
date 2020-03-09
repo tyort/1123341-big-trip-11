@@ -1,4 +1,4 @@
-const ROUTE_TYPES = [
+const WAYBILL_TYPES = [
   `Bus`,
   `Check-in`,
   `Drive`,
@@ -12,7 +12,7 @@ const ROUTE_TYPES = [
   `Trip`
 ];
 
-const ROUTE_CITIES = [
+const WAYBILL_CITIES = [
   `Brisbane`,
   `Sydnay`,
   `Budapest`,
@@ -23,7 +23,7 @@ const ROUTE_CITIES = [
   `Gorey`
 ];
 
-const RouteDescriptionList = [
+const WAYBILL_DESCRIPTION = [
   `Lorem ipsum dolor sit amet, consectetur adipiscing elit`,
   `Cras aliquet varius magna, non porta ligula feugiat eget`,
   `Fusce tristique felis at fermentum pharetra`,
@@ -37,11 +37,20 @@ const RouteDescriptionList = [
   `In rutrum ac purus sit amet tempus`
 ];
 
-const RouteExtraOptionList = [
-  {name: `Add luggage`, price: `+10€`},
-  {name: `Switch to comfort class`, price: `+150€`},
-  {name: `Add meal`, price: `+2€`}
+const EXTRA_OPTION = [
+  [`Add luggage`, 10],
+  [`Switch to comfort class`, 150],
+  [`Add meal`, 2]
 ];
+// const sadsad = new Map(RouteExtraOptionList);
+// for (var [key, value] of sadsad) {
+//   console.log(key + ' +' + value + `€`);
+// }
+
+const getRandomArrayItem = (array) => {
+  const randomIndex = getRandomIntegerNumber(0, array.length);
+  return array[randomIndex];
+};
 
 const getRandomIntegerNumber = (min, max) => {
   return min + Math.floor(max * Math.random());

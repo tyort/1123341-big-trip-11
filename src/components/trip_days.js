@@ -1,4 +1,4 @@
-export const createContentTemplate = () =>
+export const createTripDaysTemplate = () =>
   (
     `<ul class="trip-days">
     </ul>`

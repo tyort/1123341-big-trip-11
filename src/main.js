@@ -1,65 +1,43 @@
-import {createRouteInfoTemplate} from './components/route-info.js';
+import {createWaybillTemplate} from './components/waybill.js';
 import {createMenuTemplate} from './components/menu.js';
 import {createFilterTemplate} from './components/filter.js';
-import {createFormTemplate} from './components/form.js';
-import {createContentTemplate} from './components/content.js';
-import {createContentItemTemplate, createTripEventsItem, createEvent} from './components/content-item.js';
+import {createAssortmentTemplate} from './components/assortment.js';
+import {createTripDaysTemplate} from './components/trip_days.js';
+import {createCardListTemplate} from './components/card_list.js';
+import {createCardListItemTemplate} from './components/card_list_item.js';
+import {createCardListItemFormTemplate} from './components/card_list_item_form.js';
 import {generateRoute, generateRouteItem, generateEventItem} from './mock/run.js';
 
-const TRIPS_COUNT = 3;
-let trips = generateRoute(TRIPS_COUNT, generateRouteItem);
+const CARD_COUNT = 3;
+const CARD_ITEM_COUNT = 4;
 
 const render = (element, template, place = `beforeEnd`) => element.insertAdjacentHTML(place, template);
 
-const tripMainElement = document.querySelector(`.trip-main`);
+const mainTripInfoElement = document.querySelector(`.trip-main__trip-info`);
+render(mainTripInfoElement, createWaybillTemplate(), `afterBegin`);
 
-const tripInfoElement = tripMainElement.querySelector(`.trip-main__trip-info`);
-render(tripInfoElement, createRouteInfoTemplate(), `afterBegin`);
+const mainTripControlsElement = document.querySelector(`.trip-main__trip-controls`);
+const visuallyHiddenElement = mainTripControlsElement.querySelectorAll(`.visually-hidden`);
+render(visuallyHiddenElement[0], createMenuTemplate(), `afterEnd`);
+render(visuallyHiddenElement[1], createFilterTemplate(), `afterEnd`);
 
-const tripControlsElement = tripMainElement.querySelector(`.trip-main__trip-controls`);
-const hiddenTripControlsElement = tripControlsElement.querySelector(`.visually-hidden`);
-render(hiddenTripControlsElement, createMenuTemplate(), `afterEnd`);
-render(tripControlsElement, createFilterTemplate());
 
 const tripEventsElement = document.querySelector(`.trip-events`);
-render(tripEventsElement, createFormTemplate());
-render(tripEventsElement, createContentTemplate());
+render(tripEventsElement, createAssortmentTemplate());
+render(tripEventsElement, createTripDaysTemplate());
 
 const tripDaysElement = document.querySelector(`.trip-days`);
 
-trips.sort((a, b) => a.date.getTime() - b.date.getTime())
-.forEach((element, index, array) => (
-  element.days = index === 0 ? 1 : Math.ceil((array[index].date.getTime() - array[0].date.getTime()) / (1000 * 3600 * 24))
-));
-trips.forEach((element) => render(tripDaysElement, createContentItemTemplate(element)));
+new Array(CARD_COUNT)
+  .fill(``)
+  .forEach(
+      () => render(tripDaysElement, createCardListTemplate())
+  );
 
+const tripEventsListElement = document.querySelector(`.trip-events__list`);
 
-const EVENTS_COUNT = 4;
-Array.from(document.querySelectorAll(`.trip-events__list`)) // создаем массив из тегов в которых будет по 4 <li>
-  .forEach((element) => ( // для каждого тега мы выполняем:
-    new Array(EVENTS_COUNT) // внутри 4 пустых ячейки
-    .fill(``)
-    .forEach(() => render(element, createTripEventsItem())) // прорисовку 4-x <li>
-  ));
-
-
-const ITEMS_COUNT = 12;
-let events = generateRoute(ITEMS_COUNT, generateEventItem);
-Array.from(document.querySelectorAll(`.trip-events__item`)) // создаем массив из тегов для 12 <li>
-  .forEach((element, index) => render(element, createEvent(events[index])));
-
-
-const eventSelectedOffers = document.querySelectorAll(`.event__selected-offers`);
-const buttonEventRollUp = document.querySelectorAll(`.event__rollup-btn`);
-
-eventSelectedOffers.forEach((element, index) => {
-  buttonEventRollUp[index].addEventListener(`click`, function () {
-    for (let i = 0; i < element.children.length; i++) {
-      if (element.children[i].classList.contains(`izchezni`)) {
-        element.children[i].classList.remove(`izchezni`);
-      }
-    }
-    buttonEventRollUp[index].remove();
-  });
-});
-
+new Array(CARD_ITEM_COUNT)
+  .fill(``)
+  .forEach(
+      () => render(tripEventsListElement, createCardListItemTemplate())
+  );
