@@ -5,11 +5,12 @@ import {createAssortmentTemplate} from './components/assortment.js';
 import {createTripDaysTemplate} from './components/trip_days.js';
 import {createCardListTemplate} from './components/card_list.js';
 import {createCardListItemTemplate} from './components/card_list_item.js';
-import {createCardListItemFormTemplate} from './components/card_list_item_form.js';
-import {generateRoute, generateRouteItem, generateEventItem} from './mock/run.js';
+// import {createCardListItemFormTemplate} from './components/card_list_item_form.js';
+import {generateCards} from './mock/card.js';
 
 const CARD_COUNT = 3;
 const CARD_ITEM_COUNT = 4;
+const cards = generateCards(CARD_ITEM_COUNT); // массив получится из 4-х
 
 const render = (element, template, place = `beforeEnd`) => element.insertAdjacentHTML(place, template);
 
@@ -34,10 +35,8 @@ new Array(CARD_COUNT)
       () => render(tripDaysElement, createCardListTemplate())
   );
 
-const tripEventsListElement = document.querySelector(`.trip-events__list`);
+const tripEventsListElement = document.querySelectorAll(`.trip-events__list`);
 
-new Array(CARD_ITEM_COUNT)
-  .fill(``)
-  .forEach(
-      () => render(tripEventsListElement, createCardListItemTemplate())
-  );
+for (let i = tripEventsListElement.length; i--;) {
+  cards.forEach((it) => render(tripEventsListElement[i], createCardListItemTemplate(it)));
+}
