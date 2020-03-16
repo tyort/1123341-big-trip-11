@@ -27,12 +27,17 @@ const createPhotos = (array) => {
     .join(``);
 };
 
-export const createCardListItemFormTemplate = (card) => {
-  const {extraOptions, icon, waybillType, waybillPurpose, description, photos} = card;
+export const createCardListItemFormTemplate = (cardItem) => {
+  const {extraOptions, icon, waybillType, waybillPurpose, description, photos, cardItemDate, spendingTime} = cardItem;
   const addExtraOptions = createExtraOptionInsert(Array.from(extraOptions));
   const addDescription = `${Array.from(description).join(`. `)}.`;
   const addPhotos = createPhotos(Array.from(photos));
   const addWaybillPurpose = waybillType === `Check-in hotel` ? `` : waybillPurpose;
+  const month = Number(cardItemDate[1]) + 1;
+  const monthInTwins = month > 9 ? month.toString() : `0` + month.toString();
+  const addCardItemDate = cardItemDate[0].slice(2, 4) + `/` + monthInTwins + `/` + cardItemDate[2];
+  const addTime = cardItemDate[3] + `:` + cardItemDate[4];
+  const addSpendingTime = spendingTime[3] + `:` + spendingTime[4];
 
   return (
     `<li class="trip-events__item">
@@ -122,12 +127,14 @@ export const createCardListItemFormTemplate = (card) => {
             <label class="visually-hidden" for="event-start-time-1">
               From
             </label>
-            <input class="event__input  event__input--time" id="event-start-time-1" type="text" name="event-start-time" value="18/03/19 12:25">
+            <input class="event__input  event__input--time" id="event-start-time-1" type="text"
+              name="event-start-time" value="${addCardItemDate} ${addTime}">
             &mdash;
             <label class="visually-hidden" for="event-end-time-1">
               To
             </label>
-            <input class="event__input  event__input--time" id="event-end-time-1" type="text" name="event-end-time" value="18/03/19 13:35">
+            <input class="event__input  event__input--time" id="event-end-time-1" type="text"
+              name="event-end-time" value="${addCardItemDate} ${addSpendingTime}">
           </div>
 
           <div class="event__field-group  event__field-group--price">

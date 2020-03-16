@@ -1,4 +1,4 @@
-import {generateStatement} from '../formulas.js';
+import {generateStatement, getSpendingTime} from '../formulas.js';
 
 const createExtraOptionInsert = (array) => {
   return array
@@ -15,10 +15,11 @@ const createExtraOptionInsert = (array) => {
     .join(``);
 };
 
-export const createCardListItemTemplate = (card) => {
-  const {extraOptions, icon, waybillType, waybillPurpose} = card;
+export const createCardListItemTemplate = (cardItem) => {
+  const {extraOptions, icon, waybillType, waybillPurpose, cardItemDate, spendingTime} = cardItem;
   const addExtraOptions = createExtraOptionInsert(Array.from(extraOptions));
   const addWaybillPurpose = waybillType === `Check-in hotel` ? `` : waybillPurpose;
+  const kdkksd = getSpendingTime((new Date(...spendingTime).getTime() - new Date(...cardItemDate).getTime()) / 60000);
 
   return (
     `<li class="trip-events__item">
@@ -30,11 +31,17 @@ export const createCardListItemTemplate = (card) => {
 
         <div class="event__schedule">
           <p class="event__time">
-            <time class="event__start-time" datetime="2019-03-18T14:30">14:30</time>
+            <time class="event__start-time"
+              datetime="${cardItemDate[0]}-${cardItemDate[1]}-${cardItemDate[2]}T${cardItemDate[3]}:${cardItemDate[4]}">
+              ${cardItemDate[3]}:${cardItemDate[4]}
+            </time>
             &mdash;
-            <time class="event__end-time" datetime="2019-03-18T16:05">16:05</time>
+            <time class="event__end-time"
+              datetime="${spendingTime[0]}-${spendingTime[1]}-${spendingTime[2]}T${spendingTime[3]}:${spendingTime[4]}">
+              ${spendingTime[3]}:${spendingTime[4]}
+            </time>
           </p>
-          <p class="event__duration">1H 10M</p>
+          <p class="event__duration">${kdkksd}</p>
         </div>
 
         <p class="event__price">

@@ -1,19 +1,4 @@
-import {getRandomIntegerNumber, generateWaybill} from '../formulas.js';
-
-export const MONTHS = [
-  `JAN`,
-  `FEB`,
-  `MAR`,
-  `APR`,
-  `MAY`,
-  `JUN`,
-  `JUL`,
-  `AUG`,
-  `SEP`,
-  `OCT`,
-  `NOV`,
-  `DEC`
-];
+import {getRandomIntegerNumber, generateWaybill, getRandomDateArray} from '../formulas.js';
 
 const WAYBILL_TYPES = [
   `Bus`,
@@ -63,37 +48,43 @@ const EXTRA_OPTIONS = [
 ];
 
 const generateExtraOptions = () =>
-  new Array(getRandomIntegerNumber(0, 6)) // количество от 0 до 5
+  new Array(getRandomIntegerNumber(0, 5))
     .fill(``)
-    .map(() => EXTRA_OPTIONS[getRandomIntegerNumber(0, 5)]); // порядковый номер от 0 до 4
+    .map(() => EXTRA_OPTIONS[getRandomIntegerNumber(0, 4)]); // порядковый номер от 0 до 4
 
 const generateDescription = () =>
   new Array(getRandomIntegerNumber(1, 3)) // количество от 1 до 3
     .fill(``)
-    .map(() => WAYBILL_DESCRIPTION[getRandomIntegerNumber(0, 11)]);
+    .map(() => WAYBILL_DESCRIPTION[getRandomIntegerNumber(0, 10)]);
 
 const generatePhotos = () =>
   new Array(5)
     .fill(``)
     .map(() => `http://picsum.photos/300/150?r=${Math.random()}`);
 
-const generateCard = () => {
-  const waybillType = WAYBILL_TYPES[getRandomIntegerNumber(0, 11)];
+const generateCardItem = () => {
+  const waybillType = WAYBILL_TYPES[getRandomIntegerNumber(0, 10)];
+  let cardItemDate = getRandomDateArray();
+  let spendingTime = [...cardItemDate.slice(0, 3), ...getRandomDateArray().slice(3, 5)];
+  if (new Date(...cardItemDate).getTime() >= new Date(...spendingTime).getTime()) {
+    [cardItemDate, spendingTime] = [spendingTime, cardItemDate];
+  }
 
   return {
     icon: waybillType.toLowerCase(),
     extraOptions: new Map(generateExtraOptions()),
     waybillType: generateWaybill(waybillType),
-    waybillPurpose: WAYBILL_PURPOSE[getRandomIntegerNumber(0, 8)],
+    waybillPurpose: WAYBILL_PURPOSE[getRandomIntegerNumber(0, 7)],
     description: new Set(generateDescription()),
-    photos: new Set(generatePhotos())
+    photos: new Set(generatePhotos()),
+    cardItemDate,
+    spendingTime
   };
 };
 
-const generateCards = (count) =>
+const generateSomeUnit = (count, createObj) =>
   new Array(count)
     .fill(``)
-    .map(generateCard); // функция без ()
+    .map(createObj); // функция без ()
 
-
-export {generateCard, generateCards};
+export {generateCardItem, generateSomeUnit};
