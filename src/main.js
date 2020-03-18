@@ -4,6 +4,7 @@ import FilterComponent from './components/filter.js';
 import AssortmentComponent from './components/assortment.js';
 import TripDaysComponent from './components/trip_days.js';
 import CardListComponent from './components/card_list.js';
+import NoCardListComponent from './components/no_card_list.js';
 import CardListItemComponent from './components/card_list_item.js';
 import CardListItemFormComponent from './components/card_list_item_form.js';
 import {generateCardItem, generateSomeUnit} from './mock/card.js';
@@ -16,14 +17,25 @@ const renderCardItem = (container, cardItem) => {
   const cardListItemFormComponent = new CardListItemFormComponent(cardItem);
   const rollupButton = cardListItemComponent.getElement().querySelector(`.event__rollup-btn`);
 
+  const replaceFormToItem = () => {
+    container.replaceChild(cardListItemComponent.getElement(), cardListItemFormComponent.getElement());
+    document.removeEventListener(`keydown`, onEscKeyDown);
+  };
+
+  const replaceItemToForm = () => container.replaceChild(cardListItemFormComponent.getElement(), cardListItemComponent.getElement());
+  const onEscKeyDown = (evt) => {
+    if (evt.key === `Escape` || evt.key === `Esc`) {
+      replaceFormToItem();
+    }
+  };
+
   rollupButton.addEventListener(`click`, () => {
-    container.replaceChild(cardListItemFormComponent.getElement(), cardListItemComponent.getElement());
+    replaceItemToForm();
+    document.addEventListener(`keydown`, onEscKeyDown);
   });
 
   const editForm = cardListItemFormComponent.getElement().querySelector(`form`);
-  editForm.addEventListener(`submit`, () => {
-    container.replaceChild(cardListItemComponent.getElement(), cardListItemFormComponent.getElement());
-  });
+  editForm.addEventListener(`submit`, replaceFormToItem);
 
   renderCompon(container, cardListItemComponent.getElement());
 };
@@ -49,16 +61,20 @@ renderCompon(visuallyHiddenElement[0], new MenuComponent().getElement(), `afterE
 renderCompon(visuallyHiddenElement[1], new FilterComponent().getElement(), `afterEnd`);
 
 const tripEventsElement = document.querySelector(`.trip-events`);
-renderCompon(tripEventsElement, new AssortmentComponent().getElement());
-renderCompon(tripEventsElement, new TripDaysComponent().getElement());
+if (cards.length > 0) {
+  renderCompon(tripEventsElement, new AssortmentComponent().getElement());
+  renderCompon(tripEventsElement, new TripDaysComponent().getElement());
 
-const tripDaysElement = document.querySelector(`.trip-days`);
-const dayCounter = sortedCards.map((it) => new Date(...it))
-  .map((it, index, array) => 1 + Math.ceil(Math.abs(it.getTime() - array[0].getTime()) / (1000 * 3600 * 24)));
-sortedCards.forEach((it, index) => renderCompon(tripDaysElement, new CardListComponent(it, dayCounter[index]).getElement()));
+  const tripDaysElement = document.querySelector(`.trip-days`);
+  const dayCounter = sortedCards.map((it) => new Date(...it))
+    .map((it, index, array) => 1 + Math.ceil(Math.abs(it.getTime() - array[0].getTime()) / (1000 * 3600 * 24)));
+  sortedCards.forEach((it, index) => renderCompon(tripDaysElement, new CardListComponent(it, dayCounter[index]).getElement()));
 
-const tripEventsListElement = document.querySelectorAll(`.trip-events__list`);
-cards.forEach((item, index) =>
-  sortedCardItems.filter((it) => getCompareArray(item, it.cardItemDate))
-    .forEach((it) => renderCardItem(tripEventsListElement[index], it))
-);
+  const tripEventsListElement = document.querySelectorAll(`.trip-events__list`);
+  cards.forEach((item, index) =>
+    sortedCardItems.filter((it) => getCompareArray(item, it.cardItemDate))
+      .forEach((it) => renderCardItem(tripEventsListElement[index], it))
+  );
+} else {
+  renderCompon(tripEventsElement, new NoCardListComponent().getElement());
+}
