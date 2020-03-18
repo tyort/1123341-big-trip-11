@@ -1,4 +1,6 @@
-export const createAssortmentTemplate = () => (
+import {createElement} from '../formulas.js';
+
+const createAssortmentTemplate = () => (
   `<form class="trip-events__trip-sort  trip-sort" action="#" method="get">
     <span class="trip-sort__item  trip-sort__item--day">Day</span>
 
@@ -30,3 +32,24 @@ export const createAssortmentTemplate = () => (
     <span class="trip-sort__item  trip-sort__item--offers">Offers</span>
   </form>`
 );
+
+export default class Assortment {
+  constructor() {
+    this._element = null;
+  }
+
+  getTemplate() { // возвращает верстку сверху
+    return createAssortmentTemplate();
+  }
+
+  getElement() { //
+    if (!this._element) { // TRUE если this._element = null
+      this._element = createElement(this.getTemplate()); // создает div, запихивает нашу верстку внутрь, возвращает внутренности
+    }
+    return this._element; // возвращает true или false
+  }
+
+  removeElement() {
+    this._element = null;
+  }
+}

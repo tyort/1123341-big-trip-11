@@ -55,8 +55,6 @@ export const getRandomDateArray = () => {
   return arr;
 };
 
-export const render = (element, template, place = `beforeEnd`) => element.insertAdjacentHTML(place, template);
-
 export const getCompareArray = (arr1, arr2) => {
   return arr1.every((item, index) => item === arr2[index]);
 };
@@ -75,4 +73,23 @@ export const getSpendingTime = (num) => {
     return `${minutes}`;
   }
   return `${days} ${hours} ${minutes}`;
+};
+
+export const renderCompon = (container, element, place) => {
+  switch (place) {
+    case `afterBegin`:
+      container.prepend(element);
+      break;
+    case `afterEnd`:
+      container.after(element);
+      break;
+    default:
+      container.append(element);
+  }
+};
+
+export const createElement = (template) => {
+  const newElement = document.createElement(`div`);
+  newElement.innerHTML = template;
+  return newElement.firstChild;
 };

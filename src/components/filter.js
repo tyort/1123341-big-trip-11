@@ -1,3 +1,5 @@
+import {createElement} from '../formulas.js';
+
 export const createFilterTemplate = () =>
   (
     `<form class="trip-filters" action="#" method="get">
@@ -16,4 +18,25 @@ export const createFilterTemplate = () =>
       <button class="visually-hidden" type="submit">Accept filter</button>
     </form>`
   );
+
+export default class Filter {
+  constructor() {
+    this._element = null;
+  }
+
+  getTemplate() { // возвращает верстку сверху
+    return createFilterTemplate();
+  }
+
+  getElement() { //
+    if (!this._element) { // TRUE если this._element = null
+      this._element = createElement(this.getTemplate()); // создает div, запихивает нашу верстку внутрь, возвращает внутренности
+    }
+    return this._element; // возвращает true или false
+  }
+
+  removeElement() {
+    this._element = null;
+  }
+}
 

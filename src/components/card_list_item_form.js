@@ -1,4 +1,4 @@
-import {generateStatement} from '../formulas.js';
+import {generateStatement, createElement} from '../formulas.js';
 
 const createExtraOptionInsert = (array) => {
   return array
@@ -27,7 +27,7 @@ const createPhotos = (array) => {
     .join(``);
 };
 
-export const createCardListItemFormTemplate = (cardItem) => {
+const createCardListItemFormTemplate = (cardItem) => {
   const {extraOptions, icon, waybillType, waybillPurpose, description, photos, cardItemDate, spendingTime} = cardItem;
   const addExtraOptions = createExtraOptionInsert(Array.from(extraOptions));
   const addDescription = `${Array.from(description).join(`. `)}.`;
@@ -186,3 +186,25 @@ export const createCardListItemFormTemplate = (cardItem) => {
     </li>`
   );
 };
+
+export default class CardlistItemForm {
+  constructor(cardItem) {
+    this._cardItem = cardItem;
+    this._element = null;
+  }
+
+  getTemplate() { // возвращает верстку сверху
+    return createCardListItemFormTemplate(this._cardItem);
+  }
+
+  getElement() { //
+    if (!this._element) { // TRUE если this._element = null
+      this._element = createElement(this.getTemplate()); // создает div, запихивает нашу верстку внутрь, возвращает внутренности
+    }
+    return this._element; // возвращает true или false
+  }
+
+  removeElement() {
+    this._element = null;
+  }
+}

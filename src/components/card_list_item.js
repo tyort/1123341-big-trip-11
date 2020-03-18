@@ -1,4 +1,4 @@
-import {generateStatement, getSpendingTime} from '../formulas.js';
+import {generateStatement, getSpendingTime, createElement} from '../formulas.js';
 
 const createExtraOptionInsert = (array) => {
   return array
@@ -15,11 +15,15 @@ const createExtraOptionInsert = (array) => {
     .join(``);
 };
 
-export const createCardListItemTemplate = (cardItem) => {
+const createCardListItemTemplate = (cardItem) => {
   const {extraOptions, icon, waybillType, waybillPurpose, cardItemDate, spendingTime} = cardItem;
   const addExtraOptions = createExtraOptionInsert(Array.from(extraOptions));
   const addWaybillPurpose = waybillType === `Check-in hotel` ? `` : waybillPurpose;
-  const kdkksd = getSpendingTime((new Date(...spendingTime).getTime() - new Date(...cardItemDate).getTime()) / 60000);
+  const addSpendingTime = getSpendingTime((new Date(...spendingTime).getTime() - new Date(...cardItemDate).getTime()) / 60000);
+  const monthCorrectStartNum = Number(cardItemDate[1]) + 1;
+  const addMonthCorrectStartNum = monthCorrectStartNum > 9 ? `${monthCorrectStartNum}` : `0${monthCorrectStartNum}`;
+  const monthCorrectEndNum = Number(cardItemDate[1]) + 1;
+  const addMonthCorrectEndNum = monthCorrectEndNum > 9 ? `${monthCorrectEndNum}` : `0${monthCorrectEndNum}`;
 
   return (
     `<li class="trip-events__item">
@@ -32,16 +36,16 @@ export const createCardListItemTemplate = (cardItem) => {
         <div class="event__schedule">
           <p class="event__time">
             <time class="event__start-time"
-              datetime="${cardItemDate[0]}-${cardItemDate[1]}-${cardItemDate[2]}T${cardItemDate[3]}:${cardItemDate[4]}">
+              datetime="${cardItemDate[0]}-${addMonthCorrectStartNum}-${cardItemDate[2]}T${cardItemDate[3]}:${cardItemDate[4]}">
               ${cardItemDate[3]}:${cardItemDate[4]}
             </time>
             &mdash;
             <time class="event__end-time"
-              datetime="${spendingTime[0]}-${spendingTime[1]}-${spendingTime[2]}T${spendingTime[3]}:${spendingTime[4]}">
+              datetime="${spendingTime[0]}-${addMonthCorrectEndNum}-${spendingTime[2]}T${spendingTime[3]}:${spendingTime[4]}">
               ${spendingTime[3]}:${spendingTime[4]}
             </time>
           </p>
-          <p class="event__duration">${kdkksd}</p>
+          <p class="event__duration">${addSpendingTime}</p>
         </div>
 
         <p class="event__price">
@@ -60,3 +64,25 @@ export const createCardListItemTemplate = (cardItem) => {
     </li>`
   );
 };
+
+export default class CardlistItem {
+  constructor(cardItem) {
+    this._cardItem = cardItem;
+    this._element = null;
+  }
+
+  getTemplate() { // возвращает верстку сверху
+    return createCardListItemTemplate(this._cardItem);
+  }
+
+  getElement() { //
+    if (!this._element) { // TRUE если this._element = null
+      this._element = createElement(this.getTemplate()); // создает div, запихивает нашу верстку внутрь, возвращает внутренности
+    }
+    return this._element; // возвращает true или false
+  }
+
+  removeElement() {
+    this._element = null;
+  }
+}
