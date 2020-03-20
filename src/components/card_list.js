@@ -1,5 +1,5 @@
+import AbstractComponent from './abstract_component.js';
 import {MONTHS} from '../const.js';
-import {createElement} from '../formulas.js';
 
 const createCardListTemplate = (card, dayCounter) => {
   return (
@@ -16,26 +16,15 @@ const createCardListTemplate = (card, dayCounter) => {
   );
 };
 
-export default class Cardlist {
+export default class CardList extends AbstractComponent {
   constructor(card, dayCounter) {
+    super();
     this._card = card;
     this._dayCounter = dayCounter;
-    this._element = null;
   }
 
-  getTemplate() { // возвращает верстку сверху
+  getTemplate() {
     return createCardListTemplate(this._card, this._dayCounter);
-  }
-
-  getElement() { //
-    if (!this._element) { // TRUE если this._element = null
-      this._element = createElement(this.getTemplate()); // создает div, запихивает нашу верстку внутрь, возвращает внутренности
-    }
-    return this._element; // null
-  }
-
-  removeElement() {
-    this._element = null;
   }
 }
 

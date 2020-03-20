@@ -1,4 +1,5 @@
-import {generateStatement, getSpendingTime, createElement} from '../formulas.js';
+import AbstractComponent from './abstract_component.js';
+import {generateStatement, getSpendingTime} from '../formulas.js';
 
 const createExtraOptionInsert = (array) => {
   return array
@@ -65,24 +66,18 @@ const createCardListItemTemplate = (cardItem) => {
   );
 };
 
-export default class CardlistItem {
+export default class CardListItem extends AbstractComponent {
   constructor(cardItem) {
+    super();
     this._cardItem = cardItem;
-    this._element = null;
   }
 
-  getTemplate() { // возвращает верстку сверху
+  getTemplate() {
     return createCardListItemTemplate(this._cardItem);
   }
 
-  getElement() { //
-    if (!this._element) { // TRUE если this._element = null
-      this._element = createElement(this.getTemplate()); // создает div, запихивает нашу верстку внутрь, возвращает внутренности
-    }
-    return this._element; // возвращает true или false
-  }
-
-  removeElement() {
-    this._element = null;
+  setRollupButtonClickHandler(handler) {
+    this.getElement().querySelector(`.event__rollup-btn`)
+      .addEventListener(`click`, handler);
   }
 }

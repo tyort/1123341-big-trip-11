@@ -1,4 +1,4 @@
-import {createElement} from '../formulas.js';
+import AbstractComponent from './abstract_component.js';
 
 const createAssortmentTemplate = () => (
   `<form class="trip-events__trip-sort  trip-sort" action="#" method="get">
@@ -33,23 +33,8 @@ const createAssortmentTemplate = () => (
   </form>`
 );
 
-export default class Assortment {
-  constructor() {
-    this._element = null;
-  }
-
-  getTemplate() { // возвращает верстку сверху
+export default class Assortment extends AbstractComponent {
+  getTemplate() {
     return createAssortmentTemplate();
-  }
-
-  getElement() { //
-    if (!this._element) { // TRUE если this._element = null
-      this._element = createElement(this.getTemplate()); // создает div, запихивает нашу верстку внутрь, возвращает внутренности
-    }
-    return this._element; // возвращает true или false
-  }
-
-  removeElement() {
-    this._element = null;
   }
 }
