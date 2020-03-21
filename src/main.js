@@ -1,7 +1,7 @@
 import WaybillComponent from './components/waybill.js';
 import MenuComponent from './components/menu.js';
 import FilterComponent from './components/filter.js';
-import CardsMapComponent from './controllers/cards_map.js';
+import TableComponent from './controllers/table.js';
 import {generateCardItem, generateSomeUnit} from './mock/card.js';
 import {getSortDate, renderCompon} from './formulas.js';
 
@@ -16,9 +16,9 @@ const sortedCardItems = cardItems.sort((a, b) => {
   return new Date(...a.cardItemDate).getTime() - new Date(...b.cardItemDate).getTime();
 });
 
-console.log(sortedCards);
-console.log(sortedCardItems);
-console.log(sortedCardItems.map((it) => it.spendingTime));
+// console.log(sortedCards);
+// console.log(sortedCardItems);
+// console.log(sortedCardItems.map((it) => it.spendingTime));
 
 const mainTripInfoElement = document.querySelector(`.trip-main__trip-info`);
 renderCompon(mainTripInfoElement, new WaybillComponent().getElement(), `afterBegin`);
@@ -29,6 +29,6 @@ renderCompon(visuallyHiddenElement[0], new MenuComponent().getElement(), `afterE
 renderCompon(visuallyHiddenElement[1], new FilterComponent().getElement(), `afterEnd`);
 
 const tripEventsElement = document.querySelector(`.trip-events`);
-const cardsMapController = new CardsMapComponent(tripEventsElement);
+const cardsMapController = new TableComponent(tripEventsElement);
 cardsMapController.renderMap(sortedCards, sortedCardItems);
 

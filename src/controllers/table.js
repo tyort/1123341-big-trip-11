@@ -53,8 +53,7 @@ const renderItemBySort = (container, sortedCardItems) => {
   sortedCardItems.forEach((i) => renderCardItem(tripEventsListElement, i));
 };
 
-
-export default class CardsMapController {
+export default class TableController {
   constructor(container) {
     this._container = container;
     this._assortmentComponent = new AssortmentComponent();
@@ -74,15 +73,14 @@ export default class CardsMapController {
     this._assortmentComponent.setSortTypeChangeHandler((sortType) => {
       this._tripDaysComponent.innerHTML = ``;
       let sortedItems = [];
-      console.log(`dfsdf`)
 
       switch (sortType) {
         case SORT_TYPES.TIME_DOWN:
-          sortedItems = sortedCards.sort((a, b) => b.spendingTime.getDate() - b.cardItemDate.getDate() - a.spendingTime.getDate() + a.cardItemDate.getDate());
+          sortedItems = sortedCardItems.sort((a, b) => new Date(...b.spendingTime).getTime() - new Date(...b.cardItemDate).getTime() - new Date(...a.spendingTime).getTime() + new Date(...a.cardItemDate).getTime());
           renderItemBySort(this._tripDaysComponent, sortedItems);
           break;
         case SORT_TYPES.PRICE_DOWN:
-          sortedItems = sortedCards.sort((a, b) => b.price - a.price);
+          sortedItems = sortedCardItems.sort((a, b) => b.price - a.price);
           renderItemBySort(this._tripDaysComponent, sortedItems);
           break;
         case SORT_TYPES.DEFAULT:
