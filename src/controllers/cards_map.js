@@ -1,10 +1,11 @@
-import AssortmentComponent from '../components/assortment.js';
+import AssortmentComponent, {SORT_TYPES} from '../components/assortment.js';
 import TripDaysComponent from '../components/trip_days.js';
 import CardListComponent from '../components/card_list.js';
+import CardListLightComponent from '../components/card_list_light.js';
 import NoCardListComponent from '../components/no_card_list.js';
 import CardListItemComponent from '../components/card_list_item.js';
 import CardListItemFormComponent from '../components/card_list_item_form.js';
-import {renderCompon, getCompareArray} from '../formulas.js';
+import {renderCompon, getCompareArray, dayCounter} from '../formulas.js';
 
 const renderCardItem = (container, cardItem) => {
   const cardListItemComponent = new CardListItemComponent(cardItem);
@@ -35,31 +36,67 @@ const renderCardItem = (container, cardItem) => {
   renderCompon(container, cardListItemComponent.getElement());
 };
 
+const renderItemByDeafault = (container, sortedCards, sortedCardItems) => {
+  sortedCards.forEach((it, index) => { // нарисуем карты и пропишем количество дней
+    renderCompon(container, new CardListComponent(it, dayCounter(sortedCards)[index]).getElement());
+  });
+  const tripEventsListElements = document.querySelectorAll(`.trip-events__list`);
+  sortedCards.forEach((item, index) => // в кажду карту запихнем подходящие item
+    sortedCardItems.filter((elem) => getCompareArray(item, elem.cardItemDate))
+      .forEach((i) => renderCardItem(tripEventsListElements[index], i))
+  );
+};
+
+const renderItemBySort = (container, sortedCardItems) => {
+  renderCompon(container, new CardListLightComponent().getElement());
+  const tripEventsListElement = document.querySelector(`.trip-events__list`);
+  sortedCardItems.forEach((i) => renderCardItem(tripEventsListElement, i));
+};
+
+
 export default class CardsMapController {
   constructor(container) {
     this._container = container;
-    this._assortmentComponent = new AssortmentComponent().getElement();
-    this._tripDaysComponent = new TripDaysComponent().getElement();
+    this._assortmentComponent = new AssortmentComponent();
+    this._tripDaysComponent = new TripDaysComponent().getElement(); // контейнер для рендеров
     this._noCardListComponent = new NoCardListComponent().getElement();
   }
 
   renderMap(sortedCards, sortedCardItems) {
-    if (sortedCards.length > 0) {
-      renderCompon(this._container, this._assortmentComponent);
-      renderCompon(this._container, this._tripDaysComponent);
-
-      const tripDaysElement = document.querySelector(`.trip-days`);
-      const dayCounter = sortedCards.map((it) => new Date(...it))
-        .map((it, index, array) => 1 + Math.ceil(Math.abs(it.getTime() - array[0].getTime()) / (1000 * 3600 * 24)));
-      sortedCards.forEach((it, index) => renderCompon(tripDaysElement, new CardListComponent(it, dayCounter[index]).getElement()));
-
-      const tripEventsListElement = document.querySelectorAll(`.trip-events__list`);
-      sortedCards.forEach((item, index) =>
-        sortedCardItems.filter((it) => getCompareArray(item, it.cardItemDate))
-          .forEach((it) => renderCardItem(tripEventsListElement[index], it))
-      );
-    } else {
+    if (sortedCards.length === 0) {
       renderCompon(this._container, this._noCardListComponent);
     }
+
+    renderCompon(this._container, this._assortmentComponent.getElement());
+    renderCompon(this._container, this._tripDaysComponent);
+    renderItemByDeafault(this._tripDaysComponent, sortedCards, sortedCardItems);
+
+    this._assortmentComponent.setSortTypeChangeHandler((sortType) => {
+      this._tripDaysComponent.innerHTML = ``;
+      let sortedItems = [];
+      console.log(`dfsdf`)
+
+      switch (sortType) {
+        case SORT_TYPES.TIME_DOWN:
+          sortedItems = sortedCards.sort((a, b) => b.spendingTime.getDate() - b.cardItemDate.getDate() - a.spendingTime.getDate() + a.cardItemDate.getDate());
+          renderItemBySort(this._tripDaysComponent, sortedItems);
+          break;
+        case SORT_TYPES.PRICE_DOWN:
+          sortedItems = sortedCards.sort((a, b) => b.price - a.price);
+          renderItemBySort(this._tripDaysComponent, sortedItems);
+          break;
+        case SORT_TYPES.DEFAULT:
+          renderItemByDeafault(this._tripDaysComponent, sortedCards, sortedCardItems);
+          break;
+      }
+    });
   }
+  //   renderCardItem(this._tripDaysComponent, sortedItems);
+
+  //   if (sortType === SortType.DEFAULT) {
+  //     renderLoadMoreButton();
+  //   } else {
+  //     remove(this._loadMoreButtonComponent);
+  //   }
+  // });
 }

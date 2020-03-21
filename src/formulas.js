@@ -114,3 +114,9 @@ export const replace = (newComponent, oldComponent) => {
     parentElement.replaceChild(newElement, oldElement);
   }
 };
+
+
+export const dayCounter = (arr) => {
+  return arr.map((it) => new Date(...it))
+    .map((it, index, array) => 1 + Math.ceil(Math.abs(it.getTime() - array[0].getTime()) / (1000 * 3600 * 24)));
+};

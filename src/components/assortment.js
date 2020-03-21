@@ -1,15 +1,21 @@
 import AbstractComponent from './abstract_component.js';
 
+export const SORT_TYPES = {
+  PRICE_DOWN: `price`,
+  TIME_DOWN: `time`,
+  DEFAULT: `event`,
+};
+
 const createAssortmentTemplate = () => (
   `<form class="trip-events__trip-sort  trip-sort" action="#" method="get">
     <span class="trip-sort__item  trip-sort__item--day">Day</span>
 
-    <div class="trip-sort__item  trip-sort__item--event">
+    <div class="trip-sort__item  trip-sort__item--event" data-sort-type="${SORT_TYPES.DEFAULT}">
       <input id="sort-event" class="trip-sort__input  visually-hidden" type="radio" name="trip-sort" value="sort-event" checked>
       <label class="trip-sort__btn" for="sort-event">Event</label>
     </div>
 
-    <div class="trip-sort__item  trip-sort__item--time">
+    <div class="trip-sort__item  trip-sort__item--time" data-sort-type="${SORT_TYPES.TIME_DOWN}">
       <input id="sort-time" class="trip-sort__input  visually-hidden" type="radio" name="trip-sort" value="sort-time">
       <label class="trip-sort__btn" for="sort-time">
         Time
@@ -19,7 +25,7 @@ const createAssortmentTemplate = () => (
       </label>
     </div>
 
-    <div class="trip-sort__item  trip-sort__item--price">
+    <div class="trip-sort__item  trip-sort__item--price" data-sort-type="${SORT_TYPES.PRICE_DOWN}">
       <input id="sort-price" class="trip-sort__input  visually-hidden" type="radio" name="trip-sort" value="sort-price">
       <label class="trip-sort__btn" for="sort-price">
         Price
@@ -34,7 +40,32 @@ const createAssortmentTemplate = () => (
 );
 
 export default class Assortment extends AbstractComponent {
+  constructor() {
+    super();
+    this._currenSortType = SORT_TYPES.DEFAULT;
+  }
+
   getTemplate() {
     return createAssortmentTemplate();
+  }
+
+  setSortTypeChangeHandler(handler) {
+    this.getElement().addEventListener(`click`, (evt) => {
+      evt.preventDefault();
+      console.log(`dsdfsd`);
+
+      if (evt.target.className !== `trip-sort__input`) { // если не тот класс, то ничего не происходит
+        return;
+      }
+
+      const sortType = evt.target.dataset.sortType; // клик происходит по sortType
+
+      if (this._currenSortType === sortType) { // если клик по текущему sortType, то ничего не изменять
+        return;
+      }
+
+      this._currenSortType = sortType; // изменить currenSortType
+      handler(this._currenSortType); // запустить обработчик с нужным sortType
+    });
   }
 }

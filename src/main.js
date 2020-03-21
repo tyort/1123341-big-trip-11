@@ -16,6 +16,7 @@ const sortedCardItems = cardItems.sort((a, b) => {
   return new Date(...a.cardItemDate).getTime() - new Date(...b.cardItemDate).getTime();
 });
 
+console.log(sortedCards);
 console.log(sortedCardItems);
 console.log(sortedCardItems.map((it) => it.spendingTime));
 

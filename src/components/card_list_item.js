@@ -17,7 +17,7 @@ const createExtraOptionInsert = (array) => {
 };
 
 const createCardListItemTemplate = (cardItem) => {
-  const {extraOptions, icon, waybillType, waybillPurpose, cardItemDate, spendingTime} = cardItem;
+  const {extraOptions, icon, waybillType, waybillPurpose, cardItemDate, spendingTime, price} = cardItem;
   const addExtraOptions = createExtraOptionInsert(Array.from(extraOptions));
   const addWaybillPurpose = waybillType === `Check-in hotel` ? `` : waybillPurpose;
   const addSpendingTime = getSpendingTime((new Date(...spendingTime).getTime() - new Date(...cardItemDate).getTime()) / 60000);
@@ -50,7 +50,7 @@ const createCardListItemTemplate = (cardItem) => {
         </div>
 
         <p class="event__price">
-          &euro;&nbsp;<span class="event__price-value">160</span>
+          &euro;&nbsp;<span class="event__price-value">${price}</span>
         </p>
 
         <h4 class="visually-hidden">Offers:</h4>
