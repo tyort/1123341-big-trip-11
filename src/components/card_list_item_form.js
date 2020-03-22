@@ -1,5 +1,6 @@
 import AbstractComponent from './abstract_component.js';
 import {generateStatement} from '../formulas.js';
+import moment from 'moment';
 
 const createExtraOptionInsert = (array) => {
   return array
@@ -34,11 +35,8 @@ const createCardListItemFormTemplate = (cardItem) => {
   const addDescription = `${Array.from(description).join(`. `)}.`;
   const addPhotos = createPhotos(Array.from(photos));
   const addWaybillPurpose = waybillType === `Check-in hotel` ? `` : waybillPurpose;
-  const month = Number(cardItemDate[1]) + 1;
-  const monthInTwins = month > 9 ? month.toString() : `0` + month.toString();
-  const addCardItemDate = cardItemDate[0].slice(2, 4) + `/` + monthInTwins + `/` + cardItemDate[2];
-  const addTime = cardItemDate[3] + `:` + cardItemDate[4];
-  const addSpendingTime = spendingTime[3] + `:` + spendingTime[4];
+  const addCardItemDate = moment(cardItemDate).format(`YY/MM/DD HH:mm`);
+  const addSpendingTime = moment(spendingTime).format(`YY/MM/DD HH:mm`);
 
   return (
     `<li class="trip-events__item">
@@ -129,13 +127,13 @@ const createCardListItemFormTemplate = (cardItem) => {
               From
             </label>
             <input class="event__input  event__input--time" id="event-start-time-1" type="text"
-              name="event-start-time" value="${addCardItemDate} ${addTime}">
+              name="event-start-time" value="${addCardItemDate}">
             &mdash;
             <label class="visually-hidden" for="event-end-time-1">
               To
             </label>
             <input class="event__input  event__input--time" id="event-end-time-1" type="text"
-              name="event-end-time" value="${addCardItemDate} ${addSpendingTime}">
+              name="event-end-time" value="${addSpendingTime}">
           </div>
 
           <div class="event__field-group  event__field-group--price">
@@ -213,3 +211,4 @@ export default class CardListItemForm extends AbstractComponent {
       .addEventListener(`click`, handler);
   }
 }
+

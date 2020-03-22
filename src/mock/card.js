@@ -79,7 +79,8 @@ const generateCardItem = () => {
     photos: new Set(generatePhotos()),
     cardItemDate,
     spendingTime,
-    price: getRandomIntegerNumber(50, 200)
+    price: getRandomIntegerNumber(50, 200),
+    isFavorite: Math.random() > 0.5
   };
 };
 

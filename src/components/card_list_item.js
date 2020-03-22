@@ -1,5 +1,6 @@
 import AbstractComponent from './abstract_component.js';
-import {generateStatement, getSpendingTime} from '../formulas.js';
+import {generateStatement, itemTimePeriod} from '../formulas.js';
+import moment from 'moment';
 
 const createExtraOptionInsert = (array) => {
   return array
@@ -20,11 +21,11 @@ const createCardListItemTemplate = (cardItem) => {
   const {extraOptions, icon, waybillType, waybillPurpose, cardItemDate, spendingTime, price} = cardItem;
   const addExtraOptions = createExtraOptionInsert(Array.from(extraOptions));
   const addWaybillPurpose = waybillType === `Check-in hotel` ? `` : waybillPurpose;
-  const addSpendingTime = getSpendingTime((new Date(...spendingTime).getTime() - new Date(...cardItemDate).getTime()) / 60000);
-  const monthCorrectStartNum = Number(cardItemDate[1]) + 1;
-  const addMonthCorrectStartNum = monthCorrectStartNum > 9 ? `${monthCorrectStartNum}` : `0${monthCorrectStartNum}`;
-  const monthCorrectEndNum = Number(cardItemDate[1]) + 1;
-  const addMonthCorrectEndNum = monthCorrectEndNum > 9 ? `${monthCorrectEndNum}` : `0${monthCorrectEndNum}`;
+  const addItemTimePeriod = itemTimePeriod(cardItemDate, spendingTime);
+  const addCardItemDate = moment(cardItemDate).format(`YYYY-MM-DDTHH:mm`);
+  const addCardItemTime = moment(cardItemDate).format(`HH:mm`);
+  const addSpendingTime = moment(spendingTime).format(`YYYY-MM-DDTHH:mm`);
+  const addSpendingTimeOnly = moment(spendingTime).format(`HH:mm`);
 
   return (
     `<li class="trip-events__item">
@@ -37,16 +38,16 @@ const createCardListItemTemplate = (cardItem) => {
         <div class="event__schedule">
           <p class="event__time">
             <time class="event__start-time"
-              datetime="${cardItemDate[0]}-${addMonthCorrectStartNum}-${cardItemDate[2]}T${cardItemDate[3]}:${cardItemDate[4]}">
-              ${cardItemDate[3]}:${cardItemDate[4]}
+              datetime="${addCardItemDate}">
+              ${addCardItemTime}
             </time>
             &mdash;
             <time class="event__end-time"
-              datetime="${spendingTime[0]}-${addMonthCorrectEndNum}-${spendingTime[2]}T${spendingTime[3]}:${spendingTime[4]}">
-              ${spendingTime[3]}:${spendingTime[4]}
+              datetime="${addSpendingTime}">
+              ${addSpendingTimeOnly}
             </time>
           </p>
-          <p class="event__duration">${addSpendingTime}</p>
+          <p class="event__duration">${addItemTimePeriod}</p>
         </div>
 
         <p class="event__price">

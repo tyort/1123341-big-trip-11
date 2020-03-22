@@ -1,12 +1,15 @@
 import AbstractComponent from './abstract_component.js';
-import {MONTHS} from '../const.js';
+import moment from 'moment';
 
 const createCardListTemplate = (card, dayCounter) => {
+  const addDateTime = moment(card).format(`YYYY-MM-DD`);
+  const addMonthAndDay = moment(card).format(`MMM D`).toUpperCase();
+
   return (
     `<li class="trip-days__item  day">
       <div class="day__info">
         <span class="day__counter">${dayCounter}</span>
-        <time class="day__date" datetime="${card[0]}-${card[1] + 1}-${card[2]}">${MONTHS[Number(card[1])]} ${card[2]}</time>
+        <time class="day__date" datetime="${addDateTime}">${addMonthAndDay}</time>
       </div>
 
       <ul class="trip-events__list">
