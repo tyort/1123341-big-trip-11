@@ -210,5 +210,10 @@ export default class CardListItemForm extends AbstractComponent {
     this.getElement().querySelector(`.event__rollup-btn`)
       .addEventListener(`click`, handler);
   }
+
+  setSubmitHandler(handler) {
+    this.getElement().querySelector(`form`)
+      .addEventListener(`submit`, handler);
+  }
 }
 

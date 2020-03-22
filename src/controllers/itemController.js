@@ -1,65 +1,49 @@
-// import TaskComponent from '../components/task.js';
-// import TaskEditComponent from '../components/task-edit.js';
-// import {render, replace, RenderPosition} from '../utils/render.js';
+import CardListItemComponent from '../components/card_list_item.js';
+import CardListItemFormComponent from '../components/card_list_item_form.js';
+import {renderCompon, replace} from '../formulas.js';
 
-// const Mode = {
-//   DEFAULT: `default`,
-//   EDIT: `edit`,
-// };
+const MODE = {
+  DEFAULT: `default`,
+  FORM: `form`,
+};
 
-// export default class TaskController {
-//   constructor(container, onDataChange, onViewChange) {
-//     this._container = container;
-//     this._onDataChange = onDataChange;
-//     this._onViewChange = onViewChange;
+export default class ItemController {
+  constructor(container, onDataChange, onViewChange) {
+    this._container = container;
+    this._onDataChange = onDataChange;
+    this._onViewChange = onViewChange;
+    this._mode = MODE.DEFAULT;
+    this._cardListItemComponent = null;
+    this._cardListItemFormComponent = null;
+    this._onEscKeyDown = this._onEscKeyDown.bind(this);
+  }
 
-//     this._mode = Mode.DEFAULT;
+  render(cardItem) { // рендер для одной карточки
+    const oldCardListItemComponent = this._cardListItemComponent;
+    const oldCardListItemFormComponent = this._cardListItemFormComponent;
+    this._cardListItemComponent = new CardListItemComponent(cardItem);
+    this._cardListItemFormComponent = new CardListItemFormComponent(cardItem);
 
-//     this._taskComponent = null;
-//     this._taskEditComponent = null;
+    this._cardListItemComponent.setRollupButtonClickHandler(() => {
+      this._replaceItemToForm();
+      document.addEventListener(`keydown`, this._onEscKeyDown);
+    });
 
-//     this._onEscKeyDown = this._onEscKeyDown.bind(this);
-//   }
+    this._cardListItemFormComponent.setSubmitHandler(() => this._replaceFormToItem());
 
-//   render(task) {
-//     const oldTaskComponent = this._taskComponent;
-//     const oldTaskEditComponent = this._taskEditComponent;
+    if (oldCardListItemComponent && oldCardListItemFormComponent) {
+      replace(this._cardListItemFormComponent, oldCardListItemFormComponent);
+      replace(this._cardListItemComponent, oldCardListItemComponent);
+    } else {
+      renderCompon(this._container, this._cardListItemComponent);
+    }
+  }
 
-//     this._taskComponent = new TaskComponent(task);
-//     this._taskEditComponent = new TaskEditComponent(task);
-
-//     this._taskComponent.setEditButtonClickHandler(() => {
-//       this._replaceTaskToEdit();
-//       document.addEventListener(`keydown`, this._onEscKeyDown);
-//     });
-
-//     this._taskComponent.setArchiveButtonClickHandler(() => {
-//       this._onDataChange(this, task, Object.assign({}, task, {
-//         isArchive: !task.isArchive,
-//       }));
-//     });
-
-//     this._taskComponent.setFavoritesButtonClickHandler(() => {
-//       this._onDataChange(this, task, Object.assign({}, task, {
-//         isFavorite: !task.isFavorite,
-//       }));
-//     });
-
-//     this._taskEditComponent.setSubmitHandler(() => this._replaceEditToTask());
-
-//     if (oldTaskEditComponent && oldTaskComponent) {
-//       replace(this._taskComponent, oldTaskComponent);
-//       replace(this._taskEditComponent, oldTaskEditComponent);
-//     } else {
-//       render(this._container, this._taskComponent, RenderPosition.BEFOREEND);
-//     }
-//   }
-
-//   setDefaultView() {
-//     if (this._mode !== Mode.DEFAULT) {
-//       this._replaceEditToTask();
-//     }
-//   }
+  setDefaultView() { // если карточка открыта в виде формы
+    if (this._mode !== MODE.DEFAULT) {
+      this._replaceFormToItem(); // превратить форму в карточку
+    }
+  }
 
 //   _replaceEditToTask() {
 //     this._taskEditComponent.reset();
@@ -83,4 +67,4 @@
 //       document.removeEventListener(`keydown`, this._onEscKeyDown);
 //     }
 //   }
-// }
+}

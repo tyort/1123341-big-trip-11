@@ -31,8 +31,7 @@ const renderCardItem = (container, cardItem) => {
     document.addEventListener(`keydown`, onEscKeyDown);
   });
 
-  const editForm = cardListItemFormComponent.getElement().querySelector(`form`);
-  editForm.addEventListener(`submit`, replaceFormToItem);
+  cardListItemFormComponent.setSubmitHandler(replaceFormToItem);
 
   renderCompon(container, cardListItemComponent.getElement());
 };
