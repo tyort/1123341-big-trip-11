@@ -17,7 +17,6 @@ export default class AbstractComponent {
     if (!this._element) { // если элемент не существует, то содзадим на основании шаблона
       this._element = createElement(this.getTemplate());
     }
-
     return this._element;
   }
 

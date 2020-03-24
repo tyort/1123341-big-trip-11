@@ -36,16 +36,16 @@ export const getRandomDateArray = () => {
   return [`2020`, `03`, castTimeFormat(day), castTimeFormat(hours), castTimeFormat(minutes)];
 };
 
-export const renderCompon = (container, element, place) => {
+export const renderComponent = (container, element, place) => {
   switch (place) {
     case `afterBegin`:
-      container.prepend(element);
+      container.prepend(element.getElement());
       break;
     case `afterEnd`:
-      container.after(element);
+      container.after(element.getElement());
       break;
     default:
-      container.append(element);
+      container.append(element.getElement());
   }
 };
 

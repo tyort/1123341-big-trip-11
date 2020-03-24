@@ -50,10 +50,10 @@ const EXTRA_OPTIONS = [
 const generateExtraOptions = () =>
   new Array(getRandomIntegerNumber(0, 5))
     .fill(``)
-    .map(() => EXTRA_OPTIONS[getRandomIntegerNumber(0, 4)]); // порядковый номер от 0 до 4
+    .map(() => EXTRA_OPTIONS[getRandomIntegerNumber(0, 4)]);
 
 const generateDescription = () =>
-  new Array(getRandomIntegerNumber(1, 3)) // количество от 1 до 3
+  new Array(getRandomIntegerNumber(1, 3))
     .fill(``)
     .map(() => WAYBILL_DESCRIPTION[getRandomIntegerNumber(0, 10)]);
 

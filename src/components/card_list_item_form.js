@@ -1,4 +1,4 @@
-import AbstractComponent from './abstract_component.js';
+import AbstractSmartComponent from './abstract_smart_component.js';
 import {generateStatement} from '../formulas.js';
 import moment from 'moment';
 
@@ -186,14 +186,28 @@ const createCardListItemFormTemplate = (cardItem) => {
   );
 };
 
-export default class CardListItemForm extends AbstractComponent {
+export default class CardListItemForm extends AbstractSmartComponent {
   constructor(cardItem) {
     super();
     this._cardItem = cardItem;
+    this._flatpickr = null;
   }
 
   getTemplate() {
     return createCardListItemFormTemplate(this._cardItem);
+  }
+
+  recoveryListeners() { // восстанавливаем слушателей
+    this._subscribeOnEvents();
+  }
+
+  reRender() {
+    super.reRender();
+    this._applyFlatpickr();
+  }
+
+  reset() {
+    this.reRender();
   }
 
   setSaveButtonClickHandler(handler) {
