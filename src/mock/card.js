@@ -1,18 +1,4 @@
-import {getRandomIntegerNumber, generateWaybill, getRandomDateArray} from '../formulas.js';
-
-const WAYBILL_TYPES = [
-  `Bus`,
-  `Check-in`,
-  `Drive`,
-  `Flight`,
-  `Restaurant`,
-  `Ship`,
-  `Sightseeing`,
-  `Taxi`,
-  `Train`,
-  `Transport`,
-  `Trip`
-];
+import {getRandomIntegerNumber, generateWaybill, getRandomDateArray, WAYBILL_TYPES} from '../formulas.js';
 
 const WAYBILL_PURPOSE = [
   `Brisbane`,
@@ -63,7 +49,7 @@ const generatePhotos = () =>
     .map(() => `http://picsum.photos/300/150?r=${Math.random()}`);
 
 const generateCardItem = () => {
-  const waybillType = WAYBILL_TYPES[getRandomIntegerNumber(0, 10)];
+  const waybillType = Object.keys(WAYBILL_TYPES)[getRandomIntegerNumber(0, 10)];
   let cardItemDate = getRandomDateArray();
   let spendingTime = [...cardItemDate.slice(0, 3), ...getRandomDateArray().slice(3, 5)];
   if (new Date(...cardItemDate).getTime() >= new Date(...spendingTime).getTime()) {

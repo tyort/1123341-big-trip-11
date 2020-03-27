@@ -1,5 +1,5 @@
 import AbstractSmartComponent from './abstract_smart_component.js';
-import {generateStatement} from '../formulas.js';
+import {generateStatement, WAYBILL_TYPES} from '../formulas.js';
 import moment from 'moment';
 
 const createExtraOptionInsert = (array) => {
@@ -29,14 +29,31 @@ const createPhotos = (array) => {
     .join(``);
 };
 
-const createCardListItemFormTemplate = (cardItem) => {
+const createWaybillChosenType = (list, chosedType) => {
+  return Object.keys(list)
+    .map((item) => {
+      const isChecked = item === chosedType ? `checked` : ``;
+      return (
+        `<div class="event__type-item">
+          <input id="event-type-${item.toLowerCase()}-1" class="event__type-input  visually-hidden" type="radio" name="event-type" value="${item.toLowerCase()}" ${isChecked}>
+          <label class="event__type-label  event__type-label--${item.toLowerCase()}" for="event-type-${item.toLowerCase()}-1">${item}</label>
+        </div>`
+      );
+    })
+    .join(``);
+};
+
+const createCardListItemFormTemplate = (cardItem, options = {}) => {
   const {extraOptions, icon, waybillType, waybillPurpose, description, photos, cardItemDate, spendingTime, price} = cardItem;
+  const {isChangeFavorite} = options;
   const addExtraOptions = createExtraOptionInsert(Array.from(extraOptions));
   const addDescription = `${Array.from(description).join(`. `)}.`;
   const addPhotos = createPhotos(Array.from(photos));
   const addWaybillPurpose = waybillType === `Check-in hotel` ? `` : waybillPurpose;
   const addCardItemDate = moment(cardItemDate).format(`YY/MM/DD HH:mm`);
   const addSpendingTime = moment(spendingTime).format(`YY/MM/DD HH:mm`);
+  const addFavorite = isChangeFavorite ? `checked` : ``;
+  const addWaybillTypeForChoose = createWaybillChosenType(WAYBILL_TYPES, waybillType);
 
   return (
     `<li class="trip-events__item">
@@ -52,41 +69,7 @@ const createCardListItemFormTemplate = (cardItem) => {
             <div class="event__type-list">
               <fieldset class="event__type-group">
                 <legend class="visually-hidden">Transfer</legend>
-
-                <div class="event__type-item">
-                  <input id="event-type-taxi-1" class="event__type-input  visually-hidden" type="radio" name="event-type" value="taxi">
-                  <label class="event__type-label  event__type-label--taxi" for="event-type-taxi-1">Taxi</label>
-                </div>
-
-                <div class="event__type-item">
-                  <input id="event-type-bus-1" class="event__type-input  visually-hidden" type="radio" name="event-type" value="bus">
-                  <label class="event__type-label  event__type-label--bus" for="event-type-bus-1">Bus</label>
-                </div>
-
-                <div class="event__type-item">
-                  <input id="event-type-train-1" class="event__type-input  visually-hidden" type="radio" name="event-type" value="train">
-                  <label class="event__type-label  event__type-label--train" for="event-type-train-1">Train</label>
-                </div>
-
-                <div class="event__type-item">
-                  <input id="event-type-ship-1" class="event__type-input  visually-hidden" type="radio" name="event-type" value="ship">
-                  <label class="event__type-label  event__type-label--ship" for="event-type-ship-1">Ship</label>
-                </div>
-
-                <div class="event__type-item">
-                  <input id="event-type-transport-1" class="event__type-input  visually-hidden" type="radio" name="event-type" value="transport">
-                  <label class="event__type-label  event__type-label--transport" for="event-type-transport-1">Transport</label>
-                </div>
-
-                <div class="event__type-item">
-                  <input id="event-type-drive-1" class="event__type-input  visually-hidden" type="radio" name="event-type" value="drive">
-                  <label class="event__type-label  event__type-label--drive" for="event-type-drive-1">Drive</label>
-                </div>
-
-                <div class="event__type-item">
-                  <input id="event-type-flight-1" class="event__type-input  visually-hidden" type="radio" name="event-type" value="flight" checked>
-                  <label class="event__type-label  event__type-label--flight" for="event-type-flight-1">Flight</label>
-                </div>
+                ${addWaybillTypeForChoose}
               </fieldset>
 
               <fieldset class="event__type-group">
@@ -147,7 +130,7 @@ const createCardListItemFormTemplate = (cardItem) => {
           <button class="event__save-btn  btn  btn--blue" type="submit">Save</button>
           <button class="event__reset-btn" type="reset">Delete</button>
 
-          <input id="event-favorite-1" class="event__favorite-checkbox  visually-hidden" type="checkbox" name="event-favorite" checked>
+          <input id="event-favorite-1" class="event__favorite-checkbox  visually-hidden" type="checkbox" name="event-favorite" ${addFavorite}>
           <label class="event__favorite-btn" for="event-favorite-1">
             <span class="visually-hidden">Add to favorite</span>
             <svg class="event__favorite-icon" width="28" height="28" viewBox="0 0 28 28">
@@ -189,35 +172,37 @@ const createCardListItemFormTemplate = (cardItem) => {
 export default class CardListItemForm extends AbstractSmartComponent {
   constructor(cardItem) {
     super();
+
     this._cardItem = cardItem;
-    this._flatpickr = null;
+    this._isChangeFavorite = !!cardItem.isFavorite;
+    this._subscribeOnEvents();
   }
 
   getTemplate() {
-    return createCardListItemFormTemplate(this._cardItem);
+    return createCardListItemFormTemplate(this._cardItem, {
+      isChangeFavorite: this._isChangeFavorite,
+    });
   }
 
-  recoveryListeners() { // восстанавливаем слушателей
+  recoveryListeners() {
     this._subscribeOnEvents();
   }
 
   reRender() {
     super.reRender();
-    this._applyFlatpickr();
   }
 
   reset() {
+    const cardItem = this._cardItem;
+
+    this._isChangeFavorite = !!cardItem.isFavorite;
+
     this.reRender();
   }
 
-  setSaveButtonClickHandler(handler) {
-    this.getElement().querySelector(`.event__save-btn`)
-      .addEventListener(`click`, handler);
-  }
-
-  setDeleteButtonClickHandler(handler) {
-    this.getElement().querySelector(`.event__reset-btn`)
-      .addEventListener(`click`, handler);
+  setSubmitHandler(handler) {
+    this.getElement().querySelector(`form`)
+      .addEventListener(`submit`, handler);
   }
 
   setRollbackButtonClickHandler(handler) {
@@ -225,9 +210,15 @@ export default class CardListItemForm extends AbstractSmartComponent {
       .addEventListener(`click`, handler);
   }
 
-  setSubmitHandler(handler) {
-    this.getElement().querySelector(`form`)
-      .addEventListener(`submit`, handler);
+  _subscribeOnEvents() {
+    const element = this.getElement();
+
+    element.querySelector(`.event__favorite-checkbox`)
+      .addEventListener(`click`, () => {
+        this._isChangeFavorite = !this._isChangeFavorite;
+
+        this.reRender();
+      });
   }
 }
 

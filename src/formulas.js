@@ -98,3 +98,17 @@ export const itemTimePeriod = (arr1, arr2) => {
 
   return `${daysDiff}${hoursDiff}${minDiff}`;
 };
+
+export const WAYBILL_TYPES = {
+  'Bus': false,
+  'Check-in': false,
+  'Drive': false,
+  'Flight': false,
+  'Restaurant': false,
+  'Ship': false,
+  'Sightseeing': false,
+  'Taxi': false,
+  'Train': false,
+  'Transport': false,
+  'Trip': false
+};

@@ -18,7 +18,7 @@ export default class ItemController {
     this._onEscKeyDown = this._onEscKeyDown.bind(this);
   }
 
-  render(cardItem) { // рендер для одной карточки
+  renderCardItem(cardItem) { // рендер для одной карточки
     const oldCardListItemComponent = this._cardListItemComponent;
     const oldCardListItemFormComponent = this._cardListItemFormComponent;
     this._cardListItemComponent = new CardListItemComponent(cardItem);
@@ -29,7 +29,8 @@ export default class ItemController {
       document.addEventListener(`keydown`, this._onEscKeyDown);
     });
 
-    this._cardListItemFormComponent.setSubmitHandler(this._replaceFormToItem);
+    this._cardListItemFormComponent.setSubmitHandler(this._replaceFormToItem.bind(this));
+    this._cardListItemFormComponent.setRollbackButtonClickHandler(this._replaceFormToItem.bind(this));
 
     if (oldCardListItemComponent && oldCardListItemFormComponent) {
       replace(this._cardListItemFormComponent, oldCardListItemFormComponent);
@@ -46,6 +47,7 @@ export default class ItemController {
   }
 
   _replaceFormToItem() {
+    console.log(this._cardListItemFormComponent);
     this._cardListItemFormComponent.reset();
     replace(this._cardListItemComponent, this._cardListItemFormComponent);
     this._mode = MODE.DEFAULT;
