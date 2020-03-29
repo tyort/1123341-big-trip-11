@@ -16,7 +16,7 @@ export const getRandomIntegerNumber = (min, max) => {
   return Math.floor(rand);
 };
 
-export const generateWaybill = (it) => {
+export const generateWaybillType = (it) => {
   switch (it) {
     case `Restaurant`:
       return it + ` at`;
@@ -99,16 +99,16 @@ export const itemTimePeriod = (arr1, arr2) => {
   return `${daysDiff}${hoursDiff}${minDiff}`;
 };
 
-export const WAYBILL_TYPES = {
-  'Bus': false,
-  'Check-in': false,
-  'Drive': false,
-  'Flight': false,
-  'Restaurant': false,
-  'Ship': false,
-  'Sightseeing': false,
-  'Taxi': false,
-  'Train': false,
-  'Transport': false,
-  'Trip': false
-};
+export const WAYBILL_TYPES = [
+  [`Bus`, false],
+  [`Drive`, false],
+  [`Flight`, false],
+  [`Ship`, false],
+  [`Taxi`, false],
+  [`Train`, false],
+  [`Transport`, false],
+  [`Trip`, false],
+  [`Check-in`, false],
+  [`Sightseeing`, false],
+  [`Restaurant`, false],
+];

@@ -1,5 +1,5 @@
 import AbstractComponent from './abstract_component.js';
-import {generateStatement, itemTimePeriod} from '../formulas.js';
+import {generateStatement, itemTimePeriod, generateWaybillType} from '../formulas.js';
 import moment from 'moment';
 
 const createExtraOptionInsert = (array) => {
@@ -20,7 +20,8 @@ const createExtraOptionInsert = (array) => {
 const createCardListItemTemplate = (cardItem) => {
   const {extraOptions, icon, waybillType, waybillPurpose, cardItemDate, spendingTime, price} = cardItem;
   const addExtraOptions = createExtraOptionInsert(Array.from(extraOptions));
-  const addWaybillPurpose = waybillType === `Check-in hotel` ? `` : waybillPurpose;
+  const addWaybillType = generateWaybillType(waybillType);
+  const addWaybillPurpose = waybillType === `Check-in` ? `` : waybillPurpose;
   const addItemTimePeriod = itemTimePeriod(cardItemDate, spendingTime);
   const addCardItemDate = moment(cardItemDate).format(`YYYY-MM-DDTHH:mm`);
   const addCardItemTime = moment(cardItemDate).format(`HH:mm`);
@@ -33,7 +34,7 @@ const createCardListItemTemplate = (cardItem) => {
         <div class="event__type">
           <img class="event__type-icon" width="42" height="42" src="img/icons/${icon}.png" alt="Event type icon">
         </div>
-        <h3 class="event__title">${waybillType} ${addWaybillPurpose}</h3>
+        <h3 class="event__title">${addWaybillType} ${addWaybillPurpose}</h3>
 
         <div class="event__schedule">
           <p class="event__time">
