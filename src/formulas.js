@@ -112,3 +112,30 @@ export const WAYBILL_TYPES = [
   [`Sightseeing`, false],
   [`Restaurant`, false],
 ];
+
+export const WAYBILL_PURPOSE = [
+  [`Amsterdam`, false],
+  [`Sydnay`, false],
+  [`Budapest`, false],
+  [`Geneva`, false],
+  [`Bremen`, false],
+  [`Norwich`, false],
+  [`Freshford`, false],
+  [`Chamonix`, false]
+];
+
+export const EXTRA_OPTIONS = [
+  [`luggage`, 10],
+  [`comfort`, 150],
+  [`meal`, 2],
+  [`neighbor`, 250],
+  [`music`, 50]
+];
+
+export const getChangedValuesOfMap = (array) => {
+  const newmap = new Map(array);
+  for (const key of newmap.keys()) {
+    newmap.set(key, false);
+  }
+  return newmap;
+};

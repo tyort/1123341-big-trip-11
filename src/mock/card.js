@@ -1,15 +1,4 @@
-import {getRandomIntegerNumber, getRandomDateArray, WAYBILL_TYPES} from '../formulas.js';
-
-const WAYBILL_PURPOSE = [
-  `Brisbane`,
-  `Sydnay`,
-  `Budapest`,
-  `Graz`,
-  `Bremen`,
-  `Norwich`,
-  `Freshford`,
-  `Gorey`
-];
+import {getRandomIntegerNumber, getRandomDateArray, WAYBILL_TYPES, WAYBILL_PURPOSE, EXTRA_OPTIONS} from '../formulas.js';
 
 const WAYBILL_DESCRIPTION = [
   `Lorem ipsum dolor sit amet, consectetur adipiscing elit`,
@@ -23,14 +12,6 @@ const WAYBILL_DESCRIPTION = [
   `Aliquam erat volutpat`,
   `Nunc fermentum tortor ac porta dapibus`,
   `In rutrum ac purus sit amet tempus`
-];
-
-const EXTRA_OPTIONS = [
-  [`luggage`, 10],
-  [`comfort`, 150],
-  [`meal`, 2],
-  [`neighbor`, 250],
-  [`music`, 50]
 ];
 
 const generateExtraOptions = () =>
@@ -49,7 +30,6 @@ const generatePhotos = () =>
     .map(() => `http://picsum.photos/300/150?r=${Math.random()}`);
 
 const generateCardItem = () => {
-  const waybillType = Array.from(new Map(WAYBILL_TYPES).keys())[getRandomIntegerNumber(0, 10)];
   let cardItemDate = getRandomDateArray();
   let spendingTime = [...cardItemDate.slice(0, 3), ...getRandomDateArray().slice(3, 5)];
   if (new Date(...cardItemDate).getTime() >= new Date(...spendingTime).getTime()) {
@@ -57,10 +37,9 @@ const generateCardItem = () => {
   }
 
   return {
-    icon: waybillType.toLowerCase(),
     extraOptions: new Map(generateExtraOptions()),
-    waybillType,
-    waybillPurpose: WAYBILL_PURPOSE[getRandomIntegerNumber(0, 7)],
+    waybillType: Array.from(new Map(WAYBILL_TYPES).keys())[getRandomIntegerNumber(0, 10)],
+    waybillPurpose: Array.from(new Map(WAYBILL_PURPOSE).keys())[getRandomIntegerNumber(0, 7)],
     description: new Set(generateDescription()),
     photos: new Set(generatePhotos()),
     cardItemDate,

@@ -18,7 +18,7 @@ const createExtraOptionInsert = (array) => {
 };
 
 const createCardListItemTemplate = (cardItem) => {
-  const {extraOptions, icon, waybillType, waybillPurpose, cardItemDate, spendingTime, price} = cardItem;
+  const {extraOptions, waybillType, waybillPurpose, cardItemDate, spendingTime, price} = cardItem;
   const addExtraOptions = createExtraOptionInsert(Array.from(extraOptions));
   const addWaybillType = generateWaybillType(waybillType);
   const addWaybillPurpose = waybillType === `Check-in` ? `` : waybillPurpose;
@@ -32,7 +32,7 @@ const createCardListItemTemplate = (cardItem) => {
     `<li class="trip-events__item">
       <div class="event">
         <div class="event__type">
-          <img class="event__type-icon" width="42" height="42" src="img/icons/${icon}.png" alt="Event type icon">
+          <img class="event__type-icon" width="42" height="42" src="img/icons/${waybillType.toLowerCase()}.png" alt="Event type icon">
         </div>
         <h3 class="event__title">${addWaybillType} ${addWaybillPurpose}</h3>
 

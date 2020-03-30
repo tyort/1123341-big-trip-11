@@ -47,7 +47,6 @@ export default class ItemController {
   }
 
   _replaceFormToItem() {
-    console.log(this._cardListItemFormComponent);
     this._cardListItemFormComponent.reset();
     replace(this._cardListItemComponent, this._cardListItemFormComponent);
     this._mode = MODE.DEFAULT;

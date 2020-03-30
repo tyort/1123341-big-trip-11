@@ -1,13 +1,14 @@
 import AbstractSmartComponent from './abstract_smart_component.js';
-import {generateStatement, WAYBILL_TYPES, generateWaybillType} from '../formulas.js';
+import {generateStatement, WAYBILL_TYPES, WAYBILL_PURPOSE, EXTRA_OPTIONS, generateWaybillType, getChangedValuesOfMap} from '../formulas.js';
 import moment from 'moment';
 
-const createExtraOptionInsert = (array) => {
+const createExtraOptionInsert = (array, newmap) => {
   return array
     .map((item) => {
+      const isChecked = newmap.get(item[0]) ? `checked` : ``;
       return (
         `<div class="event__offer-selector">
-          <input class="event__offer-checkbox  visually-hidden" id="event-offer-${item[0]}-1" type="checkbox" name="event-offer-${item[0]}" checked>
+          <input class="event__offer-checkbox  visually-hidden" id="event-offer-${item[0]}-1" type="checkbox" name="event-offer-${item[0]}" ${isChecked}>
           <label class="event__offer-label" for="event-offer-${item[0]}-1">
             <span class="event__offer-title">${generateStatement(item[0])}</span>
             &plus;
@@ -63,21 +64,33 @@ const createWaybillTypeListTwo = (newmap) => {
     .join(``);
 };
 
+const createWaybillPurposeList = (newmap) => {
+  return Array.from(newmap)
+    .map((item) => {
+      return (
+        `<option value="${item[0]}"></option>`
+      );
+    })
+    .join(``);
+};
+
 const createCardListItemFormTemplate = (cardItem, options = {}) => {
-  const {extraOptions, icon, waybillPurpose, description, photos, cardItemDate, spendingTime, price} = cardItem;
-  const {isChangeFavorite, activateCheckedType} = options;
-  const addExtraOptions = createExtraOptionInsert(Array.from(extraOptions));
+  const {extraOptions, description, photos, cardItemDate, spendingTime, price} = cardItem;
+  const {isChangeFavorite, activateCheckedType, activateCheckedPurpose, activateExtraOptions} = options;
+  const addExtraOptions = createExtraOptionInsert(Array.from(extraOptions), activateExtraOptions);
   const addDescription = `${Array.from(description).join(`. `)}.`;
   const addPhotos = createPhotos(Array.from(photos));
-
   const waybillType = Array.from(activateCheckedType).find((it) => it[1])[0];
   const addWaybillType = generateWaybillType(waybillType);
+
+  const waybillPurpose = Array.from(activateCheckedPurpose).find((it) => it[1])[0];
   const addWaybillPurpose = waybillType === `Check-in` ? `` : waybillPurpose;
   const addCardItemDate = moment(cardItemDate).format(`YY/MM/DD HH:mm`);
   const addSpendingTime = moment(spendingTime).format(`YY/MM/DD HH:mm`);
   const addFavorite = isChangeFavorite ? `checked` : ``;
   const addListTypeForChoose = createWaybillTypeList(activateCheckedType);
   const addListTypeForChooseTwo = createWaybillTypeListTwo(activateCheckedType);
+  const addListPurposeForChoose = createWaybillPurposeList(activateCheckedPurpose);
 
   return (
     `<li class="trip-events__item">
@@ -86,7 +99,7 @@ const createCardListItemFormTemplate = (cardItem, options = {}) => {
           <div class="event__type-wrapper">
             <label class="event__type  event__type-btn" for="event-type-toggle-1">
               <span class="visually-hidden">Choose event type</span>
-              <img class="event__type-icon" width="17" height="17" src="img/icons/${icon}.png" alt="Event type icon">
+              <img class="event__type-icon" width="17" height="17" src="img/icons/${waybillType.toLowerCase()}.png" alt="Event type icon">
             </label>
             <input class="event__type-toggle  visually-hidden" id="event-type-toggle-1" type="checkbox">
 
@@ -108,9 +121,7 @@ const createCardListItemFormTemplate = (cardItem, options = {}) => {
             </label>
             <input class="event__input  event__input--destination" id="event-destination-1" type="text" name="event-destination" value="${addWaybillPurpose}" list="destination-list-1">
             <datalist id="destination-list-1">
-              <option value="Amsterdam"></option>
-              <option value="Geneva"></option>
-              <option value="Chamonix"></option>
+              ${addListPurposeForChoose}
             </datalist>
           </div>
 
@@ -184,7 +195,9 @@ export default class CardListItemForm extends AbstractSmartComponent {
 
     this._cardItem = cardItem;
     this._isChangeFavorite = !!cardItem.isFavorite;
-    this._activateCheckedType = new Map(WAYBILL_TYPES).set(cardItem.waybillType, true); // получу актыальный Map с нужным true
+    this._activateCheckedType = new Map(WAYBILL_TYPES).set(cardItem.waybillType, true); // получу актуальный Map с нужным true
+    this._activateCheckedPurpose = new Map(WAYBILL_PURPOSE).set(cardItem.waybillPurpose, true); // получу актуальный Map с нужным true
+    this._activateExtraOptions = getChangedValuesOfMap(EXTRA_OPTIONS);
 
     this._subscribeOnEvents();
   }
@@ -192,7 +205,9 @@ export default class CardListItemForm extends AbstractSmartComponent {
   getTemplate() {
     return createCardListItemFormTemplate(this._cardItem, {
       isChangeFavorite: this._isChangeFavorite,
-      activateCheckedType: this._activateCheckedType
+      activateCheckedType: this._activateCheckedType,
+      activateCheckedPurpose: this._activateCheckedPurpose,
+      activateExtraOptions: this._activateExtraOptions,
     });
   }
 
@@ -208,6 +223,9 @@ export default class CardListItemForm extends AbstractSmartComponent {
     const cardItem = this._cardItem;
 
     this._isChangeFavorite = !!cardItem.isFavorite;
+    this._activateCheckedType = new Map(WAYBILL_TYPES).set(cardItem.waybillType, true);
+    this._activateCheckedPurpose = new Map(WAYBILL_PURPOSE).set(cardItem.waybillPurpose, true);
+    this._activateExtraOptions = getChangedValuesOfMap(EXTRA_OPTIONS);
 
     this.reRender();
   }
@@ -238,6 +256,19 @@ export default class CardListItemForm extends AbstractSmartComponent {
         this._activateCheckedType.set(evt.target.value, evt.target.checked);
         this.reRender();
       });
+    });
+
+    const eventInputDestination = element.querySelector(`.event__input--destination`);
+    eventInputDestination.addEventListener(`change`, (evt) => {
+      this._activateCheckedPurpose = new Map(WAYBILL_PURPOSE);
+      this._activateCheckedPurpose.set(evt.target.value, true);
+      this.reRender();
+    });
+
+    const eventSectionOffers = element.querySelector(`.event__section--offers`);
+    eventSectionOffers.addEventListener(`change`, (evt) => {
+      this._activateExtraOptions.set(evt.target.name.slice(12), evt.target.checked);
+      this.reRender();
     });
   }
 }
