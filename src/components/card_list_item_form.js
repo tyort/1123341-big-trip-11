@@ -200,7 +200,8 @@ export default class CardListItemForm extends AbstractSmartComponent {
     this._activateCheckedType = new Map(WAYBILL_TYPES).set(cardItem.waybillType, true); // получу актуальный Map с нужным true
     this._activateCheckedPurpose = new Map(WAYBILL_PURPOSE).set(cardItem.waybillPurpose, true); // получу актуальный Map с нужным true
     this._activateExtraOptions = getChangedValuesOfMap(EXTRA_OPTIONS);
-    this._flatpickr = null;
+    this._startFlatpickr = null;
+    this._endFlatpickr = null;
 
     this._applyFlatpickr();
     this._subscribeOnEvents();
@@ -212,8 +213,6 @@ export default class CardListItemForm extends AbstractSmartComponent {
       activateCheckedType: this._activateCheckedType,
       activateCheckedPurpose: this._activateCheckedPurpose,
       activateExtraOptions: this._activateExtraOptions,
-      cardItemDate: this._cardItemDate,
-      spendingTime: this._spendingTime
     });
   }
 
@@ -233,8 +232,6 @@ export default class CardListItemForm extends AbstractSmartComponent {
     this._activateCheckedType = new Map(WAYBILL_TYPES).set(cardItem.waybillType, true);
     this._activateCheckedPurpose = new Map(WAYBILL_PURPOSE).set(cardItem.waybillPurpose, true);
     this._activateExtraOptions = getChangedValuesOfMap(EXTRA_OPTIONS);
-    this._cardItemDate = moment(cardItem.cardItemDate).format(`YYYY-MM-DD HH:mm`);
-    this._spendingTime = moment(cardItem.spendingTime).format(`YYYY-MM-DD HH:mm`);
 
     this.reRender();
   }
@@ -250,36 +247,41 @@ export default class CardListItemForm extends AbstractSmartComponent {
   }
 
   _applyFlatpickr() {
-    if (this._flatpickr) {
-      this._flatpickr.destroy();
-      this._flatpickr = null;
+    if (this._startFlatpickr || this._endFlatpickr) {
+      this._startFlatpickr.destroy();
+      this._startFlatpickr = null;
+      this._endFlatpickr.destroy();
+      this._endFlatpickr = null;
     }
 
-    const cardItemDate = moment(this._cardItem.cardItemDate).format(`YYYY-MM-DD HH:mm`);
-    const spendingTime = moment(this._cardItem.spendingTime).format(`YYYY-MM-DD HH:mm`);
+    const cardItemDate = new Date(moment(this._cardItem.cardItemDate).format(`YYYY-MM-DD HH:mm`));
+    const spendingTime = new Date(moment(this._cardItem.spendingTime).format(`YYYY-MM-DD HH:mm`));
 
     const eventStartTime = this.getElement().querySelector(`#event-start-time-1`);
-    this._flatpickr = flatpickr(eventStartTime, {
-      altInput: false,
+    const eventEndTime = this.getElement().querySelector(`#event-end-time-1`);
+
+    this._startFlatpickr = flatpickr(eventStartTime, {
+      altInput: true,
       allowInput: true,
       enableTime: true,
-      // eslint-disable-next-line camelcase
-      time_24hr: true,
-      dateFormat: `d/m/y H:i`,
-      defaultDate: new Date(cardItemDate),
-      maxDate: new Date(spendingTime),
+      altFormat: `d/m/y H:i`,
+      defaultDate: cardItemDate,
+      maxDate: spendingTime,
+      onClose: (selectedDates, dateStr) => {
+        this._endFlatpickr.set(`minDate`, dateStr);
+      },
     });
 
-    const eventEndTime = this.getElement().querySelector(`#event-end-time-1`);
-    this._flatpickr = flatpickr(eventEndTime, {
-      altInput: false,
+    this._endFlatpickr = flatpickr(eventEndTime, {
+      altInput: true,
       allowInput: true,
       enableTime: true,
-      // eslint-disable-next-line camelcase
-      time_24hr: true,
-      defaultDate: new Date(spendingTime),
-      minDate: new Date(cardItemDate),
-      dateFormat: `d/m/y H:i`,
+      altFormat: `d/m/y H:i`,
+      defaultDate: spendingTime,
+      minDate: cardItemDate,
+      onClose: (selectedDates, dateStr) => {
+        this._startFlatpickr.set(`maxDate`, dateStr);
+      },
     });
   }
 
@@ -313,20 +315,6 @@ export default class CardListItemForm extends AbstractSmartComponent {
     const eventSectionOffers = element.querySelector(`.event__section--offers`);
     eventSectionOffers.addEventListener(`change`, (evt) => {
       this._activateExtraOptions.set(evt.target.name.slice(12), evt.target.checked);
-      this.reRender();
-    });
-
-    const eventStartTime = element.querySelector(`#event-start-time-1`);
-    eventStartTime.addEventListener(`change`, (evt) => {
-      const newDate = moment(evt.target.value).format(`YYYY-MM-DD HH:mm`);
-      this._cardItem.cardItemDate = newDate;
-      this.reRender();
-    });
-
-    const eventEndTime = element.querySelector(`#event-end-time-1`);
-    eventEndTime.addEventListener(`change`, (evt) => {
-      const newDate = moment(evt.target.value).format(`YYYY-MM-DD HH:mm`);
-      this._cardItem.spendingTime = newDate;
       this.reRender();
     });
   }
