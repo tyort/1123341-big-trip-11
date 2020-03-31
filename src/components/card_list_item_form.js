@@ -1,6 +1,7 @@
 import AbstractSmartComponent from './abstract_smart_component.js';
-import {generateStatement, WAYBILL_TYPES, WAYBILL_PURPOSE, EXTRA_OPTIONS, generateWaybillType, getChangedValuesOfMap} from '../formulas.js';
+import {generateStatement, generateExclusiveArray, WAYBILL_TYPES, WAYBILL_PURPOSE, EXTRA_OPTIONS, WAYBILL_DESCRIPTION, generateWaybillType, getChangedValuesOfMap} from '../formulas.js';
 import moment from 'moment';
+import flatpickr from 'flatpickr';
 
 const createExtraOptionInsert = (array, newmap) => {
   return array
@@ -75,22 +76,21 @@ const createWaybillPurposeList = (newmap) => {
 };
 
 const createCardListItemFormTemplate = (cardItem, options = {}) => {
-  const {extraOptions, description, photos, cardItemDate, spendingTime, price} = cardItem;
+  const {cardItemDate, spendingTime, extraOptions, description, photos, price} = cardItem;
   const {isChangeFavorite, activateCheckedType, activateCheckedPurpose, activateExtraOptions} = options;
   const addExtraOptions = createExtraOptionInsert(Array.from(extraOptions), activateExtraOptions);
   const addDescription = `${Array.from(description).join(`. `)}.`;
   const addPhotos = createPhotos(Array.from(photos));
   const waybillType = Array.from(activateCheckedType).find((it) => it[1])[0];
   const addWaybillType = generateWaybillType(waybillType);
-
   const waybillPurpose = Array.from(activateCheckedPurpose).find((it) => it[1])[0];
   const addWaybillPurpose = waybillType === `Check-in` ? `` : waybillPurpose;
-  const addCardItemDate = moment(cardItemDate).format(`YY/MM/DD HH:mm`);
-  const addSpendingTime = moment(spendingTime).format(`YY/MM/DD HH:mm`);
   const addFavorite = isChangeFavorite ? `checked` : ``;
   const addListTypeForChoose = createWaybillTypeList(activateCheckedType);
   const addListTypeForChooseTwo = createWaybillTypeListTwo(activateCheckedType);
   const addListPurposeForChoose = createWaybillPurposeList(activateCheckedPurpose);
+  const addCardItemDate = moment(cardItemDate).format(`DD/MM/YY HH:mm`);
+  const addSpendingTime = moment(spendingTime).format(`DD/MM/YY HH:mm`);
 
   return (
     `<li class="trip-events__item">
@@ -136,6 +136,8 @@ const createCardListItemFormTemplate = (cardItem, options = {}) => {
               To
             </label>
             <input class="event__input  event__input--time" id="event-end-time-1" type="text"
+
+
               name="event-end-time" value="${addSpendingTime}">
           </div>
 
@@ -198,7 +200,9 @@ export default class CardListItemForm extends AbstractSmartComponent {
     this._activateCheckedType = new Map(WAYBILL_TYPES).set(cardItem.waybillType, true); // получу актуальный Map с нужным true
     this._activateCheckedPurpose = new Map(WAYBILL_PURPOSE).set(cardItem.waybillPurpose, true); // получу актуальный Map с нужным true
     this._activateExtraOptions = getChangedValuesOfMap(EXTRA_OPTIONS);
+    this._flatpickr = null;
 
+    this._applyFlatpickr();
     this._subscribeOnEvents();
   }
 
@@ -208,6 +212,8 @@ export default class CardListItemForm extends AbstractSmartComponent {
       activateCheckedType: this._activateCheckedType,
       activateCheckedPurpose: this._activateCheckedPurpose,
       activateExtraOptions: this._activateExtraOptions,
+      cardItemDate: this._cardItemDate,
+      spendingTime: this._spendingTime
     });
   }
 
@@ -217,6 +223,7 @@ export default class CardListItemForm extends AbstractSmartComponent {
 
   reRender() {
     super.reRender();
+    this._applyFlatpickr();
   }
 
   reset() {
@@ -226,6 +233,8 @@ export default class CardListItemForm extends AbstractSmartComponent {
     this._activateCheckedType = new Map(WAYBILL_TYPES).set(cardItem.waybillType, true);
     this._activateCheckedPurpose = new Map(WAYBILL_PURPOSE).set(cardItem.waybillPurpose, true);
     this._activateExtraOptions = getChangedValuesOfMap(EXTRA_OPTIONS);
+    this._cardItemDate = moment(cardItem.cardItemDate).format(`YYYY-MM-DD HH:mm`);
+    this._spendingTime = moment(cardItem.spendingTime).format(`YYYY-MM-DD HH:mm`);
 
     this.reRender();
   }
@@ -238,6 +247,40 @@ export default class CardListItemForm extends AbstractSmartComponent {
   setRollbackButtonClickHandler(handler) {
     this.getElement().querySelector(`.event__rollup-btn`)
       .addEventListener(`click`, handler);
+  }
+
+  _applyFlatpickr() {
+    if (this._flatpickr) {
+      this._flatpickr.destroy();
+      this._flatpickr = null;
+    }
+
+    const cardItemDate = moment(this._cardItem.cardItemDate).format(`YYYY-MM-DD HH:mm`);
+    const spendingTime = moment(this._cardItem.spendingTime).format(`YYYY-MM-DD HH:mm`);
+
+    const eventStartTime = this.getElement().querySelector(`#event-start-time-1`);
+    this._flatpickr = flatpickr(eventStartTime, {
+      altInput: false,
+      allowInput: true,
+      enableTime: true,
+      // eslint-disable-next-line camelcase
+      time_24hr: true,
+      dateFormat: `d/m/y H:i`,
+      defaultDate: new Date(cardItemDate),
+      maxDate: new Date(spendingTime),
+    });
+
+    const eventEndTime = this.getElement().querySelector(`#event-end-time-1`);
+    this._flatpickr = flatpickr(eventEndTime, {
+      altInput: false,
+      allowInput: true,
+      enableTime: true,
+      // eslint-disable-next-line camelcase
+      time_24hr: true,
+      defaultDate: new Date(spendingTime),
+      minDate: new Date(cardItemDate),
+      dateFormat: `d/m/y H:i`,
+    });
   }
 
   _subscribeOnEvents() {
@@ -254,6 +297,7 @@ export default class CardListItemForm extends AbstractSmartComponent {
       it.addEventListener(`change`, (evt) => {
         this._activateCheckedType = new Map(WAYBILL_TYPES);
         this._activateCheckedType.set(evt.target.value, evt.target.checked);
+        this._cardItem.extraOptions = new Map(generateExclusiveArray(EXTRA_OPTIONS, 0, 5));
         this.reRender();
       });
     });
@@ -262,6 +306,7 @@ export default class CardListItemForm extends AbstractSmartComponent {
     eventInputDestination.addEventListener(`change`, (evt) => {
       this._activateCheckedPurpose = new Map(WAYBILL_PURPOSE);
       this._activateCheckedPurpose.set(evt.target.value, true);
+      this._cardItem.description = new Set(generateExclusiveArray(WAYBILL_DESCRIPTION, 1, 3));
       this.reRender();
     });
 
@@ -270,6 +315,21 @@ export default class CardListItemForm extends AbstractSmartComponent {
       this._activateExtraOptions.set(evt.target.name.slice(12), evt.target.checked);
       this.reRender();
     });
+
+    const eventStartTime = element.querySelector(`#event-start-time-1`);
+    eventStartTime.addEventListener(`change`, (evt) => {
+      const newDate = moment(evt.target.value).format(`YYYY-MM-DD HH:mm`);
+      this._cardItem.cardItemDate = newDate;
+      this.reRender();
+    });
+
+    const eventEndTime = element.querySelector(`#event-end-time-1`);
+    eventEndTime.addEventListener(`change`, (evt) => {
+      const newDate = moment(evt.target.value).format(`YYYY-MM-DD HH:mm`);
+      this._cardItem.spendingTime = newDate;
+      this.reRender();
+    });
   }
 }
+
 

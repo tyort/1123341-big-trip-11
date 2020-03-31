@@ -1,28 +1,4 @@
-import {getRandomIntegerNumber, getRandomDateArray, WAYBILL_TYPES, WAYBILL_PURPOSE, EXTRA_OPTIONS} from '../formulas.js';
-
-const WAYBILL_DESCRIPTION = [
-  `Lorem ipsum dolor sit amet, consectetur adipiscing elit`,
-  `Cras aliquet varius magna, non porta ligula feugiat eget`,
-  `Fusce tristique felis at fermentum pharetra`,
-  `Aliquam id orci ut lectus varius viverra`,
-  `Nullam nunc ex, convallis sed finibus eget, sollicitudin eget ante`,
-  `Phasellus eros mauris, condimentum sed nibh vitae, sodales efficitur ipsum`,
-  `Sed blandit, eros vel aliquam faucibus, purus ex euismod diam, eu luctus nunc ante ut dui`,
-  `Sed sed nisi sed augue convallis suscipit in sed felis`,
-  `Aliquam erat volutpat`,
-  `Nunc fermentum tortor ac porta dapibus`,
-  `In rutrum ac purus sit amet tempus`
-];
-
-const generateExtraOptions = () =>
-  new Array(getRandomIntegerNumber(0, 5))
-    .fill(``)
-    .map(() => EXTRA_OPTIONS[getRandomIntegerNumber(0, 4)]);
-
-const generateDescription = () =>
-  new Array(getRandomIntegerNumber(1, 3))
-    .fill(``)
-    .map(() => WAYBILL_DESCRIPTION[getRandomIntegerNumber(0, 10)]);
+import {generateExclusiveArray, getRandomIntegerNumber, getRandomDateArray, WAYBILL_TYPES, WAYBILL_PURPOSE, EXTRA_OPTIONS, WAYBILL_DESCRIPTION} from '../formulas.js';
 
 const generatePhotos = () =>
   new Array(5)
@@ -37,15 +13,15 @@ const generateCardItem = () => {
   }
 
   return {
-    extraOptions: new Map(generateExtraOptions()),
+    extraOptions: new Map(generateExclusiveArray(EXTRA_OPTIONS, 0, 5)),
     waybillType: Array.from(new Map(WAYBILL_TYPES).keys())[getRandomIntegerNumber(0, 10)],
     waybillPurpose: Array.from(new Map(WAYBILL_PURPOSE).keys())[getRandomIntegerNumber(0, 7)],
-    description: new Set(generateDescription()),
+    description: new Set(generateExclusiveArray(WAYBILL_DESCRIPTION, 1, 3)),
     photos: new Set(generatePhotos()),
     cardItemDate,
     spendingTime,
     price: getRandomIntegerNumber(50, 200),
-    isFavorite: Math.random() > 0.5
+    isFavorite: Math.random() > 0.5,
   };
 };
 
