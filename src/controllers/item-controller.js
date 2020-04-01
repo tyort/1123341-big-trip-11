@@ -32,6 +32,11 @@ export default class ItemController {
         .addEventListener(`click`, this._onButtonClick);
     });
 
+    this._cardListItemFormComponent.setSubmitHandler((evt) => {
+      evt.preventDefault();
+      this._replaceFormToItem();
+    });
+
     if (oldCardListItemComponent && oldCardListItemFormComponent) {
       replace(this._cardListItemFormComponent, oldCardListItemFormComponent);
       replace(this._cardListItemComponent, oldCardListItemComponent);
@@ -47,6 +52,8 @@ export default class ItemController {
   }
 
   _replaceFormToItem() {
+    document.removeEventListener(`keydown`, this._onEscKeyDown);
+    document.removeEventListener(`click`, this._onButtonClick);
     this._cardListItemFormComponent.reset();
     replace(this._cardListItemComponent, this._cardListItemFormComponent);
     this._mode = MODE.DEFAULT;
@@ -61,12 +68,10 @@ export default class ItemController {
   _onEscKeyDown(evt) {
     if (evt.key === `Escape` || evt.key === `Esc`) {
       this._replaceFormToItem();
-      document.removeEventListener(`keydown`, this._onEscKeyDown);
     }
   }
 
   _onButtonClick() { // без ".bind(this)" this === button.event__rollup-btn
     this._replaceFormToItem();
-    document.removeEventListener(`click`, this._onButtonClick);
   }
 }

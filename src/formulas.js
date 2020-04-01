@@ -1,5 +1,3 @@
-import moment from 'moment';
-
 export const generateStatement = (it) => {
   switch (it) {
     case `comfort`:
@@ -77,13 +75,13 @@ export const replace = (newComponent, oldComponent) => {
 };
 
 export const dayCounter = (arr) => {
-  return arr.map((it) => moment(it))
+  return arr.map((it) => window.moment(it))
     .map((it, index, array) => 1 + it.diff(array[0], `days`));
 };
 
 export const itemTimePeriod = (arr1, arr2) => {
-  const startDate = moment(arr1);
-  const endDate = moment(arr2);
+  const startDate = window.moment(arr1);
+  const endDate = window.moment(arr2);
 
   let daysDiff = endDate.diff(startDate, `days`);
   startDate.add(daysDiff, `days`);

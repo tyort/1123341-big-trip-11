@@ -1,7 +1,5 @@
 import AbstractSmartComponent from './abstract_smart_component.js';
 import {generateStatement, generateExclusiveArray, WAYBILL_TYPES, WAYBILL_PURPOSE, EXTRA_OPTIONS, WAYBILL_DESCRIPTION, generateWaybillType, getChangedValuesOfMap} from '../formulas.js';
-import moment from 'moment';
-import flatpickr from 'flatpickr';
 
 const createExtraOptionInsert = (array, newmap) => {
   return array
@@ -89,8 +87,8 @@ const createCardListItemFormTemplate = (cardItem, options = {}) => {
   const addListTypeForChoose = createWaybillTypeList(activateCheckedType);
   const addListTypeForChooseTwo = createWaybillTypeListTwo(activateCheckedType);
   const addListPurposeForChoose = createWaybillPurposeList(activateCheckedPurpose);
-  const addCardItemDate = moment(cardItemDate).format(`DD/MM/YY HH:mm`);
-  const addSpendingTime = moment(spendingTime).format(`DD/MM/YY HH:mm`);
+  const addCardItemDate = window.moment(cardItemDate).format(`DD/MM/YY HH:mm`);
+  const addSpendingTime = window.moment(spendingTime).format(`DD/MM/YY HH:mm`);
 
   return (
     `<li class="trip-events__item">
@@ -202,6 +200,7 @@ export default class CardListItemForm extends AbstractSmartComponent {
     this._activateExtraOptions = getChangedValuesOfMap(EXTRA_OPTIONS);
     this._startFlatpickr = null;
     this._endFlatpickr = null;
+    this._submitHandler = null; // зачем добавили?
 
     this._applyFlatpickr();
     this._subscribeOnEvents();
@@ -216,7 +215,8 @@ export default class CardListItemForm extends AbstractSmartComponent {
     });
   }
 
-  recoveryListeners() {
+  recoveryListeners() { // восстанавливает слушателей
+    this.setSubmitHandler(this._submitHandler);
     this._subscribeOnEvents();
   }
 
@@ -239,6 +239,7 @@ export default class CardListItemForm extends AbstractSmartComponent {
   setSubmitHandler(handler) {
     this.getElement().querySelector(`form`)
       .addEventListener(`submit`, handler);
+    this._submitHandler = handler; // this._replaceFormToItem.bind(this) из item-controller
   }
 
   _applyFlatpickr() {
@@ -249,13 +250,13 @@ export default class CardListItemForm extends AbstractSmartComponent {
       this._endFlatpickr = null;
     }
 
-    const cardItemDate = new Date(moment(this._cardItem.cardItemDate).format(`YYYY-MM-DD HH:mm`));
-    const spendingTime = new Date(moment(this._cardItem.spendingTime).format(`YYYY-MM-DD HH:mm`));
+    const cardItemDate = new Date(window.moment(this._cardItem.cardItemDate).format(`YYYY-MM-DD HH:mm`));
+    const spendingTime = new Date(window.moment(this._cardItem.spendingTime).format(`YYYY-MM-DD HH:mm`));
 
     const eventStartTime = this.getElement().querySelector(`#event-start-time-1`);
     const eventEndTime = this.getElement().querySelector(`#event-end-time-1`);
 
-    this._startFlatpickr = flatpickr(eventStartTime, {
+    this._startFlatpickr = window.flatpickr(eventStartTime, {
       altInput: true,
       allowInput: true,
       enableTime: true,
@@ -267,7 +268,7 @@ export default class CardListItemForm extends AbstractSmartComponent {
       },
     });
 
-    this._endFlatpickr = flatpickr(eventEndTime, {
+    this._endFlatpickr = window.flatpickr(eventEndTime, {
       altInput: true,
       allowInput: true,
       enableTime: true,

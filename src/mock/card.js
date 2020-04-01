@@ -13,6 +13,7 @@ const generateCardItem = () => {
   }
 
   return {
+    id: String(new Date() + Math.random()),
     extraOptions: new Map(generateExclusiveArray(EXTRA_OPTIONS, 0, 5)),
     waybillType: Array.from(new Map(WAYBILL_TYPES).keys())[getRandomIntegerNumber(0, 10)],
     waybillPurpose: Array.from(new Map(WAYBILL_PURPOSE).keys())[getRandomIntegerNumber(0, 7)],

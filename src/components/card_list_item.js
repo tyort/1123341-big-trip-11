@@ -1,6 +1,5 @@
 import AbstractComponent from './abstract_component.js';
 import {generateStatement, itemTimePeriod, generateWaybillType} from '../formulas.js';
-import moment from 'moment';
 
 const createExtraOptionInsert = (array) => {
   return array
@@ -23,10 +22,10 @@ const createCardListItemTemplate = (cardItem) => {
   const addWaybillType = generateWaybillType(waybillType);
   const addWaybillPurpose = waybillType === `Check-in` ? `` : waybillPurpose;
   const addItemTimePeriod = itemTimePeriod(cardItemDate, spendingTime);
-  const addCardItemDate = moment(cardItemDate).format(`YYYY-MM-DDTHH:mm`);
-  const addCardItemTime = moment(cardItemDate).format(`HH:mm`);
-  const addSpendingTime = moment(spendingTime).format(`YYYY-MM-DDTHH:mm`);
-  const addSpendingTimeOnly = moment(spendingTime).format(`HH:mm`);
+  const addCardItemDate = window.moment(cardItemDate).format(`YYYY-MM-DDTHH:mm`);
+  const addCardItemTime = window.moment(cardItemDate).format(`HH:mm`);
+  const addSpendingTime = window.moment(spendingTime).format(`YYYY-MM-DDTHH:mm`);
+  const addSpendingTimeOnly = window.moment(spendingTime).format(`HH:mm`);
 
   return (
     `<li class="trip-events__item">

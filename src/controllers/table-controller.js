@@ -4,7 +4,6 @@ import CardListComponent from '../components/card_list.js';
 import CardListLightComponent from '../components/card_list_light.js';
 import NoCardListComponent from '../components/no_card_list.js';
 import {dayCounter, renderComponent} from '../formulas.js';
-import moment from 'moment';
 import ItemController from './item-controller.js';
 
 
@@ -14,7 +13,7 @@ const renderItemByDeafault = (container, sortedCards, sortedCardItems, onDataCha
   const arrayOfItemControllers = [];
 
   sortedCards.forEach((item, index) => {
-    sortedCardItems.filter((elem) => item === moment(elem.cardItemDate).format(`YYYYMMDD`))
+    sortedCardItems.filter((elem) => item === window.moment(elem.cardItemDate).format(`YYYYMMDD`))
       .forEach((i) => {
         const itemController = new ItemController(tripEventsListElements[index], onDataChange, onViewChange);
         itemController.renderCardItem(i);
@@ -37,11 +36,12 @@ const renderItemBySort = (container, sortedCardItems, onDataChange, onViewChange
 };
 
 export default class TableController {
-  constructor(container) {
-    this._sortedCards = [];
-    this._sortedCardItems = [];
+  constructor(container, pointsModel) { // добавим pointsModel
+    // this._sortedCards = [];
+    // this._sortedCardItems = [];
     this._showedCardItemControllers = [];
     this._container = container;
+    this._pointsModel = pointsModel; // добавим свойство
     this._assortmentComponent = new AssortmentComponent();
     this._tripDaysComponent = new TripDaysComponent(); // контейнер для рендеров
     this._noCardListComponent = new NoCardListComponent();
@@ -51,9 +51,12 @@ export default class TableController {
     this._assortmentComponent.setSortTypeChangeHandler(this._onSortTypeChange);
   }
 
-  renderMap(sortedCards, sortedCardItems) {
+  // renderMap(sortedCards, sortedCardItems) {
+  renderMap() {
     this._sortedCards = sortedCards;
     this._sortedCardItems = sortedCardItems;
+    
+
     if (sortedCards.length === 0) {
       renderComponent(this._container, this._noCardListComponent);
     }
