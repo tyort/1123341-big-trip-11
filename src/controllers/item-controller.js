@@ -16,6 +16,7 @@ export default class ItemController {
     this._cardListItemComponent = null;
     this._cardListItemFormComponent = null;
     this._onEscKeyDown = this._onEscKeyDown.bind(this);
+    this._onButtonClick = this._onButtonClick.bind(this);
   }
 
   renderCardItem(cardItem) { // рендер для одной карточки
@@ -27,10 +28,9 @@ export default class ItemController {
     this._cardListItemComponent.setRollupButtonClickHandler(() => {
       this._replaceItemToForm();
       document.addEventListener(`keydown`, this._onEscKeyDown);
+      this._cardListItemFormComponent.getElement().querySelector(`.event__rollup-btn`)
+        .addEventListener(`click`, this._onButtonClick);
     });
-
-    this._cardListItemFormComponent.setSubmitHandler(this._replaceFormToItem.bind(this));
-    this._cardListItemFormComponent.setRollbackButtonClickHandler(this._replaceFormToItem.bind(this));
 
     if (oldCardListItemComponent && oldCardListItemFormComponent) {
       replace(this._cardListItemFormComponent, oldCardListItemFormComponent);
@@ -63,5 +63,10 @@ export default class ItemController {
       this._replaceFormToItem();
       document.removeEventListener(`keydown`, this._onEscKeyDown);
     }
+  }
+
+  _onButtonClick() { // без ".bind(this)" this === button.event__rollup-btn
+    this._replaceFormToItem();
+    document.removeEventListener(`click`, this._onButtonClick);
   }
 }

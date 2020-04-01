@@ -241,11 +241,6 @@ export default class CardListItemForm extends AbstractSmartComponent {
       .addEventListener(`submit`, handler);
   }
 
-  setRollbackButtonClickHandler(handler) {
-    this.getElement().querySelector(`.event__rollup-btn`)
-      .addEventListener(`click`, handler);
-  }
-
   _applyFlatpickr() {
     if (this._startFlatpickr || this._endFlatpickr) {
       this._startFlatpickr.destroy();
