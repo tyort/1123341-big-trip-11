@@ -1,7 +1,7 @@
 export const generateStatement = (it) => {
   switch (it) {
     case `comfort`:
-      return `Switch to ` + it + `class`;
+      return `Switch to ` + it + ` class`;
     case `neighbor`:
       return `Choose ` + it;
     default:
@@ -28,10 +28,10 @@ export const generateWaybillType = (it) => {
 };
 
 export const getRandomDateArray = () => {
-  const day = getRandomIntegerNumber(1, 5);
+  const day = getRandomIntegerNumber(2, 6);
   const hours = getRandomIntegerNumber(0, 23);
   const minutes = getRandomIntegerNumber(0, 59);
-  return [`2020`, `03`, castTimeFormat(day), castTimeFormat(hours), castTimeFormat(minutes)];
+  return [2020, 4, day, hours, minutes];
 };
 
 export const renderComponent = (container, element, place) => {
@@ -122,21 +122,21 @@ export const WAYBILL_PURPOSE = [
   [`Chamonix`, false]
 ];
 
-export const EXTRA_OPTIONS = [
+export const EXTRA_OPTIONS = new Map([
   [`luggage`, 10],
   [`comfort`, 150],
   [`meal`, 2],
   [`neighbor`, 250],
   [`music`, 50]
-];
+]);
 
-export const getChangedValuesOfMap = (array) => {
-  const newmap = new Map(array);
-  for (const key of newmap.keys()) {
-    newmap.set(key, false);
-  }
-  return newmap;
-};
+export const generateExtraOption = [
+  [`luggage`, false],
+  [`comfort`, false],
+  [`meal`, false],
+  [`neighbor`, false],
+  [`music`, false]
+];
 
 export const WAYBILL_DESCRIPTION = [
   `Lorem ipsum dolor sit amet, consectetur adipiscing elit`,

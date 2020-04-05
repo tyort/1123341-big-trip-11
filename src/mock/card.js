@@ -1,4 +1,12 @@
-import {generateExclusiveArray, getRandomIntegerNumber, getRandomDateArray, WAYBILL_TYPES, WAYBILL_PURPOSE, EXTRA_OPTIONS, WAYBILL_DESCRIPTION} from '../formulas.js';
+import {
+  generateExclusiveArray,
+  getRandomIntegerNumber,
+  getRandomDateArray,
+  generateExtraOption,
+  WAYBILL_TYPES,
+  WAYBILL_PURPOSE,
+  WAYBILL_DESCRIPTION
+} from '../formulas.js';
 
 const generatePhotos = () =>
   new Array(5)
@@ -14,7 +22,7 @@ const generateCardItem = () => {
 
   return {
     id: String(new Date() + Math.random()),
-    extraOptions: new Map(generateExclusiveArray(EXTRA_OPTIONS, 0, 5)),
+    extraOptions: new Map(generateExclusiveArray(generateExtraOption, 0, 5)),
     waybillType: Array.from(new Map(WAYBILL_TYPES).keys())[getRandomIntegerNumber(0, 10)],
     waybillPurpose: Array.from(new Map(WAYBILL_PURPOSE).keys())[getRandomIntegerNumber(0, 7)],
     description: new Set(generateExclusiveArray(WAYBILL_DESCRIPTION, 1, 3)),
