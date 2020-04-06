@@ -22,7 +22,7 @@ export const EmptyPoint = {
 };
 
 export default class ItemController {
-  constructor(container, onDataChange, onViewChange, place) {
+  constructor(container, onDataChange, onViewChange) {
     this._container = container;
     this._onDataChange = onDataChange;
     this._onViewChange = onViewChange;
@@ -31,7 +31,6 @@ export default class ItemController {
     this._cardListItemFormComponent = null;
     this._onEscKeyDown = this._onEscKeyDown.bind(this);
     this._onButtonClick = this._onButtonClick.bind(this);
-    this._place = place;
   }
 
   renderCardItem(cardItem, mode) { // рендер для одной карточки
@@ -60,7 +59,7 @@ export default class ItemController {
           replace(this._cardListItemFormComponent, oldCardListItemFormComponent);
           replace(this._cardListItemComponent, oldCardListItemComponent);
         } else {
-          renderComponent(this._container, this._cardListItemComponent, this._place);
+          renderComponent(this._container, this._cardListItemComponent);
         }
         break;
       case MODE.ADDING:
@@ -71,7 +70,7 @@ export default class ItemController {
         document.addEventListener(`keydown`, this._onEscKeyDown);
         this._cardListItemFormComponent.getElement().querySelector(`.event__rollup-btn`)
           .addEventListener(`click`, this._onButtonClick);
-        renderComponent(this._container, this._cardListItemFormComponent, this._place);
+        renderComponent(this._container, this._cardListItemFormComponent, `afterEnd`);
         break;
     }
   }
