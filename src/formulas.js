@@ -28,10 +28,10 @@ export const generateWaybillType = (it) => {
 };
 
 export const getRandomDateArray = () => {
-  const day = getRandomIntegerNumber(2, 6);
+  const day = getRandomIntegerNumber(4, 8);
   const hours = getRandomIntegerNumber(0, 23);
   const minutes = getRandomIntegerNumber(0, 59);
-  return [2020, 4, day, hours, minutes];
+  return [2020, 3, day, hours, minutes];
 };
 
 export const renderComponent = (container, element, place) => {

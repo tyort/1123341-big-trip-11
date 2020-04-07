@@ -36,7 +36,7 @@ export default class ItemController {
   renderCardItem(cardItem, mode) { // рендер для одной карточки
     const oldCardListItemComponent = this._cardListItemComponent;
     const oldCardListItemFormComponent = this._cardListItemFormComponent;
-    this.mode = mode;
+    this._mode = mode;
     this._cardListItemComponent = new CardListItemComponent(cardItem);
     this._cardListItemFormComponent = new CardListItemFormComponent(cardItem);
 
@@ -70,7 +70,8 @@ export default class ItemController {
         document.addEventListener(`keydown`, this._onEscKeyDown);
         this._cardListItemFormComponent.getElement().querySelector(`.event__rollup-btn`)
           .addEventListener(`click`, this._onButtonClick);
-        renderComponent(this._container, this._cardListItemFormComponent, `afterEnd`);
+        // renderComponent(this._container, this._cardListItemFormComponent, `afterEnd`);
+        this._container.after(this._cardListItemFormComponent.getElement().querySelector(`form`));
         break;
     }
   }

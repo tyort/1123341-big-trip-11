@@ -1,17 +1,52 @@
+import {FILTER_TYPE, getPointsByFilter} from '../formulas-filter.js';
+
 export default class Points {
   constructor() {
     this._points = [];
+    this._pointsCards = [];
+    this._activeFilterType = FILTER_TYPE.EVERYTHING;
+    this._filterChangeHandlers = [];
+    this._dataChangeHandlers = []; // массив хендлеров
   }
 
-  getPoints() { // получение точек маршрута
+  getPointsCards() { // получение карточек точек маршрута
+    return this._pointsCards;
+  }
+
+  getPointsByFilter() { // получение точек маршрута
+    return getPointsByFilter(this._points, this._activeFilterType);
+  }
+
+  getPointsOnBegining() {
     return this._points;
+  }
+
+  setPointsCards(items) { // запись карточек точек маршрута
+    this._pointsCards = Array.from(items);
   }
 
   setPoints(items) { // запись точек маршрута
     this._points = Array.from(items);
   }
 
-  updatePoints(id, item) { // обновление точки маршрута
+  setFilter(filterType) { // фильтрация не происходит при вызове, только меняется тип фильтра
+    this._activeFilterType = filterType;
+    this._callHandlers(this._filterChangeHandlers);
+  }
+
+  removePoint(id) {
+    const index = this._points.findIndex((it) => it.id === id);
+
+    if (index === -1) {
+      return false;
+    }
+
+    this._points = [].concat(this._points.slice(0, index), this._points.slice(index + 1));
+    this._callHandlers(this._dataChangeHandlers);
+    return true;
+  }
+
+  updatePoint(id, item) { // обновление точки маршрута в массиве
     const index = this._points.findIndex((it) => it.id === id);
 
     if (index === -1) {
@@ -19,6 +54,24 @@ export default class Points {
     }
 
     this._points = [].concat(this._points.slice(0, index), item, this._points.slice(index + 1));
+    this._dataChangeHandlers.forEach(this._dataChangeHandlers);
     return true;
+  }
+
+  addPoint(point) {
+    this._points = [].concat(point, this._points);
+    this._callHandlers(this._dataChangeHandlers);
+  }
+
+  setFilterChangeHandler(handler) {
+    this._filterChangeHandlers.push(handler);
+  }
+
+  setDataChangeHandler(handler) { // запушить еще один хендлер
+    this._dataChangeHandlers.push(handler);
+  }
+
+  _callHandlers(handlers) { // вызвать каждый хендлер в массиве
+    handlers.forEach((handler) => handler());
   }
 }
