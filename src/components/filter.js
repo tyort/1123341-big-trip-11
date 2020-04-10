@@ -19,7 +19,7 @@ export const createFilterMarkup = (filter) => {
 };
 
 export const createFilterTemplate = (filters) => {
-  // filters массив объектов типа {name: "past", checked: false}
+  // filters массив объектов типа {name: "past", checked: false} получаем из filter controller
   const filtersMarkup = filters.map((it) => createFilterMarkup(it)).join(``);
 
   return (

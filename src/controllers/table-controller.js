@@ -7,32 +7,35 @@ import {dayCounter, renderComponent} from '../formulas.js';
 import ItemController, {MODE, EmptyPoint} from './item-controller.js';
 
 
-const renderItemByDeafault = (container, sortedCards, sortedCardItems, onDataChange, onViewChange) => {
-  sortedCards.forEach((it, index) => renderComponent(container, new CardListComponent(it, dayCounter(sortedCards)[index])));
-  const tripEventsListElements = document.querySelectorAll(`.trip-events__list`);
-  const arrayOfItemControllers = [];
+const renderOnePoint = (sortType, container, sortedCardItems, onDataChange, onViewChange) => {
+  if (sortType === `event`) {
+    const cards = Array.from(new Set(sortedCardItems.map((it) => window.moment(it.cardItemDate).format(`YYYYMMDD`))));
+    const sortedCards = cards.sort((a, b) => a - b);
 
-  sortedCards.forEach((item, index) => {
-    sortedCardItems.filter((elem) => item === window.moment(elem.cardItemDate).format(`YYYYMMDD`))
-      .forEach((i) => {
-        const itemController = new ItemController(tripEventsListElements[index], onDataChange, onViewChange);
-        itemController.renderCardItem(i, MODE.DEFAULT);
-        arrayOfItemControllers.push(itemController);
-      });
-  });
-  return arrayOfItemControllers;
-};
+    sortedCards.forEach((it, index) => renderComponent(container, new CardListComponent(it, dayCounter(sortedCards)[index])));
+    const tripEventsListElements = document.querySelectorAll(`.trip-events__list`);
+    const arrayOfItemControllers = [];
 
-const renderItemBySort = (container, sortedCardItems, onDataChange, onViewChange) => {
-  renderComponent(container, new CardListLightComponent());
+    sortedCards.forEach((item, index) => {
+      sortedCardItems.filter((elem) => item === window.moment(elem.cardItemDate).format(`YYYYMMDD`))
+        .forEach((i) => {
+          const itemController = new ItemController(tripEventsListElements[index], onDataChange, onViewChange);
+          itemController.renderCardItem(i, MODE.DEFAULT);
+          arrayOfItemControllers.push(itemController);
+        });
+    });
+    return arrayOfItemControllers;
+  } else {
+    renderComponent(container, new CardListLightComponent());
 
-  const tripEventsListElement = document.querySelector(`.trip-events__list`);
+    const tripEventsListElement = document.querySelector(`.trip-events__list`);
 
-  return sortedCardItems.forEach((i) => {
-    const itemController = new ItemController(tripEventsListElement, onDataChange, onViewChange);
-    itemController.renderCardItem(i, MODE.DEFAULT);
-    return itemController;
-  });
+    return sortedCardItems.map((i) => {
+      const itemController = new ItemController(tripEventsListElement, onDataChange, onViewChange);
+      itemController.renderCardItem(i, MODE.DEFAULT);
+      return itemController;
+    });
+  }
 };
 
 export default class TableController {
@@ -50,20 +53,20 @@ export default class TableController {
     this._onFilterChange = this._onFilterChange.bind(this);
     this._assortmentComponent.setSortTypeChangeHandler(this._onSortTypeChange);
     this._points.setFilterChangeHandler(this._onFilterChange);
+    this._sortType = `event`;
   }
 
   renderMap() {
-    const pointsCards = this._points.getPointsCards();
     const points = this._points.getPointsByFilter();
 
-    if (pointsCards.length === 0) {
+    if (points.length === 0) {
       renderComponent(this._container, this._noCardListComponent);
     }
 
     renderComponent(this._container, this._assortmentComponent);
     renderComponent(this._container, this._tripDaysComponent);
 
-    this._renderPoints(pointsCards, points); // вызывается один раз, вначале
+    this._renderPoints(this._sortType, points); // вызывается один раз, вначале
   }
 
   createPoint() {
@@ -72,57 +75,45 @@ export default class TableController {
     }
 
     this._creatingPoint = new ItemController(this._assortmentComponent.getElement(), this._onDataChange, this._onViewChange);
-    // при добавлении новой карточки
     this._creatingPoint.renderCardItem(EmptyPoint, MODE.ADDING);
   }
 
   _removePoints() {
+    this._tripDaysComponent.getElement().innerHTML = ``;
     this._showedCardItemControllers.forEach((it) => it.destroy());
     this._showedCardItemControllers = [];
   }
 
-  _renderPoints(pointsCards, points) {
+  _renderPoints(sortType, points) {
+    this._sortType = sortType;
     const pointsList = this._tripDaysComponent.getElement();
-    const newCardItems = renderItemByDeafault(pointsList, pointsCards, points, this._onDataChange, this._onViewChange);
-    // при запуске, при отказе сохранения новой карточки, удаление карточки
-    // переключение фильтров, при сортировке
-    this._showedCardItemControllers = this._showedCardItemControllers.concat(newCardItems);
-  }
-  _renderPointsCardsOff(points) {
-    const pointsList = this._tripDaysComponent.getElement();
-    const newCardItems = renderItemBySort(pointsList, points, this._onDataChange, this._onViewChange);
+    const newCardItems = renderOnePoint(this._sortType, pointsList, points, this._onDataChange, this._onViewChange);
     this._showedCardItemControllers = this._showedCardItemControllers.concat(newCardItems);
   }
 
   _updatePoints() {
-    // при переходе по фильтрам; при нажатии ESC, чтобы не добавлять новую карточку;
-    // при удалении карточки;
     this._removePoints();
-    this._renderPoints(this._points.getPointsByFilter()); // получение определенного списка, согласно фильтра
+    this._renderPoints(this._sortType, this._points.getPointsByFilter());
   }
 
   _onDataChange(itemController, oldData, newData) {
     if (oldData === EmptyPoint && newData === null) {
       this._creatingPoint = null;
-      itemController.destroy(); // уничтожаются все вьюхи и слушатели таска
-      this._updatePoints(); // обновляет представление тасков
-      console.log(`первый`); // я создал пусту карточку, а потом удалил
+      itemController.destroy();
+      this._updatePoints();
 
     } else if (oldData === EmptyPoint) {
       this._creatingPoint = null;
+      itemController.destroy();
       this._points.addPoint(newData);
-      itemController.renderCardItem(newData, MODE.DEFAULT);
-      this._showedTaskControllers = [].concat(itemController, this._showedTaskControllers); // в начало вставляется новый таск, а другие сдвигаются
-      console.log(`второй`); // вставляет пустой таск в таблицу и удаляет последний в таблице
+      this._updatePoints();
 
-    } else if (newData === null) { // удаление таска. если выполнится просто "if", то "else if" не будет даже рассматриваться
+    } else if (newData === null) {
       this._points.removePoint(oldData.id);
       this. _updatePoints();
-      console.log(`третий`); // удалил карточку
 
-    } else { // выполнится при oldData !== EmptyPoint || newData !== null
+    } else {
       const isSuccess = this._points.updatePoint(oldData.id, newData);
-      console.log(`четвертый`); // я что-то изменил в форме, а потом сохранил с превращением формы в карточку
 
       if (isSuccess) {
         itemController.renderCardItem(newData, MODE.DEFAULT);
@@ -137,25 +128,22 @@ export default class TableController {
   _onSortTypeChange(sortType) {
     this._tripDaysComponent.getElement().innerHTML = ``;
     let sortedItems = [];
-    const pointsCards = this._points.getPointsCards();
     const points = this._points.getPointsByFilter();
 
     switch (sortType) {
       case SORT_TYPES.TIME_DOWN:
         sortedItems = points.sort((a, b) => new Date(...b.spendingTime).getTime() - new Date(...b.cardItemDate).getTime() - new Date(...a.spendingTime).getTime() + new Date(...a.cardItemDate).getTime());
-        this._removePoints();
-        this._renderPointsCardsOff(sortedItems);
         break;
       case SORT_TYPES.PRICE_DOWN:
         sortedItems = points.sort((a, b) => b.price - a.price);
-        this._removePoints();
-        this._renderPointsCardsOff(sortedItems);
         break;
       case SORT_TYPES.DEFAULT:
-        this._removePoints();
-        this._renderPoints(pointsCards, points);
+        sortedItems = points;
         break;
     }
+
+    this._removePoints();
+    this._renderPoints(sortType, sortedItems);
   }
 
   _onFilterChange() {

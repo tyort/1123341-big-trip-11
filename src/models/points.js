@@ -21,10 +21,6 @@ export default class Points {
     return this._points;
   }
 
-  setPointsCards(items) { // запись карточек точек маршрута
-    this._pointsCards = Array.from(items);
-  }
-
   setPoints(items) { // запись точек маршрута
     this._points = Array.from(items);
   }
@@ -54,21 +50,21 @@ export default class Points {
     }
 
     this._points = [].concat(this._points.slice(0, index), item, this._points.slice(index + 1));
-    this._dataChangeHandlers.forEach(this._dataChangeHandlers);
+    this._callHandlers(this._dataChangeHandlers);
     return true;
   }
 
   addPoint(point) {
     this._points = [].concat(point, this._points);
-    this._callHandlers(this._dataChangeHandlers);
+    this._callHandlers(this._dataChangeHandlers); // вызывает _onDataChange из filter controller
   }
 
   setFilterChangeHandler(handler) {
     this._filterChangeHandlers.push(handler);
   }
 
-  setDataChangeHandler(handler) { // запушить еще один хендлер
-    this._dataChangeHandlers.push(handler);
+  setDataChangeHandler(handler) { // запускается вначале
+    this._dataChangeHandlers.push(handler); // handler равен _onDataChange из filter controller
   }
 
   _callHandlers(handlers) { // вызвать каждый хендлер в массиве

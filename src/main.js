@@ -13,16 +13,12 @@ document.querySelector(`.trip-main__event-add-btn`)
 
 const CARD_ITEM_COUNT = 12;
 const cardItems = generateSomeUnit(CARD_ITEM_COUNT, generateCardItem);
-const sortedCardItems = cardItems.sort((a, b) => new Date(...a.cardItemDate).getTime() - new Date(...b.cardItemDate).getTime());
-const cards = Array.from(new Set(sortedCardItems.map((it) => window.moment(it.cardItemDate).format(`YYYYMMDD`))));
-const sortedCards = cards.sort((a, b) => a - b);
 
-console.log(sortedCardItems);
-console.log(sortedCards);
+const sortedCardItems = cardItems.sort((a, b) => new Date(...a.cardItemDate).getTime() - new Date(...b.cardItemDate).getTime());
 
 const points = new Points();
-points.setPointsCards(sortedCards);
 points.setPoints(sortedCardItems);
+console.log(sortedCardItems);
 
 
 const mainTripInfoElement = document.querySelector(`.trip-main__trip-info`);

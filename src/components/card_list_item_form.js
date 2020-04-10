@@ -32,7 +32,7 @@ const createPhotos = (array) => {
   return array
     .map((item) => {
       return (
-        `<img class="event__photo" src="${item}" alt="Event photo"></img>`
+        `<img class="event__photo" src="http://picsum.photos/300/150?r=${item}" alt="Event photo"></img>`
       );
     })
     .join(``);
@@ -86,7 +86,7 @@ const createCardListItemFormTemplate = (cardItem, options = {}) => {
   const {cardItemDate, spendingTime, extraOptions, description, photos, price} = cardItem;
   const {isChangeFavorite, activateCheckedType, activateCheckedPurpose, activateExtraOptions} = options;
   const addExtraOptions = createExtraOptionInsert(Array.from(extraOptions), activateExtraOptions);
-  const addDescription = window.he.encode(`${Array.from(description).join(`. `)}.`);
+  const addDescription = window.he.encode(description);
   const addPhotos = createPhotos(Array.from(photos));
   const waybillType = Array.from(activateCheckedType).find((it) => it[1])[0];
   const addWaybillType = generateWaybillType(waybillType);
@@ -215,6 +215,9 @@ const parseFormData = (formData) => {
     }
   }
 
+  const photos = Array.from(document.querySelectorAll(`.event__photo`))
+    .map((it) => it.src.slice(31));
+
   return {
     waybillType: formData.get(`event-type`),
     waybillPurpose: formData.get(`event-destination`),
@@ -222,7 +225,9 @@ const parseFormData = (formData) => {
     isFavorite: !!formData.get(`event-favorite`),
     cardItemDate: startDateToArray,
     spendingTime: endDateToArray,
-    description: document.querySelector(`.event__destination-description`).textContent
+    description: document.querySelector(`.event__destination-description`).textContent,
+    photos: new Set(photos),
+    price: formData.get(`event-price`),
   };
 };
 
@@ -366,7 +371,8 @@ export default class CardListItemForm extends AbstractSmartComponent {
     eventInputDestination.addEventListener(`change`, (evt) => {
       this._activateCheckedPurpose = new Map(WAYBILL_PURPOSE);
       this._activateCheckedPurpose.set(evt.target.value, true);
-      this._cardItem.description = new Set(generateExclusiveArray(WAYBILL_DESCRIPTION, 1, 3));
+      this._cardItem.description = Array.from(new Set(generateExclusiveArray(WAYBILL_DESCRIPTION, 1, 3)))
+        .join(`. `) + `.`;
       this.reRender();
     });
 

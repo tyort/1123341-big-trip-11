@@ -11,10 +11,12 @@ export const MODE = {
 export const EmptyPoint = {
   id: ``,
   extraOptions: new Map(),
-  waybillType: ``,
+  waybillType: `Ship`,
   waybillPurpose: ``,
-  description: new Set(),
-  photos: new Set(),
+  description: ``,
+  photos: new Set(new Array(5)
+    .fill(``)
+    .map(() => Math.random())),
   cardItemDate: [],
   spendingTime: [],
   price: 0,
@@ -52,12 +54,14 @@ export default class ItemController {
       const data = this._cardListItemFormComponent.getChangedDataByView();
       this._onDataChange(this, cardItem, data);
     });
+    this._cardListItemFormComponent.setDeleteButtonClickHandler(() => this._onDataChange(this, cardItem, null));
 
     switch (mode) {
       case MODE.DEFAULT:
         if (oldCardListItemComponent && oldCardListItemFormComponent) {
           replace(this._cardListItemFormComponent, oldCardListItemFormComponent);
           replace(this._cardListItemComponent, oldCardListItemComponent);
+          this._replaceFormToItem();
         } else {
           renderComponent(this._container, this._cardListItemComponent);
         }
@@ -70,8 +74,7 @@ export default class ItemController {
         document.addEventListener(`keydown`, this._onEscKeyDown);
         this._cardListItemFormComponent.getElement().querySelector(`.event__rollup-btn`)
           .addEventListener(`click`, this._onButtonClick);
-        // renderComponent(this._container, this._cardListItemFormComponent, `afterEnd`);
-        this._container.after(this._cardListItemFormComponent.getElement().querySelector(`form`));
+        renderComponent(this._container, this._cardListItemFormComponent, `afterEnd`);
         break;
     }
   }
@@ -113,7 +116,7 @@ export default class ItemController {
     }
   }
 
-  _onButtonClick() { // без ".bind(this)" this === button.event__rollup-btn
+  _onButtonClick() {
     this._replaceFormToItem();
   }
 }

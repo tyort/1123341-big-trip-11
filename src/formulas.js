@@ -28,7 +28,7 @@ export const generateWaybillType = (it) => {
 };
 
 export const getRandomDateArray = () => {
-  const day = getRandomIntegerNumber(4, 8);
+  const day = getRandomIntegerNumber(9, 11);
   const hours = getRandomIntegerNumber(0, 23);
   const minutes = getRandomIntegerNumber(0, 59);
   return [2020, 3, day, hours, minutes];
