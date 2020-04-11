@@ -7,21 +7,21 @@ const createRandomColor = () => {
 };
 
 const renderMoneyChart = (container, points) => {
-  const originalType = points.map((it) => it.waybillType)
+  const originalPurpose = points.map((it) => it.waybillType)
     .filter((item, index, array) => array.indexOf(item) === index); // массив оригинальных типов
 
   return new window.Chart(container, {
     type: `horizontalBar`,
     data: {
-      labels: originalType,
+      labels: originalPurpose,
       datasets: [{
-        data: originalType.map((currentType) => {
-          return points.filter((point) => point.waybillType === currentType)
-            .reduce((acc, itemOfCurrentType) => {
-              return acc + itemOfCurrentType.price;
+        data: originalPurpose.map((currentPurpose) => {
+          return points.filter((point) => point.waybillType === currentPurpose)
+            .reduce((acc, itemOfCurrentPurpose) => {
+              return acc + itemOfCurrentPurpose.price;
             }, 0);
         }), // массив денег потраченных в сумме для каждого типа
-        backgroundColor: originalType.map(createRandomColor)
+        backgroundColor: originalPurpose.map(createRandomColor)
       }]
     },
     options: {
@@ -69,21 +69,23 @@ const renderMoneyChart = (container, points) => {
 };
 
 const renderTimeSpentChart = (container, points) => {
-  const originalType = points.map((it) => it.waybillType)
+  const originalPurpose = points.map((it) => it.waybillPurpose)
     .filter((item, index, array) => array.indexOf(item) === index); // массив оригинальных мест назначений
 
   return new window.Chart(container, {
     type: `horizontalBar`,
     data: {
-      labels: originalType,
+      labels: originalPurpose,
       datasets: [{
-        data: originalType.map((currentType) => {
-          return points.filter((point) => point.waybillType === currentType)
-            .reduce((acc, itemOfCurrentType) => {
-              return acc + itemOfCurrentType.price;
-            }, 0);
+        data: originalPurpose.map((currentPurpose) => {
+          return Math.floor(points.filter((point) => point.waybillPurpose === currentPurpose)
+            .reduce((acc, itemOfPurpose) => {
+              const startDate = window.moment(itemOfPurpose.cardItemDate);
+              const endDate = window.moment(itemOfPurpose.spendingTime);
+              return acc + endDate.diff(startDate, `minutes`);
+            }, 0) / 60);
         }),
-        backgroundColor: originalType.map(createRandomColor)
+        backgroundColor: originalPurpose.map(createRandomColor)
       }]
     },
     options: {
@@ -132,19 +134,19 @@ const renderTimeSpentChart = (container, points) => {
 
 const renderTransportChart = (container, points) => {
   const inappropriateType = [`Check-in`, `Sightseeing`, `Restaurant`, `Trip`];
-  const originalType = points.map((it) => it.waybillType)
+  const originalPurpose = points.map((it) => it.waybillType)
     .filter((item, index, array) => array.indexOf(item) === index) // массив оригинальных типов
     .filter((item) => !inappropriateType.includes(item)); // без учета элементов inappropriateType
 
   return new window.Chart(container, {
     type: `horizontalBar`,
     data: {
-      labels: originalType,
+      labels: originalPurpose,
       datasets: [{
-        data: originalType.map((currentType) => {
-          return points.filter((point) => point.waybillType === currentType).length;
+        data: originalPurpose.map((currentPurpose) => {
+          return points.filter((point) => point.waybillType === currentPurpose).length;
         }),
-        backgroundColor: originalType.map(createRandomColor)
+        backgroundColor: originalPurpose.map(createRandomColor)
       }]
     },
     options: {
@@ -226,6 +228,19 @@ export default class Statistics extends AbstractSmartComponent {
 
   getTemplate() {
     return createStatisticsTemplate();
+  }
+
+  show() {
+    super.show();
+    this.reRender(this._points);
+  }
+
+  recoveryListeners() {}
+
+  reRender(points) {
+    this._points = points;
+    super.reRender();
+    this._renderCharts();
   }
 
   _renderCharts() {
