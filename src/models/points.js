@@ -3,21 +3,16 @@ import {FILTER_TYPE, getPointsByFilter} from '../formulas-filter.js';
 export default class Points {
   constructor() {
     this._points = [];
-    this._pointsCards = [];
     this._activeFilterType = FILTER_TYPE.EVERYTHING;
     this._filterChangeHandlers = [];
     this._dataChangeHandlers = []; // массив хендлеров
-  }
-
-  getPointsCards() { // получение карточек точек маршрута
-    return this._pointsCards;
   }
 
   getPointsByFilter() { // получение точек маршрута
     return getPointsByFilter(this._points, this._activeFilterType);
   }
 
-  getPointsOnBegining() {
+  getPointsOnBegining() { // зачем этот метод
     return this._points;
   }
 

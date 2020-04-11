@@ -91,7 +91,7 @@ const createCardListItemFormTemplate = (cardItem, options = {}) => {
   const waybillType = Array.from(activateCheckedType).find((it) => it[1])[0];
   const addWaybillType = generateWaybillType(waybillType);
   const waybillPurpose = Array.from(activateCheckedPurpose).find((it) => it[1])[0];
-  const addWaybillPurpose = waybillType === `Check-in` ? `` : waybillPurpose;
+  const addWaybillPurpose = waybillPurpose;
   const addFavorite = isChangeFavorite ? `checked` : ``;
   const addListTypeForChoose = createWaybillTypeList(activateCheckedType);
   const addListTypeForChooseTwo = createWaybillTypeListTwo(activateCheckedType);

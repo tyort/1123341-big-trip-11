@@ -21,14 +21,14 @@ export const generateWaybillType = (it) => {
     case `Sightseeing`:
       return it + ` at`;
     case `Check-in`:
-      return it + ` hotel`;
+      return it;
     default:
       return it + ` to`;
   }
 };
 
 export const getRandomDateArray = () => {
-  const day = getRandomIntegerNumber(9, 11);
+  const day = getRandomIntegerNumber(9, 12);
   const hours = getRandomIntegerNumber(0, 23);
   const minutes = getRandomIntegerNumber(0, 59);
   return [2020, 3, day, hours, minutes];

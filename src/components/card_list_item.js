@@ -20,7 +20,7 @@ const createCardListItemTemplate = (cardItem) => {
   const {extraOptions, waybillType, waybillPurpose, cardItemDate, spendingTime, price} = cardItem;
   const addExtraOptions = createExtraOptionInsert(Array.from(extraOptions));
   const addWaybillType = generateWaybillType(waybillType);
-  const addWaybillPurpose = waybillType === `Check-in` ? `` : waybillPurpose;
+  const addWaybillPurpose = waybillPurpose;
   const addItemTimePeriod = itemTimePeriod(cardItemDate, spendingTime);
   const addCardItemDate = window.moment(cardItemDate).format(`YYYY-MM-DDTHH:mm`);
   const addCardItemTime = window.moment(cardItemDate).format(`HH:mm`);

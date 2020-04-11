@@ -23,11 +23,13 @@ const generateCardItem = () => {
   const description = Array.from(new Set(generateExclusiveArray(WAYBILL_DESCRIPTION, 1, 3)))
     .join(`. `) + `.`;
 
+  const waybillType = Array.from(new Map(WAYBILL_TYPES).keys())[getRandomIntegerNumber(0, 10)];
+
   return {
     id: String(new Date() + Math.random()),
     extraOptions: new Map(generateExclusiveArray(generateExtraOption, 0, 5)),
-    waybillType: Array.from(new Map(WAYBILL_TYPES).keys())[getRandomIntegerNumber(0, 10)],
-    waybillPurpose: Array.from(new Map(WAYBILL_PURPOSE).keys())[getRandomIntegerNumber(0, 7)],
+    waybillType,
+    waybillPurpose: waybillType === `Check-in` ? `hotel` : Array.from(new Map(WAYBILL_PURPOSE).keys())[getRandomIntegerNumber(0, 7)],
     description,
     photos: new Set(generatePhotos()),
     cardItemDate,

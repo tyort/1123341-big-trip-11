@@ -6,11 +6,13 @@ import NoCardListComponent from '../components/no_card_list.js';
 import {dayCounter, renderComponent} from '../formulas.js';
 import ItemController, {MODE, EmptyPoint} from './item-controller.js';
 
+const HIDDEN_CLASS = `trip-events--hidden`;
 
 const renderOnePoint = (sortType, container, sortedCardItems, onDataChange, onViewChange) => {
   if (sortType === `event`) {
-    const cards = Array.from(new Set(sortedCardItems.map((it) => window.moment(it.cardItemDate).format(`YYYYMMDD`))));
-    const sortedCards = cards.sort((a, b) => a - b);
+    const sortedCards = sortedCardItems.map((it) => window.moment(it.cardItemDate).format(`YYYYMMDD`))
+      .filter((item, index, array) => array.indexOf(item) === index)
+      .sort((a, b) => a - b);
 
     sortedCards.forEach((it, index) => renderComponent(container, new CardListComponent(it, dayCounter(sortedCards)[index])));
     const tripEventsListElements = document.querySelectorAll(`.trip-events__list`);
@@ -54,6 +56,20 @@ export default class TableController {
     this._assortmentComponent.setSortTypeChangeHandler(this._onSortTypeChange);
     this._points.setFilterChangeHandler(this._onFilterChange);
     this._sortType = `event`;
+  }
+
+  show() {
+    const tripEvents = document.querySelector(`.trip-events`);
+    if (tripEvents.classList.contains(HIDDEN_CLASS)) {
+      tripEvents.classList.remove(HIDDEN_CLASS);
+    }
+  }
+
+  hide() {
+    const tripEvents = document.querySelector(`.trip-events`);
+    if (!tripEvents.classList.contains(HIDDEN_CLASS)) {
+      tripEvents.classList.add(HIDDEN_CLASS);
+    }
   }
 
   renderMap() {
