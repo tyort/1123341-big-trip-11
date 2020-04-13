@@ -14,9 +14,12 @@ export const EmptyPoint = {
   waybillType: `Ship`,
   waybillPurpose: ``,
   description: ``,
-  photos: new Set(new Array(5)
+  photos: new Array(5)
     .fill(``)
-    .map(() => Math.random())),
+    .map(() => `http://picsum.photos/300/150?r=${Math.random()}`)
+    .map((it) => {
+      return {src: it, description: `где-то далеко`};
+    }),
   cardItemDate: [],
   spendingTime: [],
   price: 0,
@@ -95,7 +98,8 @@ export default class ItemController {
 
   _replaceFormToItem() {
     document.removeEventListener(`keydown`, this._onEscKeyDown);
-    document.removeEventListener(`click`, this._onButtonClick);
+    this._cardListItemFormComponent.getElement().querySelector(`.event__rollup-btn`)
+      .removeEventListener(`click`, this._onButtonClick);
     this._cardListItemFormComponent.reset();
     replace(this._cardListItemComponent, this._cardListItemFormComponent);
     this._mode = MODE.DEFAULT;

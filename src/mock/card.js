@@ -11,7 +11,10 @@ import {
 const generatePhotos = () =>
   new Array(5)
     .fill(``)
-    .map(() => Math.random());
+    .map(() => `http://picsum.photos/300/150?r=${Math.random()}`)
+    .map((it) => {
+      return {src: it, description: `залупня какая-то`};
+    });
 
 const generateCardItem = () => {
   let cardItemDate = getRandomDateArray();
@@ -31,7 +34,7 @@ const generateCardItem = () => {
     waybillType,
     waybillPurpose: waybillType === `Check-in` ? `hotel` : Array.from(new Map(WAYBILL_PURPOSE).keys())[getRandomIntegerNumber(0, 7)],
     description,
-    photos: new Set(generatePhotos()),
+    photos: generatePhotos(),
     cardItemDate,
     spendingTime,
     price: getRandomIntegerNumber(50, 200),

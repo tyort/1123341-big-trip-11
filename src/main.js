@@ -1,3 +1,4 @@
+import API from './api.js';
 import WaybillComponent from './components/waybill.js';
 import MenuComponent, {MAIN_VIEW_MODE} from './components/menu.js';
 import StatisticsComponent from './components/statistics.js';
@@ -7,10 +8,13 @@ import Points from './models/points.js';
 import {generateCardItem, generateSomeUnit} from './mock/card.js';
 import {renderComponent} from './formulas.js';
 
-// document.querySelector(`.trip-main__event-add-btn`)
-//   .addEventListener(`click`, () => {
-//     tableController.createPoint();
-//   });
+document.querySelector(`.trip-main__event-add-btn`)
+  .addEventListener(`click`, () => {
+    tableController.createPoint();
+  });
+
+const AUTHORIZATION = `Basic eo0w590ik29889a`; // это строка должна быть значение заголовка авторизации
+const END_POINT = `https://htmlacademy-es-10.appspot.com/big-trip/`;
 
 const CARD_ITEM_COUNT = 12;
 const cardItems = generateSomeUnit(CARD_ITEM_COUNT, generateCardItem);
@@ -21,6 +25,7 @@ const points = new Points();
 points.setPoints(sortedCardItems);
 console.log(sortedCardItems);
 
+const api = new API(END_POINT, AUTHORIZATION);
 
 const mainTripInfoElement = document.querySelector(`.trip-main__trip-info`);
 renderComponent(mainTripInfoElement, new WaybillComponent(), `afterBegin`);
@@ -56,3 +61,8 @@ menuComponent.setOnChange((mainViewId) => {
       break;
   }
 });
+
+api.getPoints() // запускает this._load из api.js, а тот в свою очередь запускает Promise в режиме pending
+  .then((pointss) => { // массив из экземпляров с models/point.js
+    console.log(pointss);
+  });
