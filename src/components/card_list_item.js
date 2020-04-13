@@ -1,12 +1,12 @@
 import AbstractComponent from './abstract_component.js';
-import {generateStatement, itemTimePeriod, generateWaybillType} from '../formulas.js';
+import {itemTimePeriod, generateWaybillType} from '../formulas.js';
 
 const createExtraOptionInsert = (array) => {
   return array
     .map((item) => {
       return (
         `<li class="event__offer">
-          <span class="event__offer-title">${generateStatement(item[0])}</span>
+          <span class="event__offer-title">${item[0]}</span>
           &plus;&euro;&nbsp;
           <span class="event__offer-price">${item[1]}</span>
         </li>`

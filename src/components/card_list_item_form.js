@@ -82,9 +82,9 @@ const createWaybillPurposeList = (newmap) => {
 };
 
 const createCardListItemFormTemplate = (cardItem, options = {}) => {
-  const {cardItemDate, spendingTime, extraOptions, description, photos, price} = cardItem;
+  const {cardItemDate, spendingTime, description, photos, price, extraOptions} = cardItem;
   const {isChangeFavorite, activateCheckedType, activateCheckedPurpose, activateExtraOptions} = options;
-  const addExtraOptions = createExtraOptionInsert(Array.from(extraOptions), activateExtraOptions);
+  const addExtraOptions = createExtraOptionInsert(Array.from(activateExtraOptions), extraOptions);
   const addDescription = window.he.encode(description);
   const addPhotos = createPhotos(photos);
   const waybillType = Array.from(activateCheckedType).find((it) => it[1])[0];
@@ -219,6 +219,8 @@ const parseFormData = (formData) => {
       return {src: it.src, description: it.alt};
     });
 
+  console.log(actualExtraOptionsMap);
+
   return {
     waybillType: formData.get(`event-type`),
     waybillPurpose: formData.get(`event-destination`),
@@ -240,6 +242,7 @@ export default class CardListItemForm extends AbstractSmartComponent {
     this._isChangeFavorite = !!cardItem.isFavorite;
     this._activateCheckedType = new Map(WAYBILL_TYPES).set(cardItem.waybillType, true); // получу актуальный Map с нужным true
     this._activateCheckedPurpose = new Map(WAYBILL_PURPOSE).set(cardItem.waybillPurpose, true); // получу актуальный Map с нужным true
+    this._activateExtraOptions = new Map(cardItem.extraOptions);
     this._startFlatpickr = null;
     this._endFlatpickr = null;
     this._submitHandler = null; // зачем добавили?
@@ -253,7 +256,7 @@ export default class CardListItemForm extends AbstractSmartComponent {
       isChangeFavorite: this._isChangeFavorite,
       activateCheckedType: this._activateCheckedType,
       activateCheckedPurpose: this._activateCheckedPurpose,
-      activateExtraOptions: this._cardItem.extraOptions,
+      activateExtraOptions: this._activateExtraOptions,
     });
   }
 
@@ -285,7 +288,7 @@ export default class CardListItemForm extends AbstractSmartComponent {
     this._isChangeFavorite = !!cardItem.isFavorite;
     this._activateCheckedType = new Map(WAYBILL_TYPES).set(cardItem.waybillType, true);
     this._activateCheckedPurpose = new Map(WAYBILL_PURPOSE).set(cardItem.waybillPurpose, true);
-    this._cardItem.extraOptions = cardItem.extraOptions;
+    this._activateExtraOptions = new Map(cardItem.extraOptions);
 
     this.reRender();
   }
@@ -363,7 +366,7 @@ export default class CardListItemForm extends AbstractSmartComponent {
       it.addEventListener(`change`, (evt) => {
         this._activateCheckedType = new Map(WAYBILL_TYPES);
         this._activateCheckedType.set(evt.target.value, evt.target.checked);
-        this._cardItem.extraOptions = new Map(generateExclusiveArray(generateExtraOption, 0, 5));
+        this._activateExtraOptions = new Map(generateExclusiveArray(generateExtraOption, 0, 5));
         this.reRender();
       });
     });
@@ -379,7 +382,7 @@ export default class CardListItemForm extends AbstractSmartComponent {
 
     const eventSectionOffers = element.querySelector(`.event__section--offers`);
     eventSectionOffers.addEventListener(`change`, (evt) => {
-      this._cardItem.extraOptions.set(evt.target.name.slice(12), evt.target.checked);
+      this._activateExtraOptions.set(evt.target.name.slice(12), evt.target.checked);
       this.reRender();
     });
   }
