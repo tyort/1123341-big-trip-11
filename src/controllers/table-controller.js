@@ -10,7 +10,7 @@ const HIDDEN_CLASS = `trip-events--hidden`;
 
 const renderOnePoint = (sortType, container, sortedCardItems, onDataChange, onViewChange) => {
   if (sortType === `event`) {
-    const sortedCards = sortedCardItems.map((it) => window.moment(it.cardItemDate).format(`YYYYMMDD`))
+    const sortedCards = sortedCardItems.map((it) => window.moment(it.datefrom).format(`YYYYMMDD`))
       .filter((item, index, array) => array.indexOf(item) === index)
       .sort((a, b) => a - b);
 
@@ -19,7 +19,7 @@ const renderOnePoint = (sortType, container, sortedCardItems, onDataChange, onVi
     const arrayOfItemControllers = [];
 
     sortedCards.forEach((item, index) => {
-      sortedCardItems.filter((elem) => item === window.moment(elem.cardItemDate).format(`YYYYMMDD`))
+      sortedCardItems.filter((elem) => item === window.moment(elem.datefrom).format(`YYYYMMDD`))
         .forEach((i) => {
           const itemController = new ItemController(tripEventsListElements[index], onDataChange, onViewChange);
           itemController.renderCardItem(i, MODE.DEFAULT);
@@ -148,10 +148,10 @@ export default class TableController {
 
     switch (sortType) {
       case SORT_TYPES.TIME_DOWN:
-        sortedItems = points.sort((a, b) => new Date(...b.spendingTime).getTime() - new Date(...b.cardItemDate).getTime() - new Date(...a.spendingTime).getTime() + new Date(...a.cardItemDate).getTime());
+        sortedItems = points.sort((a, b) => new Date(...b.spendingTime).getTime() - new Date(...b.datefrom).getTime() - new Date(...a.spendingTime).getTime() + new Date(...a.datefrom).getTime());
         break;
       case SORT_TYPES.PRICE_DOWN:
-        sortedItems = points.sort((a, b) => b.price - a.price);
+        sortedItems = points.sort((a, b) => b.basePrice - a.basePrice);
         break;
       case SORT_TYPES.DEFAULT:
         sortedItems = points;

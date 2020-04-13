@@ -19,7 +19,7 @@ const END_POINT = `https://htmlacademy-es-10.appspot.com/big-trip/`;
 const CARD_ITEM_COUNT = 12;
 const cardItems = generateSomeUnit(CARD_ITEM_COUNT, generateCardItem);
 
-const sortedCardItems = cardItems.sort((a, b) => new Date(...a.cardItemDate).getTime() - new Date(...b.cardItemDate).getTime());
+const sortedCardItems = cardItems.sort((a, b) => new Date(...a.datefrom).getTime() - new Date(...b.datefrom).getTime());
 
 const points = new Points();
 points.setPoints(sortedCardItems);

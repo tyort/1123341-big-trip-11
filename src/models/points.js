@@ -18,6 +18,7 @@ export default class Points {
 
   setPoints(items) { // запись точек маршрута
     this._points = Array.from(items);
+    this._callHandlers(this._dataChangeHandlers);
   }
 
   setFilter(filterType) { // фильтрация не происходит при вызове, только меняется тип фильтра

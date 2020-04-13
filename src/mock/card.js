@@ -17,27 +17,27 @@ const generatePhotos = () =>
     });
 
 const generateCardItem = () => {
-  let cardItemDate = getRandomDateArray();
-  let spendingTime = [...cardItemDate.slice(0, 3), ...getRandomDateArray().slice(3, 5)];
-  if (new Date(...cardItemDate).getTime() >= new Date(...spendingTime).getTime()) {
-    [cardItemDate, spendingTime] = [spendingTime, cardItemDate];
+  let datefrom = getRandomDateArray();
+  let spendingTime = [...datefrom.slice(0, 3), ...getRandomDateArray().slice(3, 5)];
+  if (new Date(...datefrom).getTime() >= new Date(...spendingTime).getTime()) {
+    [datefrom, spendingTime] = [spendingTime, datefrom];
   }
 
   const description = Array.from(new Set(generateExclusiveArray(WAYBILL_DESCRIPTION, 1, 3)))
     .join(`. `) + `.`;
 
-  const waybillType = Array.from(new Map(WAYBILL_TYPES).keys())[getRandomIntegerNumber(0, 10)];
+  const type = Array.from(new Map(WAYBILL_TYPES).keys())[getRandomIntegerNumber(0, 10)];
 
   return {
     id: String(new Date() + Math.random()),
     extraOptions: new Map(generateExclusiveArray(generateExtraOption, 0, 5)),
-    waybillType,
-    waybillPurpose: waybillType === `Check-in` ? `hotel` : Array.from(new Map(WAYBILL_PURPOSE).keys())[getRandomIntegerNumber(0, 7)],
+    type,
+    name: type === `Check-in` ? `hotel` : Array.from(new Map(WAYBILL_PURPOSE).keys())[getRandomIntegerNumber(0, 7)],
     description,
     photos: generatePhotos(),
-    cardItemDate,
+    datefrom,
     spendingTime,
-    price: getRandomIntegerNumber(50, 200),
+    basePrice: getRandomIntegerNumber(50, 200),
     isFavorite: Math.random() > 0.5,
   };
 };

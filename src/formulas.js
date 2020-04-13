@@ -28,7 +28,7 @@ export const generateWaybillType = (it) => {
 };
 
 export const getRandomDateArray = () => {
-  const day = getRandomIntegerNumber(9, 12);
+  const day = getRandomIntegerNumber(12, 15);
   const hours = getRandomIntegerNumber(0, 23);
   const minutes = getRandomIntegerNumber(0, 59);
   return [2020, 3, day, hours, minutes];
@@ -121,14 +121,6 @@ export const WAYBILL_PURPOSE = [
   [`Freshford`, false],
   [`Chamonix`, false]
 ];
-
-export const EXTRA_OPTIONS = new Map([
-  [`luggage`, 10],
-  [`comfort`, 150],
-  [`meal`, 2],
-  [`neighbor`, 250],
-  [`music`, 50]
-]);
 
 export const generateExtraOption = [
   [`luggage`, false],

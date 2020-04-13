@@ -4,7 +4,6 @@ import {
   generateExtraOption,
   WAYBILL_TYPES,
   WAYBILL_PURPOSE,
-  EXTRA_OPTIONS,
   WAYBILL_DESCRIPTION,
   generateWaybillType
 } from '../formulas.js';
@@ -19,7 +18,7 @@ const createExtraOptionInsert = (array) => {
           <label class="event__offer-label" for="event-offer-${item[0]}-1">
             <span class="event__offer-title">${item[0]}</span>
             &plus;
-            &euro;&nbsp;<span class="event__offer-price">${EXTRA_OPTIONS.get(item[0])}</span>
+            &euro;&nbsp;<span class="event__offer-price"></span>
           </label>
         </div>`
       );
@@ -82,9 +81,10 @@ const createWaybillPurposeList = (newmap) => {
 };
 
 const createCardListItemFormTemplate = (cardItem, options = {}) => {
-  const {cardItemDate, spendingTime, description, photos, price, extraOptions} = cardItem;
+  const {datefrom, spendingTime, description, photos, basePrice} = cardItem;
   const {isChangeFavorite, activateCheckedType, activateCheckedPurpose, activateExtraOptions} = options;
-  const addExtraOptions = createExtraOptionInsert(Array.from(activateExtraOptions), extraOptions);
+
+  const addExtraOptions = createExtraOptionInsert(Array.from(activateExtraOptions));
   const addDescription = window.he.encode(description);
   const addPhotos = createPhotos(photos);
   const waybillType = Array.from(activateCheckedType).find((it) => it[1])[0];
@@ -95,7 +95,7 @@ const createCardListItemFormTemplate = (cardItem, options = {}) => {
   const addListTypeForChoose = createWaybillTypeList(activateCheckedType);
   const addListTypeForChooseTwo = createWaybillTypeListTwo(activateCheckedType);
   const addListPurposeForChoose = createWaybillPurposeList(activateCheckedPurpose);
-  const addCardItemDate = window.moment(cardItemDate).format(`DD/MM/YY HH:mm`);
+  const addCardItemDate = window.moment(datefrom).format(`DD/MM/YY HH:mm`);
   const addSpendingTime = window.moment(spendingTime).format(`DD/MM/YY HH:mm`);
 
   return (
@@ -152,7 +152,7 @@ const createCardListItemFormTemplate = (cardItem, options = {}) => {
               <span class="visually-hidden">Price</span>
               &euro;
             </label>
-            <input class="event__input  event__input--price" id="event-price-1" type="text" name="event-price" value="${price}">
+            <input class="event__input  event__input--price" id="event-price-1" type="text" name="event-price" value="${basePrice}">
           </div>
 
           <button class="event__save-btn  btn  btn--blue" type="submit">Save</button>
@@ -222,15 +222,15 @@ const parseFormData = (formData) => {
   console.log(actualExtraOptionsMap);
 
   return {
-    waybillType: formData.get(`event-type`),
-    waybillPurpose: formData.get(`event-destination`),
+    type: formData.get(`event-type`),
+    name: formData.get(`event-destination`),
     extraOptions: actualExtraOptionsMap,
     isFavorite: !!formData.get(`event-favorite`),
-    cardItemDate: startDateToArray,
+    datefrom: startDateToArray,
     spendingTime: endDateToArray,
     description: document.querySelector(`.event__destination-description`).textContent,
     photos,
-    price: formData.get(`event-price`),
+    basePrice: formData.get(`event-price`),
   };
 };
 
@@ -240,8 +240,8 @@ export default class CardListItemForm extends AbstractSmartComponent {
 
     this._cardItem = cardItem;
     this._isChangeFavorite = !!cardItem.isFavorite;
-    this._activateCheckedType = new Map(WAYBILL_TYPES).set(cardItem.waybillType, true); // получу актуальный Map с нужным true
-    this._activateCheckedPurpose = new Map(WAYBILL_PURPOSE).set(cardItem.waybillPurpose, true); // получу актуальный Map с нужным true
+    this._activateCheckedType = new Map(WAYBILL_TYPES).set(cardItem.type, true); // получу актуальный Map с нужным true
+    this._activateCheckedPurpose = new Map(WAYBILL_PURPOSE).set(cardItem.name, true); // получу актуальный Map с нужным true
     this._activateExtraOptions = new Map(cardItem.extraOptions);
     this._startFlatpickr = null;
     this._endFlatpickr = null;
@@ -286,8 +286,8 @@ export default class CardListItemForm extends AbstractSmartComponent {
     const cardItem = this._cardItem;
 
     this._isChangeFavorite = !!cardItem.isFavorite;
-    this._activateCheckedType = new Map(WAYBILL_TYPES).set(cardItem.waybillType, true);
-    this._activateCheckedPurpose = new Map(WAYBILL_PURPOSE).set(cardItem.waybillPurpose, true);
+    this._activateCheckedType = new Map(WAYBILL_TYPES).set(cardItem.type, true);
+    this._activateCheckedPurpose = new Map(WAYBILL_PURPOSE).set(cardItem.name, true);
     this._activateExtraOptions = new Map(cardItem.extraOptions);
 
     this.reRender();
@@ -321,7 +321,7 @@ export default class CardListItemForm extends AbstractSmartComponent {
       this._endFlatpickr = null;
     }
 
-    const cardItemDate = new Date(window.moment(this._cardItem.cardItemDate).format(`YYYY-MM-DD HH:mm`));
+    const datefrom = new Date(window.moment(this._cardItem.datefrom).format(`YYYY-MM-DD HH:mm`));
     const spendingTime = new Date(window.moment(this._cardItem.spendingTime).format(`YYYY-MM-DD HH:mm`));
 
     const eventStartTime = this.getElement().querySelector(`#event-start-time-1`);
@@ -332,7 +332,7 @@ export default class CardListItemForm extends AbstractSmartComponent {
       allowInput: true,
       enableTime: true,
       altFormat: `d/m/y H:i`,
-      defaultDate: cardItemDate,
+      defaultDate: datefrom,
       maxDate: spendingTime,
       onClose: (selectedDates, dateStr) => {
         this._endFlatpickr.set(`minDate`, dateStr);
@@ -345,7 +345,7 @@ export default class CardListItemForm extends AbstractSmartComponent {
       enableTime: true,
       altFormat: `d/m/y H:i`,
       defaultDate: spendingTime,
-      minDate: cardItemDate,
+      minDate: datefrom,
       onClose: (selectedDates, dateStr) => {
         this._startFlatpickr.set(`maxDate`, dateStr);
       },

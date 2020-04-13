@@ -7,7 +7,7 @@ const createRandomColor = () => {
 };
 
 const renderMoneyChart = (container, points) => {
-  const originalPurpose = points.map((it) => it.waybillType)
+  const originalPurpose = points.map((it) => it.type)
     .filter((item, index, array) => array.indexOf(item) === index); // массив оригинальных типов
 
   return new window.Chart(container, {
@@ -16,9 +16,9 @@ const renderMoneyChart = (container, points) => {
       labels: originalPurpose,
       datasets: [{
         data: originalPurpose.map((currentPurpose) => {
-          return points.filter((point) => point.waybillType === currentPurpose)
+          return points.filter((point) => point.type === currentPurpose)
             .reduce((acc, itemOfCurrentPurpose) => {
-              return acc + itemOfCurrentPurpose.price;
+              return acc + itemOfCurrentPurpose.basePrice;
             }, 0);
         }), // массив денег потраченных в сумме для каждого типа
         backgroundColor: originalPurpose.map(createRandomColor)
@@ -69,7 +69,7 @@ const renderMoneyChart = (container, points) => {
 };
 
 const renderTimeSpentChart = (container, points) => {
-  const originalPurpose = points.map((it) => it.waybillPurpose)
+  const originalPurpose = points.map((it) => it.name)
     .filter((item, index, array) => array.indexOf(item) === index); // массив оригинальных мест назначений
 
   return new window.Chart(container, {
@@ -78,9 +78,9 @@ const renderTimeSpentChart = (container, points) => {
       labels: originalPurpose,
       datasets: [{
         data: originalPurpose.map((currentPurpose) => {
-          return Math.floor(points.filter((point) => point.waybillPurpose === currentPurpose)
+          return Math.floor(points.filter((point) => point.name === currentPurpose)
             .reduce((acc, itemOfPurpose) => {
-              const startDate = window.moment(itemOfPurpose.cardItemDate);
+              const startDate = window.moment(itemOfPurpose.datefrom);
               const endDate = window.moment(itemOfPurpose.spendingTime);
               return acc + endDate.diff(startDate, `minutes`);
             }, 0) / 60);
@@ -134,7 +134,7 @@ const renderTimeSpentChart = (container, points) => {
 
 const renderTransportChart = (container, points) => {
   const inappropriateType = [`Check-in`, `Sightseeing`, `Restaurant`, `Trip`];
-  const originalPurpose = points.map((it) => it.waybillType)
+  const originalPurpose = points.map((it) => it.type)
     .filter((item, index, array) => array.indexOf(item) === index) // массив оригинальных типов
     .filter((item) => !inappropriateType.includes(item)); // без учета элементов inappropriateType
 
@@ -144,7 +144,7 @@ const renderTransportChart = (container, points) => {
       labels: originalPurpose,
       datasets: [{
         data: originalPurpose.map((currentPurpose) => {
-          return points.filter((point) => point.waybillType === currentPurpose).length;
+          return points.filter((point) => point.type === currentPurpose).length;
         }),
         backgroundColor: originalPurpose.map(createRandomColor)
       }]

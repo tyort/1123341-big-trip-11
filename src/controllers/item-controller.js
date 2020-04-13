@@ -11,8 +11,8 @@ export const MODE = {
 export const EmptyPoint = {
   id: ``,
   extraOptions: new Map(),
-  waybillType: `Ship`,
-  waybillPurpose: ``,
+  type: `Ship`,
+  name: ``,
   description: ``,
   photos: new Array(5)
     .fill(``)
@@ -20,9 +20,9 @@ export const EmptyPoint = {
     .map((it) => {
       return {src: it, description: `где-то далеко`};
     }),
-  cardItemDate: [],
+  datefrom: [],
   spendingTime: [],
-  price: 0,
+  basePrice: 0,
   isFavorite: false,
 };
 
@@ -101,7 +101,11 @@ export default class ItemController {
     this._cardListItemFormComponent.getElement().querySelector(`.event__rollup-btn`)
       .removeEventListener(`click`, this._onButtonClick);
     this._cardListItemFormComponent.reset();
-    replace(this._cardListItemComponent, this._cardListItemFormComponent);
+
+    if (document.contains(this._cardListItemFormComponent.getElement())) {
+      replace(this._cardListItemComponent, this._cardListItemFormComponent);
+    }
+
     this._mode = MODE.DEFAULT;
   }
 

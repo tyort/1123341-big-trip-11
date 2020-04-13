@@ -8,7 +8,7 @@ const createExtraOptionInsert = (array) => {
         `<li class="event__offer">
           <span class="event__offer-title">${item[0]}</span>
           &plus;&euro;&nbsp;
-          <span class="event__offer-price">${item[1]}</span>
+          <span class="event__offer-price"></span>
         </li>`
       );
     })
@@ -17,13 +17,13 @@ const createExtraOptionInsert = (array) => {
 };
 
 const createCardListItemTemplate = (cardItem) => {
-  const {extraOptions, waybillType, waybillPurpose, cardItemDate, spendingTime, price} = cardItem;
+  const {extraOptions, type, name, datefrom, spendingTime, basePrice} = cardItem;
   const addExtraOptions = createExtraOptionInsert(Array.from(extraOptions));
-  const addWaybillType = generateWaybillType(waybillType);
-  const addWaybillPurpose = waybillPurpose;
-  const addItemTimePeriod = itemTimePeriod(cardItemDate, spendingTime);
-  const addCardItemDate = window.moment(cardItemDate).format(`YYYY-MM-DDTHH:mm`);
-  const addCardItemTime = window.moment(cardItemDate).format(`HH:mm`);
+  const addWaybillType = generateWaybillType(type);
+  const addWaybillPurpose = name;
+  const addItemTimePeriod = itemTimePeriod(datefrom, spendingTime);
+  const addCardItemDate = window.moment(datefrom).format(`YYYY-MM-DDTHH:mm`);
+  const addCardItemTime = window.moment(datefrom).format(`HH:mm`);
   const addSpendingTime = window.moment(spendingTime).format(`YYYY-MM-DDTHH:mm`);
   const addSpendingTimeOnly = window.moment(spendingTime).format(`HH:mm`);
 
@@ -31,7 +31,7 @@ const createCardListItemTemplate = (cardItem) => {
     `<li class="trip-events__item">
       <div class="event">
         <div class="event__type">
-          <img class="event__type-icon" width="42" height="42" src="img/icons/${waybillType.toLowerCase()}.png" alt="Event type icon">
+          <img class="event__type-icon" width="42" height="42" src="img/icons/${type.toLowerCase()}.png" alt="Event type icon">
         </div>
         <h3 class="event__title">${addWaybillType} ${addWaybillPurpose}</h3>
 
@@ -51,7 +51,7 @@ const createCardListItemTemplate = (cardItem) => {
         </div>
 
         <p class="event__price">
-          &euro;&nbsp;<span class="event__price-value">${price}</span>
+          &euro;&nbsp;<span class="event__price-value">${basePrice}</span>
         </p>
 
         <h4 class="visually-hidden">Offers:</h4>

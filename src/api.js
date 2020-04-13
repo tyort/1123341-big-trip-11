@@ -27,6 +27,15 @@ const API = class {
       .then(Point.parsePoints); // передаем в models/point точки преобразованные в json
   }
 
+  createPoint(point) {
+  }
+
+  updatePoint(id, data) {
+  }
+
+  deletePoint(id) {
+  }
+
   _load({url, method = METHOD.GET, body = null, headers = new Headers()}) {
   // url - адрес сервера
   // headers - по умолчанию передаем пустые заголовки, если не передаем самостоятельно
