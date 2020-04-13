@@ -1,6 +1,5 @@
 import AbstractSmartComponent from './abstract_smart_component.js';
 import {
-  generateStatement,
   generateExclusiveArray,
   generateExtraOption,
   WAYBILL_TYPES,
@@ -18,7 +17,7 @@ const createExtraOptionInsert = (array) => {
         `<div class="event__offer-selector">
           <input class="event__offer-checkbox  visually-hidden" id="event-offer-${item[0]}-1" type="checkbox" name="event-offer-${item[0]}" ${isChecked}>
           <label class="event__offer-label" for="event-offer-${item[0]}-1">
-            <span class="event__offer-title">${generateStatement(item[0])}</span>
+            <span class="event__offer-title">${item[0]}</span>
             &plus;
             &euro;&nbsp;<span class="event__offer-price">${EXTRA_OPTIONS.get(item[0])}</span>
           </label>
@@ -32,7 +31,7 @@ const createPhotos = (array) => {
   return array
     .map((item) => {
       return (
-        `<img class="event__photo" src="http://picsum.photos/300/150?r=${item}" alt="Event photo"></img>`
+        `<img class="event__photo" src="${item.src}" alt="${item.description}"></img>`
       );
     })
     .join(``);
@@ -87,7 +86,7 @@ const createCardListItemFormTemplate = (cardItem, options = {}) => {
   const {isChangeFavorite, activateCheckedType, activateCheckedPurpose, activateExtraOptions} = options;
   const addExtraOptions = createExtraOptionInsert(Array.from(extraOptions), activateExtraOptions);
   const addDescription = window.he.encode(description);
-  const addPhotos = createPhotos(Array.from(photos));
+  const addPhotos = createPhotos(photos);
   const waybillType = Array.from(activateCheckedType).find((it) => it[1])[0];
   const addWaybillType = generateWaybillType(waybillType);
   const waybillPurpose = Array.from(activateCheckedPurpose).find((it) => it[1])[0];
@@ -216,7 +215,9 @@ const parseFormData = (formData) => {
   }
 
   const photos = Array.from(document.querySelectorAll(`.event__photo`))
-    .map((it) => it.src.slice(31));
+    .map((it) => {
+      return {src: it.src, description: it.alt};
+    });
 
   return {
     waybillType: formData.get(`event-type`),
@@ -226,7 +227,7 @@ const parseFormData = (formData) => {
     cardItemDate: startDateToArray,
     spendingTime: endDateToArray,
     description: document.querySelector(`.event__destination-description`).textContent,
-    photos: new Set(photos),
+    photos,
     price: formData.get(`event-price`),
   };
 };
