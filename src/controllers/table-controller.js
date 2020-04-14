@@ -8,9 +8,9 @@ import ItemController, {MODE, EmptyPoint} from './item-controller.js';
 
 const HIDDEN_CLASS = `trip-events--hidden`;
 
-const renderAllPoints = (sortType, container, sortedCardItems, onDataChange, onViewChange) => {
+const renderAllPoints = (sortType, container, allPoints, onDataChange, onViewChange) => {
   if (sortType === `event`) {
-    const sortedCards = sortedCardItems.map((it) => window.moment(it.datefrom).format(`YYYYMMDD`))
+    const sortedCards = allPoints.map((it) => window.moment(it.datefrom).format(`YYYYMMDD`))
       .filter((item, index, array) => array.indexOf(item) === index)
       .sort((a, b) => a - b);
 
@@ -19,9 +19,9 @@ const renderAllPoints = (sortType, container, sortedCardItems, onDataChange, onV
     const arrayOfItemControllers = [];
 
     sortedCards.forEach((item, index) => {
-      sortedCardItems.filter((elem) => item === window.moment(elem.datefrom).format(`YYYYMMDD`))
+      allPoints.filter((elem) => item === window.moment(elem.datefrom).format(`YYYYMMDD`))
         .forEach((i) => {
-          const itemController = new ItemController(tripEventsListElements[index], onDataChange, onViewChange);
+          const itemController = new ItemController(tripEventsListElements[index], onDataChange, onViewChange, allPoints);
           itemController.renderCardItem(i, MODE.DEFAULT);
           arrayOfItemControllers.push(itemController);
         });
@@ -32,8 +32,8 @@ const renderAllPoints = (sortType, container, sortedCardItems, onDataChange, onV
 
     const tripEventsListElement = document.querySelector(`.trip-events__list`);
 
-    return sortedCardItems.map((i) => {
-      const itemController = new ItemController(tripEventsListElement, onDataChange, onViewChange);
+    return allPoints.map((i) => {
+      const itemController = new ItemController(tripEventsListElement, onDataChange, onViewChange, allPoints);
       itemController.renderCardItem(i, MODE.DEFAULT);
       return itemController;
     });
@@ -91,7 +91,7 @@ export default class TableController {
       return;
     }
 
-    this._creatingPoint = new ItemController(this._assortmentComponent.getElement(), this._onDataChange, this._onViewChange);
+    this._creatingPoint = new ItemController(this._assortmentComponent.getElement(), this._onDataChange, this._onViewChange, this._points._points);
     this._creatingPoint.renderCardItem(EmptyPoint, MODE.ADDING);
   }
 
@@ -105,7 +105,6 @@ export default class TableController {
     this._sortType = sortType;
     const pointsList = this._tripDaysComponent.getElement();
     const newCardItems = renderAllPoints(this._sortType, pointsList, points, this._onDataChange, this._onViewChange);
-    console.log(newCardItems);
     this._showedCardItemControllers = this._showedCardItemControllers.concat(newCardItems);
   }
 

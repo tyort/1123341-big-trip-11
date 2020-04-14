@@ -1,14 +1,3 @@
-export const generateStatement = (it) => {
-  switch (it) {
-    case `comfort`:
-      return `Switch to ` + it + ` class`;
-    case `neighbor`:
-      return `Choose ` + it;
-    default:
-      return `Add ` + it;
-  }
-};
-
 export const getRandomIntegerNumber = (min, max) => {
   let rand = min + Math.random() * (max + 1 - min);
   return Math.floor(rand);
@@ -96,31 +85,6 @@ export const itemTimePeriod = (arr1, arr2) => {
 
   return `${daysDiff}${hoursDiff}${minDiff}`;
 };
-
-export const WAYBILL_TYPES = [
-  [`bus`, false],
-  [`drive`, false],
-  [`flight`, false],
-  [`ship`, false],
-  [`taxi`, false],
-  [`train`, false],
-  [`transport`, false],
-  [`trip`, false],
-  [`check-in`, false],
-  [`sightseeing`, false],
-  [`restaurant`, false],
-];
-
-export const WAYBILL_PURPOSE = [
-  [`Amsterdam`, false],
-  [`Sydnay`, false],
-  [`Budapest`, false],
-  [`Geneva`, false],
-  [`Bremen`, false],
-  [`Norwich`, false],
-  [`Freshford`, false],
-  [`Chamonix`, false]
-];
 
 export const OFFERS_BOOLEAN = [
   [`luggage`, false],

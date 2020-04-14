@@ -28,7 +28,8 @@ export const EmptyPoint = {
 };
 
 export default class ItemController {
-  constructor(container, onDataChange, onViewChange) {
+  constructor(container, onDataChange, onViewChange, allPoints) {
+    this._allPoints = allPoints;
     this._container = container;
     this._onDataChange = onDataChange;
     this._onViewChange = onViewChange;
@@ -44,7 +45,7 @@ export default class ItemController {
     const oldCardListItemFormComponent = this._cardListItemFormComponent;
     this._mode = mode;
     this._cardListItemComponent = new CardListItemComponent(cardItem);
-    this._cardListItemFormComponent = new CardListItemFormComponent(cardItem);
+    this._cardListItemFormComponent = new CardListItemFormComponent(cardItem, this._allPoints);
 
     this._cardListItemComponent.setRollupButtonClickHandler(() => {
       this._replaceItemToForm();

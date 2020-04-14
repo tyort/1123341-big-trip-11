@@ -1,7 +1,5 @@
 import AbstractSmartComponent from './abstract_smart_component.js';
 import {
-  WAYBILL_TYPES,
-  WAYBILL_PURPOSE,
   generateWaybillType
 } from '../formulas.js';
 
@@ -35,15 +33,15 @@ const createPhotos = (array) => {
 
 const createWaybillTypeList = (newmap) => {
   return Array.from(newmap)
-    .slice(0, 8)
+    .filter((it) => it[0] !== `check-in` && it[0] !== `sightseeing` && it[0] !== `restaurant`)
     .map((item) => {
       const isChecked = item[1] ? `checked` : ``;
       return (
         `<div class="event__type-item">
-          <input id="event-type-${item[0].toLowerCase()}-1" class="event__type-input  visually-hidden"
+          <input id="event-type-${item[0]}-1" class="event__type-input  visually-hidden"
             type="radio" name="event-type" value="${item[0]}" ${isChecked}>
-          <label class="event__type-label  event__type-label--${item[0].toLowerCase()}"
-            for="event-type-${item[0].toLowerCase()}-1">${item[0]}</label>
+          <label class="event__type-label  event__type-label--${item[0]}"
+            for="event-type-${item[0]}-1">${item[0]}</label>
         </div>`
       );
     })
@@ -52,15 +50,15 @@ const createWaybillTypeList = (newmap) => {
 
 const createWaybillTypeListTwo = (newmap) => {
   return Array.from(newmap)
-    .slice(8, 11)
+    .filter((it) => it[0] === `check-in` || it[0] === `sightseeing` || it[0] === `restaurant`)
     .map((item) => {
       const isChecked = item[1] ? `checked` : ``;
       return (
         `<div class="event__type-item">
-          <input id="event-type-${item[0].toLowerCase()}-1" class="event__type-input  visually-hidden"
+          <input id="event-type-${item[0]}-1" class="event__type-input  visually-hidden"
             type="radio" name="event-type" value="${item[0]}" ${isChecked}>
-          <label class="event__type-label  event__type-label--${item[0].toLowerCase()}"
-            for="event-type-${item[0].toLowerCase()}-1">${item[0]}</label>
+          <label class="event__type-label  event__type-label--${item[0]}"
+            for="event-type-${item[0]}-1">${item[0]}</label>
         </div>`
       );
     })
@@ -167,7 +165,7 @@ const createCardListItemFormTemplate = (cardItem, options = {}) => {
 
         <section class="event__details">
 
-          <section class="event__section  event__section--offers">
+          <section class="event__section  event__section--offers ${activateExtraOptions.size > 0 ? `` : `visually-hidden`}">
             <h3 class="event__section-title  event__section-title--offers">Offers</h3>
 
             <div class="event__available-offers">
@@ -233,13 +231,14 @@ const parseFormData = (formData) => {
 };
 
 export default class CardListItemForm extends AbstractSmartComponent {
-  constructor(cardItem) {
+  constructor(cardItem, allpoints) {
     super();
 
     this._cardItem = cardItem;
+    this._allPoints = allpoints;
     this._isChangeFavorite = !!cardItem.isFavorite;
-    this._activateCheckedType = new Map(WAYBILL_TYPES).set(cardItem.type, true); // получу актуальный Map с нужным true
-    this._activateCheckedPurpose = new Map(WAYBILL_PURPOSE).set(cardItem.name, true); // получу актуальный Map с нужным true
+    this._activateCheckedType = new Map(this._allPoints.map((it) => [it.type, false])).set(cardItem.type, true); // получу актуальный Map с нужным true
+    this._activateCheckedPurpose = new Map(this._allPoints.map((it) => [it.name, false])).set(cardItem.name, true); // получу актуальный Map с нужным true
     this._activateExtraOptions = new Map(cardItem.offers);
     this._startFlatpickr = null;
     this._endFlatpickr = null;
@@ -284,8 +283,8 @@ export default class CardListItemForm extends AbstractSmartComponent {
     const cardItem = this._cardItem;
 
     this._isChangeFavorite = !!cardItem.isFavorite;
-    this._activateCheckedType = new Map(WAYBILL_TYPES).set(cardItem.type, true);
-    this._activateCheckedPurpose = new Map(WAYBILL_PURPOSE).set(cardItem.name, true);
+    this._activateCheckedType = new Map(this._allPoints.map((it) => [it.type, false])).set(cardItem.type, true); // получу актуальный Map с нужным true
+    this._activateCheckedPurpose = new Map(this._allPoints.map((it) => [it.name, false])).set(cardItem.name, true); // получу актуальный Map с нужным true
     this._activateExtraOptions = new Map(cardItem.offers);
 
     this.reRender();
@@ -362,7 +361,7 @@ export default class CardListItemForm extends AbstractSmartComponent {
     const eventTypeGroup = Array.from(element.querySelectorAll(`.event__type-group`));
     eventTypeGroup.forEach((it) => {
       it.addEventListener(`change`, (evt) => {
-        this._activateCheckedType = new Map(WAYBILL_TYPES);
+        this._activateCheckedType = new Map(this._allPoints.map((item) => [item.type, false]));
         this._activateCheckedType.set(evt.target.value, evt.target.checked);
         this.reRender();
       });
@@ -370,7 +369,7 @@ export default class CardListItemForm extends AbstractSmartComponent {
 
     const eventInputDestination = element.querySelector(`.event__input--destination`);
     eventInputDestination.addEventListener(`change`, (evt) => {
-      this._activateCheckedPurpose = new Map(WAYBILL_PURPOSE);
+      this._activateCheckedPurpose = new Map(this._allPoints.map((it) => [it.name, false]));
       this._activateCheckedPurpose.set(evt.target.value, true);
       this.reRender();
     });
