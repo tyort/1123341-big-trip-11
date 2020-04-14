@@ -16,11 +16,11 @@ export const getRandomIntegerNumber = (min, max) => {
 
 export const generateWaybillType = (it) => {
   switch (it) {
-    case `Restaurant`:
+    case `restaurant`:
       return it + ` at`;
-    case `Sightseeing`:
+    case `sightseeing`:
       return it + ` at`;
-    case `Check-in`:
+    case `check-in`:
       return it;
     default:
       return it + ` to`;
@@ -98,17 +98,17 @@ export const itemTimePeriod = (arr1, arr2) => {
 };
 
 export const WAYBILL_TYPES = [
-  [`Bus`, false],
-  [`Drive`, false],
-  [`Flight`, false],
-  [`Ship`, false],
-  [`Taxi`, false],
-  [`Train`, false],
-  [`Transport`, false],
-  [`Trip`, false],
-  [`Check-in`, false],
-  [`Sightseeing`, false],
-  [`Restaurant`, false],
+  [`bus`, false],
+  [`drive`, false],
+  [`flight`, false],
+  [`ship`, false],
+  [`taxi`, false],
+  [`train`, false],
+  [`transport`, false],
+  [`trip`, false],
+  [`check-in`, false],
+  [`sightseeing`, false],
+  [`restaurant`, false],
 ];
 
 export const WAYBILL_PURPOSE = [
@@ -122,13 +122,21 @@ export const WAYBILL_PURPOSE = [
   [`Chamonix`, false]
 ];
 
-export const generateExtraOption = [
+export const OFFERS_BOOLEAN = [
   [`luggage`, false],
   [`comfort`, false],
   [`meal`, false],
   [`neighbor`, false],
   [`music`, false]
 ];
+
+export const OFFERS_PRICE = new Map([
+  [`luggage`, 30],
+  [`comfort`, 120],
+  [`meal`, 550],
+  [`neighbor`, 60],
+  [`music`, 200]
+]);
 
 export const WAYBILL_DESCRIPTION = [
   `Lorem ipsum dolor sit amet, consectetur adipiscing elit`,

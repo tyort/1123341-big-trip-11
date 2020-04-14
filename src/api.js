@@ -27,14 +27,14 @@ const API = class {
       .then(Point.parsePoints); // передаем в models/point точки преобразованные в json
   }
 
-  createPoint(point) {
-  }
+  // createPoint(point) {
+  // }
 
-  updatePoint(id, data) {
-  }
+  // updatePoint(id, data) {
+  // }
 
-  deletePoint(id) {
-  }
+  // deletePoint(id) {
+  // }
 
   _load({url, method = METHOD.GET, body = null, headers = new Headers()}) {
   // url - адрес сервера

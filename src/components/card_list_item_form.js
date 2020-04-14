@@ -1,14 +1,11 @@
 import AbstractSmartComponent from './abstract_smart_component.js';
 import {
-  generateExclusiveArray,
-  generateExtraOption,
   WAYBILL_TYPES,
   WAYBILL_PURPOSE,
-  WAYBILL_DESCRIPTION,
   generateWaybillType
 } from '../formulas.js';
 
-const createExtraOptionInsert = (array) => {
+const createExtraOptionInsert = (array, newmap) => {
   return array
     .map((item) => {
       const isChecked = item[1] ? `checked` : ``;
@@ -18,7 +15,7 @@ const createExtraOptionInsert = (array) => {
           <label class="event__offer-label" for="event-offer-${item[0]}-1">
             <span class="event__offer-title">${item[0]}</span>
             &plus;
-            &euro;&nbsp;<span class="event__offer-price"></span>
+            &euro;&nbsp;<span class="event__offer-price">${newmap.get(item[0])}</span>
           </label>
         </div>`
       );
@@ -81,22 +78,19 @@ const createWaybillPurposeList = (newmap) => {
 };
 
 const createCardListItemFormTemplate = (cardItem, options = {}) => {
-  const {datefrom, spendingTime, description, photos, basePrice} = cardItem;
+  const {datefrom, dateTo, description, pictures, basePrice, offersPrice} = cardItem;
   const {isChangeFavorite, activateCheckedType, activateCheckedPurpose, activateExtraOptions} = options;
-
-  const addExtraOptions = createExtraOptionInsert(Array.from(activateExtraOptions));
+  const addExtraOptions = createExtraOptionInsert(Array.from(activateExtraOptions), offersPrice);
   const addDescription = window.he.encode(description);
-  const addPhotos = createPhotos(photos);
-  const waybillType = Array.from(activateCheckedType).find((it) => it[1])[0];
-  const addWaybillType = generateWaybillType(waybillType);
-  const waybillPurpose = Array.from(activateCheckedPurpose).find((it) => it[1])[0];
-  const addWaybillPurpose = waybillPurpose;
+  const addPhotos = createPhotos(pictures);
+  const addWaybillType = Array.from(activateCheckedType).find((it) => it[1])[0];
+  const addWaybillPurpose = Array.from(activateCheckedPurpose).find((it) => it[1])[0];
   const addFavorite = isChangeFavorite ? `checked` : ``;
   const addListTypeForChoose = createWaybillTypeList(activateCheckedType);
   const addListTypeForChooseTwo = createWaybillTypeListTwo(activateCheckedType);
   const addListPurposeForChoose = createWaybillPurposeList(activateCheckedPurpose);
   const addCardItemDate = window.moment(datefrom).format(`DD/MM/YY HH:mm`);
-  const addSpendingTime = window.moment(spendingTime).format(`DD/MM/YY HH:mm`);
+  const addDateTo = window.moment(dateTo).format(`DD/MM/YY HH:mm`);
 
   return (
     `<li class="trip-events__item">
@@ -105,7 +99,7 @@ const createCardListItemFormTemplate = (cardItem, options = {}) => {
           <div class="event__type-wrapper">
             <label class="event__type  event__type-btn" for="event-type-toggle-1">
               <span class="visually-hidden">Choose event type</span>
-              <img class="event__type-icon" width="17" height="17" src="img/icons/${waybillType.toLowerCase()}.png" alt="Event type icon">
+              <img class="event__type-icon" width="17" height="17" src="img/icons/${addWaybillType}.png" alt="Event type icon">
             </label>
             <input class="event__type-toggle  visually-hidden" id="event-type-toggle-1" type="checkbox">
 
@@ -123,7 +117,7 @@ const createCardListItemFormTemplate = (cardItem, options = {}) => {
 
           <div class="event__field-group  event__field-group--destination">
             <label class="event__label  event__type-output" for="event-destination-1">
-              ${addWaybillType}
+              ${generateWaybillType(addWaybillType)}
             </label>
             <input class="event__input  event__input--destination" id="event-destination-1" type="text" name="event-destination" value="${addWaybillPurpose}" list="destination-list-1">
             <datalist id="destination-list-1">
@@ -144,7 +138,7 @@ const createCardListItemFormTemplate = (cardItem, options = {}) => {
             <input class="event__input  event__input--time" id="event-end-time-1" type="text"
 
 
-              name="event-end-time" value="${addSpendingTime}">
+              name="event-end-time" value="${addDateTo}">
           </div>
 
           <div class="event__field-group  event__field-group--price">
@@ -200,36 +194,40 @@ const createCardListItemFormTemplate = (cardItem, options = {}) => {
 const parseFormData = (formData) => {
   const startDateToArray = window.moment(formData.get(`event-start-time`)).toArray().slice(0, 5);
   const endDateToArray = window.moment(formData.get(`event-end-time`)).toArray().slice(0, 5);
-  const actualExtraOptionsMap = new Map();
-  Array.from(document.querySelectorAll(`.event__offer-checkbox`))
-    .map((it) => actualExtraOptionsMap.set(it.name.slice(12), false));
+  const allOffersBoolean = new Map();
+  const allOffersPrice = new Map();
 
-  const checkedExtraOptionsMap = new Map(Array.from(actualExtraOptionsMap).filter((item) => {
+  Array.from(document.querySelectorAll(`.event__offer-selector`))
+    .map((it) => {
+      allOffersBoolean.set(it.querySelector(`.event__offer-checkbox`).name.slice(12), false);
+      allOffersPrice.set(it.querySelector(`.event__offer-checkbox`).name.slice(12), it.querySelector(`.event__offer-price`).textContent);
+    });
+
+  const checkedExtraOptionsMap = new Map(Array.from(allOffersBoolean).filter((item) => {
     return formData.get(`event-offer-${item[0]}`);
   }));
 
-  for (const key of actualExtraOptionsMap.keys()) {
+  for (const key of allOffersBoolean.keys()) {
     if (checkedExtraOptionsMap.has(key)) {
-      actualExtraOptionsMap.set(key, true);
+      allOffersBoolean.set(key, true);
     }
   }
 
-  const photos = Array.from(document.querySelectorAll(`.event__photo`))
+  const pictures = Array.from(document.querySelectorAll(`.event__photo`))
     .map((it) => {
       return {src: it.src, description: it.alt};
     });
 
-  console.log(actualExtraOptionsMap);
-
   return {
     type: formData.get(`event-type`),
     name: formData.get(`event-destination`),
-    extraOptions: actualExtraOptionsMap,
+    offers: allOffersBoolean,
+    offersPrice: allOffersPrice,
     isFavorite: !!formData.get(`event-favorite`),
     datefrom: startDateToArray,
-    spendingTime: endDateToArray,
+    dateTo: endDateToArray,
     description: document.querySelector(`.event__destination-description`).textContent,
-    photos,
+    pictures,
     basePrice: formData.get(`event-price`),
   };
 };
@@ -242,10 +240,10 @@ export default class CardListItemForm extends AbstractSmartComponent {
     this._isChangeFavorite = !!cardItem.isFavorite;
     this._activateCheckedType = new Map(WAYBILL_TYPES).set(cardItem.type, true); // получу актуальный Map с нужным true
     this._activateCheckedPurpose = new Map(WAYBILL_PURPOSE).set(cardItem.name, true); // получу актуальный Map с нужным true
-    this._activateExtraOptions = new Map(cardItem.extraOptions);
+    this._activateExtraOptions = new Map(cardItem.offers);
     this._startFlatpickr = null;
     this._endFlatpickr = null;
-    this._submitHandler = null; // зачем добавили?
+    this._submitHandler = null;
     this._applyFlatpickr();
     this._deleteButtonClickHandler = null;
     this._subscribeOnEvents();
@@ -288,7 +286,7 @@ export default class CardListItemForm extends AbstractSmartComponent {
     this._isChangeFavorite = !!cardItem.isFavorite;
     this._activateCheckedType = new Map(WAYBILL_TYPES).set(cardItem.type, true);
     this._activateCheckedPurpose = new Map(WAYBILL_PURPOSE).set(cardItem.name, true);
-    this._activateExtraOptions = new Map(cardItem.extraOptions);
+    this._activateExtraOptions = new Map(cardItem.offers);
 
     this.reRender();
   }
@@ -322,7 +320,7 @@ export default class CardListItemForm extends AbstractSmartComponent {
     }
 
     const datefrom = new Date(window.moment(this._cardItem.datefrom).format(`YYYY-MM-DD HH:mm`));
-    const spendingTime = new Date(window.moment(this._cardItem.spendingTime).format(`YYYY-MM-DD HH:mm`));
+    const dateTo = new Date(window.moment(this._cardItem.dateTo).format(`YYYY-MM-DD HH:mm`));
 
     const eventStartTime = this.getElement().querySelector(`#event-start-time-1`);
     const eventEndTime = this.getElement().querySelector(`#event-end-time-1`);
@@ -333,7 +331,7 @@ export default class CardListItemForm extends AbstractSmartComponent {
       enableTime: true,
       altFormat: `d/m/y H:i`,
       defaultDate: datefrom,
-      maxDate: spendingTime,
+      maxDate: dateTo,
       onClose: (selectedDates, dateStr) => {
         this._endFlatpickr.set(`minDate`, dateStr);
       },
@@ -344,7 +342,7 @@ export default class CardListItemForm extends AbstractSmartComponent {
       allowInput: true,
       enableTime: true,
       altFormat: `d/m/y H:i`,
-      defaultDate: spendingTime,
+      defaultDate: dateTo,
       minDate: datefrom,
       onClose: (selectedDates, dateStr) => {
         this._startFlatpickr.set(`maxDate`, dateStr);
@@ -366,7 +364,6 @@ export default class CardListItemForm extends AbstractSmartComponent {
       it.addEventListener(`change`, (evt) => {
         this._activateCheckedType = new Map(WAYBILL_TYPES);
         this._activateCheckedType.set(evt.target.value, evt.target.checked);
-        this._activateExtraOptions = new Map(generateExclusiveArray(generateExtraOption, 0, 5));
         this.reRender();
       });
     });
@@ -375,8 +372,6 @@ export default class CardListItemForm extends AbstractSmartComponent {
     eventInputDestination.addEventListener(`change`, (evt) => {
       this._activateCheckedPurpose = new Map(WAYBILL_PURPOSE);
       this._activateCheckedPurpose.set(evt.target.value, true);
-      this._cardItem.description = Array.from(new Set(generateExclusiveArray(WAYBILL_DESCRIPTION, 1, 3)))
-        .join(`. `) + `.`;
       this.reRender();
     });
 

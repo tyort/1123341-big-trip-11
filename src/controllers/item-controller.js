@@ -10,18 +10,19 @@ export const MODE = {
 
 export const EmptyPoint = {
   id: ``,
-  extraOptions: new Map(),
-  type: `Ship`,
+  offers: new Map(),
+  offersPrice: new Map(),
+  type: `ship`,
   name: ``,
   description: ``,
-  photos: new Array(5)
+  pictures: new Array(5)
     .fill(``)
     .map(() => `http://picsum.photos/300/150?r=${Math.random()}`)
     .map((it) => {
       return {src: it, description: `где-то далеко`};
     }),
   datefrom: [],
-  spendingTime: [],
+  dateTo: [],
   basePrice: 0,
   isFavorite: false,
 };

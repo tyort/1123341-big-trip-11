@@ -77,6 +77,7 @@ export default class TableController {
 
     if (points.length === 0) {
       renderComponent(this._container, this._noCardListComponent);
+      return;
     }
 
     renderComponent(this._container, this._assortmentComponent);
@@ -148,7 +149,7 @@ export default class TableController {
 
     switch (sortType) {
       case SORT_TYPES.TIME_DOWN:
-        sortedItems = points.sort((a, b) => new Date(...b.spendingTime).getTime() - new Date(...b.datefrom).getTime() - new Date(...a.spendingTime).getTime() + new Date(...a.datefrom).getTime());
+        sortedItems = points.sort((a, b) => new Date(...b.dateTo).getTime() - new Date(...b.datefrom).getTime() - new Date(...a.dateTo).getTime() + new Date(...a.datefrom).getTime());
         break;
       case SORT_TYPES.PRICE_DOWN:
         sortedItems = points.sort((a, b) => b.basePrice - a.basePrice);

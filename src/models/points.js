@@ -5,7 +5,7 @@ export default class Points {
     this._points = [];
     this._activeFilterType = FILTER_TYPE.EVERYTHING;
     this._filterChangeHandlers = [];
-    this._dataChangeHandlers = []; // массив хендлеров
+    this._dataChangeHandlers = []; // this._points.setDataChangeHandler(this._onDataChange);
   }
 
   getPointsByFilter() { // получение точек маршрута
@@ -23,7 +23,7 @@ export default class Points {
 
   setFilter(filterType) { // фильтрация не происходит при вызове, только меняется тип фильтра
     this._activeFilterType = filterType;
-    this._callHandlers(this._filterChangeHandlers);
+    this._callHandlers(this._filterChangeHandlers); // запустить this._onDataChange
   }
 
   removePoint(id) {
