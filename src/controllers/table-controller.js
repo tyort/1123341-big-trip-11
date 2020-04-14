@@ -8,7 +8,7 @@ import ItemController, {MODE, EmptyPoint} from './item-controller.js';
 
 const HIDDEN_CLASS = `trip-events--hidden`;
 
-const renderOnePoint = (sortType, container, sortedCardItems, onDataChange, onViewChange) => {
+const renderAllPoints = (sortType, container, sortedCardItems, onDataChange, onViewChange) => {
   if (sortType === `event`) {
     const sortedCards = sortedCardItems.map((it) => window.moment(it.datefrom).format(`YYYYMMDD`))
       .filter((item, index, array) => array.indexOf(item) === index)
@@ -104,7 +104,8 @@ export default class TableController {
   _renderPoints(sortType, points) {
     this._sortType = sortType;
     const pointsList = this._tripDaysComponent.getElement();
-    const newCardItems = renderOnePoint(this._sortType, pointsList, points, this._onDataChange, this._onViewChange);
+    const newCardItems = renderAllPoints(this._sortType, pointsList, points, this._onDataChange, this._onViewChange);
+    console.log(newCardItems);
     this._showedCardItemControllers = this._showedCardItemControllers.concat(newCardItems);
   }
 
