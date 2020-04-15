@@ -79,8 +79,17 @@ const createWaybillPurposeList = (newmap) => {
 };
 
 const createCardListItemFormTemplate = (cardItem, options = {}) => {
-  const {datefrom, dateTo, pictures, basePrice} = cardItem;
-  const {buttonText, isChangeFavorite, activateCheckedType, activateCheckedPurpose, activateExtraOptions, activateDescription, activateExtraOptionsPrice} = options;
+  const {datefrom, dateTo, pictures} = cardItem;
+  const {
+    activateButtonText,
+    isChangeFavorite,
+    activateCheckedType,
+    activateCheckedPurpose,
+    activateExtraOptions,
+    activateDescription,
+    activateExtraOptionsPrice,
+    activateBasePrice
+  } = options;
   const addExtraOptions = createExtraOptionInsert(Array.from(activateExtraOptions), activateExtraOptionsPrice);
   const addDescription = window.he.encode(activateDescription);
   const addPhotos = createPhotos(pictures);
@@ -93,8 +102,8 @@ const createCardListItemFormTemplate = (cardItem, options = {}) => {
   const addCardItemDate = window.moment(datefrom).format(`DD/MM/YY HH:mm`);
   const addDateTo = window.moment(dateTo).format(`DD/MM/YY HH:mm`);
 
-  const deleteButtonText = buttonText.DELETE_BUTTON_TEXT;
-  const saveButtonText = buttonText.SAVE_BUTTON_TEXT;
+  const deleteButtonText = activateButtonText.DELETE_BUTTON_TEXT;
+  const saveButtonText = activateButtonText.SAVE_BUTTON_TEXT;
 
   return (
     `<li class="trip-events__item">
@@ -150,7 +159,7 @@ const createCardListItemFormTemplate = (cardItem, options = {}) => {
               <span class="visually-hidden">Price</span>
               &euro;
             </label>
-            <input class="event__input  event__input--price" id="event-price-1" type="text" name="event-price" value="${basePrice}">
+            <input class="event__input  event__input--price" id="event-price-1" type="text" name="event-price" value="${activateBasePrice}">
           </div>
 
           <button class="event__save-btn  btn  btn--blue" type="submit">${saveButtonText}</button>
@@ -207,7 +216,8 @@ export default class CardListItemForm extends AbstractSmartComponent {
     this._activateExtraOptions = new Map(cardItem.offers);
     this._activateDescription = cardItem.description;
     this._activateExtraOptionsPrice = cardItem.offersPrice;
-    this._buttonText = BUTTON_TEXT;
+    this._activateBasePrice = cardItem.basePrice;
+    this._activateButtonText = BUTTON_TEXT;
     this._startFlatpickr = null;
     this._endFlatpickr = null;
     this._submitHandler = null;
@@ -224,7 +234,8 @@ export default class CardListItemForm extends AbstractSmartComponent {
       activateExtraOptions: this._activateExtraOptions,
       activateDescription: this._activateDescription,
       activateExtraOptionsPrice: this._activateExtraOptionsPrice,
-      buttonText: this._buttonText
+      activateButtonText: this._activateButtonText,
+      activateBasePrice: this._activateBasePrice
     });
   }
 
@@ -259,6 +270,7 @@ export default class CardListItemForm extends AbstractSmartComponent {
     this._activateExtraOptions = new Map(cardItem.offers);
     this._activateDescription = cardItem.description;
     this._activateExtraOptionsPrice = cardItem.offersPrice;
+    this._activateBasePrice = cardItem.basePrice;
 
     this.reRender();
   }
@@ -269,7 +281,7 @@ export default class CardListItemForm extends AbstractSmartComponent {
   }
 
   setChangedDataByView(data) {
-    this._buttonText = Object.assign({}, BUTTON_TEXT, data);
+    this._activateButtonText = Object.assign({}, BUTTON_TEXT, data);
     this.reRender();
   }
 
@@ -327,6 +339,11 @@ export default class CardListItemForm extends AbstractSmartComponent {
 
   _subscribeOnEvents() {
     const element = this.getElement();
+
+    element.querySelector(`.event__input--price`)
+      .addEventListener(`input`, (evt) => {
+        this._activateBasePrice = evt.target.value;
+      });
 
     element.querySelector(`.event__favorite-checkbox`)
       .addEventListener(`click`, () => {

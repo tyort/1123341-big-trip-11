@@ -26,7 +26,7 @@ export const EmptyPoint = {
     }),
   datefrom: [],
   dateTo: [],
-  basePrice: 0,
+  basePrice: Number(),
   isFavorite: false,
 };
 
