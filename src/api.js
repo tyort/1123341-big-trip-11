@@ -23,15 +23,23 @@ const API = class {
 
   getPoints() {
     return this._load({url: `points`})
-      .then((response) => response.json())
+      .then((response) => response.json()) // получаю Promise в режиме Pending
       .then(Point.parsePoints); // передаем в models/point точки преобразованные в json
   }
 
   // createPoint(point) {
   // }
 
-  // updatePoint(id, data) {
-  // }
+  updatePoint(id, data) {
+    return this._load({
+      url: `points/${id}`,
+      method: METHOD.PUT,
+      body: JSON.stringify(data.toRAW()),
+      headers: new Headers({'Content-Type': `application/json`})
+    })
+      .then((response) => response.json())
+      .then(Point.parsePoint);
+  }
 
   // deletePoint(id) {
   // }

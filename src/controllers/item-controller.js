@@ -1,5 +1,6 @@
 import CardListItemComponent from '../components/card_list_item.js';
 import CardListItemFormComponent from '../components/card_list_item_form.js';
+import PointModel from '../models/point.js';
 import {renderComponent, replace, remove} from '../formulas.js';
 
 export const MODE = {
@@ -25,6 +26,50 @@ export const EmptyPoint = {
   dateTo: [],
   basePrice: 0,
   isFavorite: false,
+};
+
+const parseFormData = (formData) => {
+  const allOffersBoolean = new Map();
+  const allOffersPrice = new Map();
+
+  Array.from(document.querySelectorAll(`.event__offer-selector`))
+    .map((it) => {
+      allOffersBoolean.set(it.querySelector(`.event__offer-checkbox`).name.slice(12), false);
+      allOffersPrice.set(it.querySelector(`.event__offer-checkbox`).name.slice(12), it.querySelector(`.event__offer-price`).textContent);
+    });
+
+  const checkedExtraOptionsMap = new Map(Array.from(allOffersBoolean).filter((item) => {
+    return formData.get(`event-offer-${item[0]}`);
+  }));
+
+  for (const key of allOffersBoolean.keys()) {
+    if (checkedExtraOptionsMap.has(key)) {
+      allOffersBoolean.set(key, true);
+    }
+  }
+
+  const pictures = Array.from(document.querySelectorAll(`.event__photo`))
+    .map((it) => {
+      return {src: it.src, description: it.alt};
+    });
+
+  const offersForServer = Array.from(allOffersPrice).map((it) => {
+    return {title: it[0], price: Number(it[1])};
+  });
+
+  return new PointModel({
+    'type': formData.get(`event-type`),
+    'offers': offersForServer,
+    'is_favorite': !!formData.get(`event-favorite`),
+    'date_from': window.moment(formData.get(`event-start-time`)).format(),
+    'date_to': window.moment(formData.get(`event-end-time`)).format(),
+    'base_price': Number(formData.get(`event-price`)),
+    'destination': {
+      description: document.querySelector(`.event__destination-description`).textContent,
+      name: formData.get(`event-destination`),
+      pictures
+    }
+  });
 };
 
 export default class ItemController {
@@ -56,7 +101,9 @@ export default class ItemController {
 
     this._cardListItemFormComponent.setSubmitHandler((evt) => {
       evt.preventDefault();
-      const data = this._cardListItemFormComponent.getChangedDataByView();
+      const formData = this._cardListItemFormComponent.getChangedDataByView();
+      const data = parseFormData(formData);
+      // data - актуальный объект со всеми актуальными параметрами в удобном для меня виде
       this._onDataChange(this, cardItem, data);
     });
     this._cardListItemFormComponent.setDeleteButtonClickHandler(() => this._onDataChange(this, cardItem, null));

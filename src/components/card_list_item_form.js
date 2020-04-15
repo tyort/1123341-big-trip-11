@@ -1,7 +1,5 @@
 import AbstractSmartComponent from './abstract_smart_component.js';
-import {
-  generateWaybillType
-} from '../formulas.js';
+import {generateWaybillType} from '../formulas.js';
 
 const createExtraOptionInsert = (array, newmap) => {
   return array
@@ -76,9 +74,9 @@ const createWaybillPurposeList = (newmap) => {
 };
 
 const createCardListItemFormTemplate = (cardItem, options = {}) => {
-  const {datefrom, dateTo, pictures, basePrice, offersPrice} = cardItem;
-  const {isChangeFavorite, activateCheckedType, activateCheckedPurpose, activateExtraOptions, activateDescription} = options;
-  const addExtraOptions = createExtraOptionInsert(Array.from(activateExtraOptions), offersPrice);
+  const {datefrom, dateTo, pictures, basePrice} = cardItem;
+  const {isChangeFavorite, activateCheckedType, activateCheckedPurpose, activateExtraOptions, activateDescription, activateExtraOptionsPrice} = options;
+  const addExtraOptions = createExtraOptionInsert(Array.from(activateExtraOptions), activateExtraOptionsPrice);
   const addDescription = window.he.encode(activateDescription);
   const addPhotos = createPhotos(pictures);
   const addWaybillType = Array.from(activateCheckedType).find((it) => it[1])[0];
@@ -189,47 +187,6 @@ const createCardListItemFormTemplate = (cardItem, options = {}) => {
   );
 };
 
-const parseFormData = (formData) => {
-  const startDateToArray = window.moment(formData.get(`event-start-time`)).toArray().slice(0, 5);
-  const endDateToArray = window.moment(formData.get(`event-end-time`)).toArray().slice(0, 5);
-  const allOffersBoolean = new Map();
-  const allOffersPrice = new Map();
-
-  Array.from(document.querySelectorAll(`.event__offer-selector`))
-    .map((it) => {
-      allOffersBoolean.set(it.querySelector(`.event__offer-checkbox`).name.slice(12), false);
-      allOffersPrice.set(it.querySelector(`.event__offer-checkbox`).name.slice(12), it.querySelector(`.event__offer-price`).textContent);
-    });
-
-  const checkedExtraOptionsMap = new Map(Array.from(allOffersBoolean).filter((item) => {
-    return formData.get(`event-offer-${item[0]}`);
-  }));
-
-  for (const key of allOffersBoolean.keys()) {
-    if (checkedExtraOptionsMap.has(key)) {
-      allOffersBoolean.set(key, true);
-    }
-  }
-
-  const pictures = Array.from(document.querySelectorAll(`.event__photo`))
-    .map((it) => {
-      return {src: it.src, description: it.alt};
-    });
-
-  return {
-    type: formData.get(`event-type`),
-    name: formData.get(`event-destination`),
-    offers: allOffersBoolean,
-    offersPrice: allOffersPrice,
-    isFavorite: !!formData.get(`event-favorite`),
-    datefrom: startDateToArray,
-    dateTo: endDateToArray,
-    description: document.querySelector(`.event__destination-description`).textContent,
-    pictures,
-    basePrice: Number(formData.get(`event-price`)),
-  };
-};
-
 export default class CardListItemForm extends AbstractSmartComponent {
   constructor(cardItem, allpoints) {
     super();
@@ -241,6 +198,7 @@ export default class CardListItemForm extends AbstractSmartComponent {
     this._activateCheckedPurpose = new Map(this._allPoints.map((it) => [it.name, false])).set(cardItem.name, true); // получу актуальный Map с нужным true
     this._activateExtraOptions = new Map(cardItem.offers);
     this._activateDescription = cardItem.description;
+    this._activateExtraOptionsPrice = cardItem.offersPrice;
     this._startFlatpickr = null;
     this._endFlatpickr = null;
     this._submitHandler = null;
@@ -255,7 +213,8 @@ export default class CardListItemForm extends AbstractSmartComponent {
       activateCheckedType: this._activateCheckedType,
       activateCheckedPurpose: this._activateCheckedPurpose,
       activateExtraOptions: this._activateExtraOptions,
-      activateDescription: this._activateDescription
+      activateDescription: this._activateDescription,
+      activateExtraOptionsPrice: this._activateExtraOptionsPrice
     });
   }
 
@@ -289,14 +248,14 @@ export default class CardListItemForm extends AbstractSmartComponent {
     this._activateCheckedPurpose = new Map(this._allPoints.map((it) => [it.name, false])).set(cardItem.name, true); // получу актуальный Map с нужным true
     this._activateExtraOptions = new Map(cardItem.offers);
     this._activateDescription = cardItem.description;
+    this._activateExtraOptionsPrice = cardItem.offersPrice;
 
     this.reRender();
   }
 
   getChangedDataByView() {
     const form = this.getElement().querySelector(`.event--edit`);
-    const formData = new FormData(form);
-    return parseFormData(formData);
+    return new FormData(form);
   }
 
   setSubmitHandler(handler) {
@@ -367,6 +326,7 @@ export default class CardListItemForm extends AbstractSmartComponent {
         this._activateCheckedType.set(evt.target.value, evt.target.checked);
         const properPoint = this._allPoints.find((item) => item.type === evt.target.value);
         this._activateExtraOptions = properPoint.offers;
+        this._activateExtraOptionsPrice = properPoint.offersPrice;
         this.reRender();
       });
     });

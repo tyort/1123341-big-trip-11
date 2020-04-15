@@ -16,13 +16,6 @@ export const generateWaybillType = (it) => {
   }
 };
 
-export const getRandomDateArray = () => {
-  const day = getRandomIntegerNumber(12, 15);
-  const hours = getRandomIntegerNumber(0, 23);
-  const minutes = getRandomIntegerNumber(0, 59);
-  return [2020, 3, day, hours, minutes];
-};
-
 export const renderComponent = (container, element, place) => {
   switch (place) {
     case `afterBegin`:
@@ -85,37 +78,6 @@ export const itemTimePeriod = (arr1, arr2) => {
 
   return `${daysDiff}${hoursDiff}${minDiff}`;
 };
-
-export const OFFERS_BOOLEAN = [
-  [`luggage`, false],
-  [`comfort`, false],
-  [`meal`, false],
-  [`neighbor`, false],
-  [`music`, false]
-];
-
-export const OFFERS_PRICE = new Map([
-  [`luggage`, 30],
-  [`comfort`, 120],
-  [`meal`, 550],
-  [`neighbor`, 60],
-  [`music`, 200]
-]);
-
-export const WAYBILL_DESCRIPTION = [
-  `Lorem ipsum dolor sit amet, consectetur adipiscing elit`,
-  `Cras aliquet varius magna, non porta ligula feugiat eget`,
-  `Fusce tristique felis at fermentum pharetra`,
-  `Aliquam id orci ut lectus varius viverra`,
-  `Nullam nunc ex, convallis sed finibus eget, sollicitudin eget ante`,
-  `Phasellus eros mauris, condimentum sed nibh vitae, sodales efficitur ipsum`,
-  `Sed blandit, eros vel aliquam faucibus, purus ex euismod diam, eu luctus nunc ante ut dui`,
-  `Sed sed nisi sed augue convallis suscipit in sed felis`,
-  `Aliquam erat volutpat`,
-  `Nunc fermentum tortor ac porta dapibus`,
-  `In rutrum ac purus sit amet tempus`
-];
-
 
 export const generateExclusiveArray = (array, minCount, maxCount) =>
   new Array(getRandomIntegerNumber(minCount, maxCount))

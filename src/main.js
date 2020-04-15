@@ -35,7 +35,7 @@ renderComponent(pageBodyContainer, statisticsComponent);
 statisticsComponent.hide();
 
 const tripEventsElement = document.querySelector(`.trip-events`);
-const tableController = new TableController(tripEventsElement, points);
+const tableController = new TableController(tripEventsElement, points, api);
 
 menuComponent.setOnChange((mainViewId) => {
   switch (mainViewId) {
@@ -53,7 +53,8 @@ menuComponent.setOnChange((mainViewId) => {
 });
 
 api.getPoints() // запускает this._load из api.js, а тот в свою очередь запускает Promise в режиме pending
-  .then((items) => { // массив из экземпляров с models/point.js
+  .then((items) => { // массив из экземпляров с models/point.js в удобном для меня виде
+    console.log(items);
     const sortedItems = items.sort((a, b) => new Date(...a.datefrom).getTime() - new Date(...b.datefrom).getTime());
     points.setPoints(sortedItems);
     tableController.renderMap();

@@ -41,10 +41,11 @@ const renderAllPoints = (sortType, container, allPoints, onDataChange, onViewCha
 };
 
 export default class TableController {
-  constructor(container, points) {
+  constructor(container, points, api) {
     this._showedCardItemControllers = [];
     this._container = container;
     this._points = points;
+    this._api = api;
     this._assortmentComponent = new AssortmentComponent();
     this._tripDaysComponent = new TripDaysComponent(); // контейнер для рендеров
     this._noCardListComponent = new NoCardListComponent();
@@ -130,11 +131,15 @@ export default class TableController {
       this. _updatePoints();
 
     } else {
-      const isSuccess = this._points.updatePoint(oldData.id, newData);
+      this._api.updatePoint(oldData.id, newData) // находится нужный id и сохраняются измененные данные
+        .then((item) => {
+          const isSuccess = this._points.updatePoint(oldData.id, item);
 
-      if (isSuccess) {
-        itemController.renderCardItem(newData, MODE.DEFAULT);
-      }
+          if (isSuccess) {
+            itemController.renderCardItem(item, MODE.DEFAULT);
+            this._updatePoints();
+          }
+        });
     }
   }
 
