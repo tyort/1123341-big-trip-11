@@ -27,8 +27,16 @@ const API = class {
       .then(Point.parsePoints); // передаем в models/point точки преобразованные в json
   }
 
-  // createPoint(point) {
-  // }
+  createPoint(point) {
+    return this._load({
+      url: `points`,
+      method: METHOD.POST,
+      body: JSON.stringify(point.toRAW()),
+      headers: new Headers({'Content-Type': `application/json`})
+    })
+      .then((response) => response.json())
+      .then(Point.parsePoint);
+  }
 
   updatePoint(id, data) {
     return this._load({
@@ -41,8 +49,9 @@ const API = class {
       .then(Point.parsePoint);
   }
 
-  // deletePoint(id) {
-  // }
+  deletePoint(id) {
+    return this._load({url: `points/${id}`, method: METHOD.DELETE});
+  }
 
   _load({url, method = METHOD.GET, body = null, headers = new Headers()}) {
   // url - адрес сервера

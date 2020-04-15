@@ -79,7 +79,13 @@ export const itemTimePeriod = (arr1, arr2) => {
   return `${daysDiff}${hoursDiff}${minDiff}`;
 };
 
-export const generateExclusiveArray = (array, minCount, maxCount) =>
-  new Array(getRandomIntegerNumber(minCount, maxCount))
-    .fill(``)
-    .map(() => array[getRandomIntegerNumber(0, array.length - 1)]);
+export const dateToArray = (currentDate) => {
+  const arr = [];
+  const instance = new Date(currentDate);
+  arr.push(instance.getFullYear());
+  arr.push(instance.getMonth());
+  arr.push(instance.getDate());
+  arr.push(instance.getHours());
+  arr.push(instance.getMinutes());
+  return arr;
+};

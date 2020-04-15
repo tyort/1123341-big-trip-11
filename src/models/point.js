@@ -1,3 +1,5 @@
+import {dateToArray} from '../formulas.js';
+
 export default class Point {
   constructor(data) {
     this.id = data[`id`];
@@ -47,13 +49,4 @@ export default class Point {
   }
 }
 
-const dateToArray = (currentDate) => {
-  const arr = [];
-  const instance = new Date(currentDate);
-  arr.push(instance.getFullYear());
-  arr.push(instance.getMonth());
-  arr.push(instance.getDate());
-  arr.push(instance.getHours());
-  arr.push(instance.getMinutes());
-  return arr;
-};
+

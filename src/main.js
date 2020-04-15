@@ -12,7 +12,7 @@ document.querySelector(`.trip-main__event-add-btn`)
     tableController.createPoint();
   });
 
-const AUTHORIZATION = `Basic eo0w590ik29889a`; // это строка должна быть значение заголовка авторизации
+const AUTHORIZATION = `Basic eo0w590ik29889b`; // это строка должна быть значение заголовка авторизации
 const END_POINT = `https://htmlacademy-es-10.appspot.com/big-trip/`;
 
 const points = new Points();

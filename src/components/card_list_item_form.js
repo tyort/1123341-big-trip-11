@@ -1,6 +1,11 @@
 import AbstractSmartComponent from './abstract_smart_component.js';
 import {generateWaybillType} from '../formulas.js';
 
+const BUTTON_TEXT = {
+  DELETE_BUTTON_TEXT: `Delete`,
+  SAVE_BUTTON_TEXT: `Save`
+};
+
 const createExtraOptionInsert = (array, newmap) => {
   return array
     .map((item) => {
@@ -75,7 +80,7 @@ const createWaybillPurposeList = (newmap) => {
 
 const createCardListItemFormTemplate = (cardItem, options = {}) => {
   const {datefrom, dateTo, pictures, basePrice} = cardItem;
-  const {isChangeFavorite, activateCheckedType, activateCheckedPurpose, activateExtraOptions, activateDescription, activateExtraOptionsPrice} = options;
+  const {sdwevjovw, isChangeFavorite, activateCheckedType, activateCheckedPurpose, activateExtraOptions, activateDescription, activateExtraOptionsPrice} = options;
   const addExtraOptions = createExtraOptionInsert(Array.from(activateExtraOptions), activateExtraOptionsPrice);
   const addDescription = window.he.encode(activateDescription);
   const addPhotos = createPhotos(pictures);
@@ -87,6 +92,9 @@ const createCardListItemFormTemplate = (cardItem, options = {}) => {
   const addListPurposeForChoose = createWaybillPurposeList(activateCheckedPurpose);
   const addCardItemDate = window.moment(datefrom).format(`DD/MM/YY HH:mm`);
   const addDateTo = window.moment(dateTo).format(`DD/MM/YY HH:mm`);
+
+  const deleteButtonText = sdwevjovw.DELETE_BUTTON_TEXT;
+  const saveButtonText = sdwevjovw.SAVE_BUTTON_TEXT;
 
   return (
     `<li class="trip-events__item">
@@ -145,8 +153,8 @@ const createCardListItemFormTemplate = (cardItem, options = {}) => {
             <input class="event__input  event__input--price" id="event-price-1" type="text" name="event-price" value="${basePrice}">
           </div>
 
-          <button class="event__save-btn  btn  btn--blue" type="submit">Save</button>
-          <button class="event__reset-btn" type="reset">Delete</button>
+          <button class="event__save-btn  btn  btn--blue" type="submit">${saveButtonText}</button>
+          <button class="event__reset-btn" type="reset">${deleteButtonText}</button>
 
           <input id="event-favorite-1" class="event__favorite-checkbox  visually-hidden" type="checkbox" name="event-favorite" ${addFavorite}>
           <label class="event__favorite-btn" for="event-favorite-1">
@@ -199,6 +207,7 @@ export default class CardListItemForm extends AbstractSmartComponent {
     this._activateExtraOptions = new Map(cardItem.offers);
     this._activateDescription = cardItem.description;
     this._activateExtraOptionsPrice = cardItem.offersPrice;
+    this._sdwevjovw = BUTTON_TEXT;
     this._startFlatpickr = null;
     this._endFlatpickr = null;
     this._submitHandler = null;
@@ -214,7 +223,8 @@ export default class CardListItemForm extends AbstractSmartComponent {
       activateCheckedPurpose: this._activateCheckedPurpose,
       activateExtraOptions: this._activateExtraOptions,
       activateDescription: this._activateDescription,
-      activateExtraOptionsPrice: this._activateExtraOptionsPrice
+      activateExtraOptionsPrice: this._activateExtraOptionsPrice,
+      sdwevjovw: this._sdwevjovw
     });
   }
 
@@ -256,6 +266,11 @@ export default class CardListItemForm extends AbstractSmartComponent {
   getChangedDataByView() {
     const form = this.getElement().querySelector(`.event--edit`);
     return new FormData(form);
+  }
+
+  setChangedDataByView(data) {
+    this._sdwevjovw = Object.assign({}, BUTTON_TEXT, data);
+    this.reRender();
   }
 
   setSubmitHandler(handler) {

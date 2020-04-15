@@ -123,12 +123,20 @@ export default class TableController {
     } else if (oldData === EmptyPoint) {
       this._creatingPoint = null;
       itemController.destroy();
-      this._points.addPoint(newData);
-      this._updatePoints();
+
+      this._api.createPoint(newData) // экземпляр Point в удобном для мня формате
+          .then((item) => {
+            this._points.addPoint(item);
+            this._updatePoints();
+          });
 
     } else if (newData === null) {
-      this._points.removePoint(oldData.id);
-      this. _updatePoints();
+
+      this._api.deletePoint(oldData.id) // свойство id экземпляра Point
+        .then(() => {
+          this._points.removePoint(oldData.id);
+          this. _updatePoints();
+        });
 
     } else {
       this._api.updatePoint(oldData.id, newData) // находится нужный id и сохраняются измененные данные
