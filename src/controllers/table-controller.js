@@ -128,6 +128,9 @@ export default class TableController {
           .then((item) => {
             this._points.addPoint(item);
             this._updatePoints();
+          })
+          .catch(() => {
+            itemController.shake();
           });
 
     } else if (newData === null) {
@@ -136,6 +139,9 @@ export default class TableController {
         .then(() => {
           this._points.removePoint(oldData.id);
           this. _updatePoints();
+        })
+        .catch(() => {
+          itemController.shake();
         });
 
     } else {
@@ -147,6 +153,9 @@ export default class TableController {
             itemController.renderCardItem(item, MODE.DEFAULT);
             this._updatePoints();
           }
+        })
+        .catch(() => {
+          itemController.shake();
         });
     }
   }

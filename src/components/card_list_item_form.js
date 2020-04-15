@@ -80,7 +80,7 @@ const createWaybillPurposeList = (newmap) => {
 
 const createCardListItemFormTemplate = (cardItem, options = {}) => {
   const {datefrom, dateTo, pictures, basePrice} = cardItem;
-  const {sdwevjovw, isChangeFavorite, activateCheckedType, activateCheckedPurpose, activateExtraOptions, activateDescription, activateExtraOptionsPrice} = options;
+  const {buttonText, isChangeFavorite, activateCheckedType, activateCheckedPurpose, activateExtraOptions, activateDescription, activateExtraOptionsPrice} = options;
   const addExtraOptions = createExtraOptionInsert(Array.from(activateExtraOptions), activateExtraOptionsPrice);
   const addDescription = window.he.encode(activateDescription);
   const addPhotos = createPhotos(pictures);
@@ -93,8 +93,8 @@ const createCardListItemFormTemplate = (cardItem, options = {}) => {
   const addCardItemDate = window.moment(datefrom).format(`DD/MM/YY HH:mm`);
   const addDateTo = window.moment(dateTo).format(`DD/MM/YY HH:mm`);
 
-  const deleteButtonText = sdwevjovw.DELETE_BUTTON_TEXT;
-  const saveButtonText = sdwevjovw.SAVE_BUTTON_TEXT;
+  const deleteButtonText = buttonText.DELETE_BUTTON_TEXT;
+  const saveButtonText = buttonText.SAVE_BUTTON_TEXT;
 
   return (
     `<li class="trip-events__item">
@@ -207,7 +207,7 @@ export default class CardListItemForm extends AbstractSmartComponent {
     this._activateExtraOptions = new Map(cardItem.offers);
     this._activateDescription = cardItem.description;
     this._activateExtraOptionsPrice = cardItem.offersPrice;
-    this._sdwevjovw = BUTTON_TEXT;
+    this._buttonText = BUTTON_TEXT;
     this._startFlatpickr = null;
     this._endFlatpickr = null;
     this._submitHandler = null;
@@ -224,7 +224,7 @@ export default class CardListItemForm extends AbstractSmartComponent {
       activateExtraOptions: this._activateExtraOptions,
       activateDescription: this._activateDescription,
       activateExtraOptionsPrice: this._activateExtraOptionsPrice,
-      sdwevjovw: this._sdwevjovw
+      buttonText: this._buttonText
     });
   }
 
@@ -269,7 +269,7 @@ export default class CardListItemForm extends AbstractSmartComponent {
   }
 
   setChangedDataByView(data) {
-    this._sdwevjovw = Object.assign({}, BUTTON_TEXT, data);
+    this._buttonText = Object.assign({}, BUTTON_TEXT, data);
     this.reRender();
   }
 

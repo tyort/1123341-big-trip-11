@@ -3,6 +3,8 @@ import CardListItemFormComponent from '../components/card_list_item_form.js';
 import PointModel from '../models/point.js';
 import {renderComponent, replace, remove} from '../formulas.js';
 
+const SHAKE_ANIMATION_TIMEOUT = 600;
+
 export const MODE = {
   ADDING: `adding`,
   DEFAULT: `default`,
@@ -101,12 +103,22 @@ export default class ItemController {
 
     this._cardListItemFormComponent.setSubmitHandler((evt) => {
       evt.preventDefault();
+
+      this._cardListItemFormComponent.setChangedDataByView({
+        SAVE_BUTTON_TEXT: `Saving...`,
+      });
+
       const formData = this._cardListItemFormComponent.getChangedDataByView();
       const data = parseFormData(formData);
-      // data - актуальный объект со всеми актуальными параметрами в удобном для меня виде
       this._onDataChange(this, cardItem, data);
     });
-    this._cardListItemFormComponent.setDeleteButtonClickHandler(() => this._onDataChange(this, cardItem, null));
+    this._cardListItemFormComponent.setDeleteButtonClickHandler(() => {
+
+      this._cardListItemFormComponent.setChangedDataByView({
+        DELETE_BUTTON_TEXT: `Deleting...`,
+      });
+      this._onDataChange(this, cardItem, null);
+    });
 
     switch (mode) {
       case MODE.DEFAULT:
@@ -143,6 +155,21 @@ export default class ItemController {
     document.removeEventListener(`keydown`, this._onEscKeyDown);
     this._cardListItemFormComponent.getElement().querySelector(`.event__rollup-btn`)
       .removeEventListener(`click`, this._onButtonClick);
+  }
+
+  shake() {
+    this._cardListItemFormComponent.getElement().style.animation = `shake ${SHAKE_ANIMATION_TIMEOUT / 1000}s`;
+    this._cardListItemComponent.getElement().style.animation = `shake ${SHAKE_ANIMATION_TIMEOUT / 1000}s`;
+
+    setTimeout(() => {
+      this._cardListItemFormComponent.getElement().style.animation = ``;
+      this._cardListItemComponent.getElement().style.animation = ``;
+
+      this._cardListItemFormComponent.setChangedDataByView({
+        DELETE_BUTTON_TEXT: `Delete`,
+        SAVE_BUTTON_TEXT: `Save`
+      });
+    }, SHAKE_ANIMATION_TIMEOUT);
   }
 
   _replaceFormToItem() {
