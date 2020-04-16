@@ -24,7 +24,7 @@ export const EmptyPoint = {
     .map((it) => {
       return {src: it, description: `где-то далеко`};
     }),
-  datefrom: [],
+  dateFrom: [],
   dateTo: [],
   basePrice: Number(),
   isFavorite: false,

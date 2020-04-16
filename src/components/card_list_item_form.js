@@ -79,7 +79,7 @@ const createWaybillPurposeList = (newmap) => {
 };
 
 const createCardListItemFormTemplate = (cardItem, options = {}) => {
-  const {datefrom, dateTo, pictures} = cardItem;
+  const {pictures} = cardItem;
   const {
     activateButtonText,
     isChangeFavorite,
@@ -88,7 +88,9 @@ const createCardListItemFormTemplate = (cardItem, options = {}) => {
     activateExtraOptions,
     activateDescription,
     activateExtraOptionsPrice,
-    activateBasePrice
+    activateBasePrice,
+    activateDateFrom,
+    activateDateTo
   } = options;
   const addExtraOptions = createExtraOptionInsert(Array.from(activateExtraOptions), activateExtraOptionsPrice);
   const addDescription = window.he.encode(activateDescription);
@@ -99,8 +101,8 @@ const createCardListItemFormTemplate = (cardItem, options = {}) => {
   const addListTypeForChoose = createWaybillTypeList(activateCheckedType);
   const addListTypeForChooseTwo = createWaybillTypeListTwo(activateCheckedType);
   const addListPurposeForChoose = createWaybillPurposeList(activateCheckedPurpose);
-  const addCardItemDate = window.moment(datefrom).format(`DD/MM/YY HH:mm`);
-  const addDateTo = window.moment(dateTo).format(`DD/MM/YY HH:mm`);
+  const addDateFrom = window.moment(activateDateFrom).format(`DD/MM/YY HH:mm`);
+  const addDateTo = window.moment(activateDateTo).format(`DD/MM/YY HH:mm`);
 
   const deleteButtonText = activateButtonText.DELETE_BUTTON_TEXT;
   const saveButtonText = activateButtonText.SAVE_BUTTON_TEXT;
@@ -143,7 +145,7 @@ const createCardListItemFormTemplate = (cardItem, options = {}) => {
               From
             </label>
             <input class="event__input  event__input--time" id="event-start-time-1" type="text"
-              name="event-start-time" value="${addCardItemDate}">
+              name="event-start-time" value="${addDateFrom}">
             &mdash;
             <label class="visually-hidden" for="event-end-time-1">
               To
@@ -218,6 +220,8 @@ export default class CardListItemForm extends AbstractSmartComponent {
     this._activateExtraOptionsPrice = cardItem.offersPrice;
     this._activateBasePrice = cardItem.basePrice;
     this._activateButtonText = BUTTON_TEXT;
+    this._activateDateFrom = cardItem.dateFrom;
+    this._activateDateTo = cardItem.dateTo;
     this._startFlatpickr = null;
     this._endFlatpickr = null;
     this._submitHandler = null;
@@ -235,7 +239,8 @@ export default class CardListItemForm extends AbstractSmartComponent {
       activateDescription: this._activateDescription,
       activateExtraOptionsPrice: this._activateExtraOptionsPrice,
       activateButtonText: this._activateButtonText,
-      activateBasePrice: this._activateBasePrice
+      activateBasePrice: this._activateBasePrice,
+      activateDateTo: this._activateDateTo
     });
   }
 
@@ -271,6 +276,8 @@ export default class CardListItemForm extends AbstractSmartComponent {
     this._activateDescription = cardItem.description;
     this._activateExtraOptionsPrice = cardItem.offersPrice;
     this._activateBasePrice = cardItem.basePrice;
+    this._activateDateFrom = cardItem.dateFrom;
+    this._activateDateTo = cardItem.dateTo;
 
     this.reRender();
   }
@@ -306,8 +313,8 @@ export default class CardListItemForm extends AbstractSmartComponent {
       this._endFlatpickr = null;
     }
 
-    const datefrom = new Date(window.moment(this._cardItem.datefrom).format(`YYYY-MM-DD HH:mm`));
-    const dateTo = new Date(window.moment(this._cardItem.dateTo).format(`YYYY-MM-DD HH:mm`));
+    const dateFrom = new Date(window.moment(this._activateDateFrom).format(`YYYY-MM-DD HH:mm`));
+    const dateTo = new Date(window.moment(this._activateDateTo).format(`YYYY-MM-DD HH:mm`));
 
     const eventStartTime = this.getElement().querySelector(`#event-start-time-1`);
     const eventEndTime = this.getElement().querySelector(`#event-end-time-1`);
@@ -317,7 +324,7 @@ export default class CardListItemForm extends AbstractSmartComponent {
       allowInput: true,
       enableTime: true,
       altFormat: `d/m/y H:i`,
-      defaultDate: datefrom,
+      defaultDate: dateFrom,
       maxDate: dateTo,
       onClose: (selectedDates, dateStr) => {
         this._endFlatpickr.set(`minDate`, dateStr);
@@ -330,7 +337,7 @@ export default class CardListItemForm extends AbstractSmartComponent {
       enableTime: true,
       altFormat: `d/m/y H:i`,
       defaultDate: dateTo,
-      minDate: datefrom,
+      minDate: dateFrom,
       onClose: (selectedDates, dateStr) => {
         this._startFlatpickr.set(`maxDate`, dateStr);
       },
@@ -339,6 +346,18 @@ export default class CardListItemForm extends AbstractSmartComponent {
 
   _subscribeOnEvents() {
     const element = this.getElement();
+
+    element.querySelector(`#event-start-time-1`)
+      .addEventListener(`change`, (evt) => {
+        this._activateDateFrom = evt.target.value;
+        this.reRender();
+      });
+
+    element.querySelector(`#event-end-time-1`)
+      .addEventListener(`change`, (evt) => {
+        this._activateDateTo = evt.target.value;
+        this.reRender();
+      });
 
     element.querySelector(`.event__input--price`)
       .addEventListener(`input`, (evt) => {

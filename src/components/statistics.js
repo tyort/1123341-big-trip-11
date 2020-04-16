@@ -80,7 +80,7 @@ const renderTimeSpentChart = (container, points) => {
         data: originalPurpose.map((currentPurpose) => {
           return Math.floor(points.filter((point) => point.name === currentPurpose)
             .reduce((acc, itemOfPurpose) => {
-              const startDate = window.moment(itemOfPurpose.datefrom);
+              const startDate = window.moment(itemOfPurpose.dateFrom);
               const endDate = window.moment(itemOfPurpose.dateTo);
               return acc + endDate.diff(startDate, `minutes`);
             }, 0) / 60);

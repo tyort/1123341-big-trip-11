@@ -4,7 +4,7 @@ export default class Point {
   constructor(data) {
     this.id = data[`id`];
     this.basePrice = data[`base_price`];
-    this.datefrom = dateToArray(data[`date_from`]);
+    this.dateFrom = dateToArray(data[`date_from`]);
     this.dateTo = dateToArray(data[`date_to`]);
     this.description = data[`destination`].description;
     this.name = data[`destination`].name;
@@ -23,7 +23,7 @@ export default class Point {
     return {
       'id': this.id,
       'base_price': this.basePrice,
-      'date_from': window.moment(this.datefrom).format(),
+      'date_from': window.moment(this.dateFrom).format(),
       'date_to': window.moment(this.dateTo).format(),
       'destination': {
         'name': this.name,

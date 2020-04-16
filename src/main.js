@@ -12,7 +12,7 @@ document.querySelector(`.trip-main__event-add-btn`)
     tableController.createPoint();
   });
 
-const AUTHORIZATION = `Basic eo0w590ik29889c`; // это строка должна быть значение заголовка авторизации
+const AUTHORIZATION = `Basic eo0w590ik29889d`; // это строка должна быть значение заголовка авторизации
 const END_POINT = `https://htmlacademy-es-10.appspot.com/big-trip/`;
 
 const points = new Points();
@@ -55,7 +55,7 @@ menuComponent.setOnChange((mainViewId) => {
 api.getPoints() // запускает this._load из api.js, а тот в свою очередь запускает Promise в режиме pending
   .then((items) => { // массив из экземпляров с models/point.js в удобном для меня виде
     console.log(items);
-    const sortedItems = items.sort((a, b) => new Date(...a.datefrom).getTime() - new Date(...b.datefrom).getTime());
+    const sortedItems = items.sort((a, b) => new Date(...a.dateFrom).getTime() - new Date(...b.dateFrom).getTime());
     points.setPoints(sortedItems);
     tableController.renderMap();
   });

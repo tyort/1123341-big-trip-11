@@ -17,11 +17,11 @@ const createExtraOptionInsert = (array, newmap) => {
 };
 
 const createCardListItemTemplate = (cardItem) => {
-  const {offers, type, name, datefrom, dateTo, basePrice, offersPrice} = cardItem;
+  const {offers, type, name, dateFrom, dateTo, basePrice, offersPrice} = cardItem;
   const addExtraOptions = createExtraOptionInsert(Array.from(offers), offersPrice);
-  const addItemTimePeriod = itemTimePeriod(datefrom, dateTo);
-  const addCardItemDate = window.moment(datefrom).format(`YYYY-MM-DDTHH:mm`);
-  const addCardItemTime = window.moment(datefrom).format(`HH:mm`);
+  const addItemTimePeriod = itemTimePeriod(dateFrom, dateTo);
+  const addCardItemDate = window.moment(dateFrom).format(`YYYY-MM-DDTHH:mm`);
+  const addCardItemTime = window.moment(dateFrom).format(`HH:mm`);
   const addDateTo = window.moment(dateTo).format(`YYYY-MM-DDTHH:mm`);
   const addDateToOnly = window.moment(dateTo).format(`HH:mm`);
 
