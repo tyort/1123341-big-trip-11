@@ -5,12 +5,13 @@ import CardListLightComponent from '../components/card_list_light.js';
 import NoCardListComponent from '../components/no_card_list.js';
 import {dayCounter, renderComponent} from '../formulas.js';
 import ItemController, {MODE, EmptyPoint} from './item-controller.js';
+import moment from 'moment';
 
 const HIDDEN_CLASS = `trip-events--hidden`;
 
 const renderAllPoints = (sortType, container, allPoints, onDataChange, onViewChange) => {
   if (sortType === `event`) {
-    const sortedCards = allPoints.map((it) => window.moment(it.dateFrom).format(`YYYYMMDD`))
+    const sortedCards = allPoints.map((it) => moment(it.dateFrom).format(`YYYYMMDD`))
       .filter((item, index, array) => array.indexOf(item) === index)
       .sort((a, b) => a - b);
 
@@ -19,7 +20,7 @@ const renderAllPoints = (sortType, container, allPoints, onDataChange, onViewCha
     const arrayOfItemControllers = [];
 
     sortedCards.forEach((item, index) => {
-      allPoints.filter((elem) => item === window.moment(elem.dateFrom).format(`YYYYMMDD`))
+      allPoints.filter((elem) => item === moment(elem.dateFrom).format(`YYYYMMDD`))
         .forEach((i) => {
           const itemController = new ItemController(tripEventsListElements[index], onDataChange, onViewChange, allPoints);
           itemController.renderCardItem(i, MODE.DEFAULT);
@@ -110,6 +111,7 @@ export default class TableController {
   }
 
   _updatePoints() {
+    console.log(this._points.getPointsByFilter());
     this._removePoints();
     this._renderPoints(this._sortType, this._points.getPointsByFilter());
   }

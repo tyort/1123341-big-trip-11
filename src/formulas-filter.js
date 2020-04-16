@@ -1,3 +1,5 @@
+import moment from 'moment';
+
 export const FILTER_TYPE = {
   EVERYTHING: `everything`,
   FUTURE: `future`,
@@ -13,8 +15,8 @@ export const isFutureDate = (itemDate, currentDate) => {
 };
 
 export const isOneDay = (dateA, dateB) => {
-  const a = window.moment(dateA);
-  const b = window.moment(dateB);
+  const a = moment(dateA);
+  const b = moment(dateB);
   return a.diff(b, `days`) === 0 && dateA.getDate() === dateB.getDate();
 };
 

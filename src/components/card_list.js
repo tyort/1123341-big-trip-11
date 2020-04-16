@@ -1,8 +1,9 @@
 import AbstractComponent from './abstract_component.js';
+import moment from 'moment';
 
 const createCardListTemplate = (card, dayCounter) => {
-  const addDateTime = window.moment(card).format(`YYYY-MM-DD`);
-  const addMonthAndDay = window.moment(card).format(`MMM D`).toUpperCase();
+  const addDateTime = moment(card).format(`YYYY-MM-DD`);
+  const addMonthAndDay = moment(card).format(`MMM D`).toUpperCase();
 
   return (
     `<li class="trip-days__item  day">

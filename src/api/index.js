@@ -1,4 +1,4 @@
-import Point from './models/point.js';
+import Point from '../models/point.js';
 
 const METHOD = {
   GET: `GET`,
@@ -15,7 +15,7 @@ const checkStatus = (response) => {
   }
 };
 
-const API = class {
+export default class Api {
   constructor(endPoint, authorization) {
     this._endPoint = endPoint; // передаем из main https://htmlacademy-es-10.appspot.com/big-trip/
     this._authorization = authorization; // передаем из main Basic eo0w590ik29889a
@@ -53,6 +53,16 @@ const API = class {
     return this._load({url: `points/${id}`, method: METHOD.DELETE});
   }
 
+  sync(data) {
+    return this._load({
+      url: `points/sync`,
+      method: METHOD.POST,
+      body: JSON.stringify(data),
+      headers: new Headers({'Content-Type': `application/json`})
+    })
+      .then((response) => response.json());
+  }
+
   _load({url, method = METHOD.GET, body = null, headers = new Headers()}) {
   // url - адрес сервера
   // headers - по умолчанию передаем пустые заголовки, если не передаем самостоятельно
@@ -64,6 +74,5 @@ const API = class {
         throw err;
       });
   }
-};
+}
 
-export default API;

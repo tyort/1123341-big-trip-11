@@ -1,5 +1,6 @@
 import AbstractComponent from './abstract_component.js';
 import {itemTimePeriod, generateWaybillType} from '../formulas.js';
+import moment from 'moment';
 
 const createExtraOptionInsert = (array, newmap) => {
   return array
@@ -20,10 +21,10 @@ const createCardListItemTemplate = (cardItem) => {
   const {offers, type, name, dateFrom, dateTo, basePrice, offersPrice} = cardItem;
   const addExtraOptions = createExtraOptionInsert(Array.from(offers), offersPrice);
   const addItemTimePeriod = itemTimePeriod(dateFrom, dateTo);
-  const addCardItemDate = window.moment(dateFrom).format(`YYYY-MM-DDTHH:mm`);
-  const addCardItemTime = window.moment(dateFrom).format(`HH:mm`);
-  const addDateTo = window.moment(dateTo).format(`YYYY-MM-DDTHH:mm`);
-  const addDateToOnly = window.moment(dateTo).format(`HH:mm`);
+  const addCardItemDate = moment(dateFrom).format(`YYYY-MM-DDTHH:mm`);
+  const addCardItemTime = moment(dateFrom).format(`HH:mm`);
+  const addDateTo = moment(dateTo).format(`YYYY-MM-DDTHH:mm`);
+  const addDateToOnly = moment(dateTo).format(`HH:mm`);
 
   return (
     `<li class="trip-events__item">

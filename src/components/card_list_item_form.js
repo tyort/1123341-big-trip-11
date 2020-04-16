@@ -1,5 +1,8 @@
 import AbstractSmartComponent from './abstract_smart_component.js';
 import {generateWaybillType} from '../formulas.js';
+import flatpickr from 'flatpickr';
+import he from 'he';
+import moment from 'moment';
 
 const BUTTON_TEXT = {
   DELETE_BUTTON_TEXT: `Delete`,
@@ -93,7 +96,7 @@ const createCardListItemFormTemplate = (cardItem, options = {}) => {
     activateDateTo
   } = options;
   const addExtraOptions = createExtraOptionInsert(Array.from(activateExtraOptions), activateExtraOptionsPrice);
-  const addDescription = window.he.encode(activateDescription);
+  const addDescription = he.encode(activateDescription);
   const addPhotos = createPhotos(pictures);
   const addWaybillType = Array.from(activateCheckedType).find((it) => it[1])[0];
   const addWaybillPurpose = Array.from(activateCheckedPurpose).find((it) => it[1])[0];
@@ -101,8 +104,8 @@ const createCardListItemFormTemplate = (cardItem, options = {}) => {
   const addListTypeForChoose = createWaybillTypeList(activateCheckedType);
   const addListTypeForChooseTwo = createWaybillTypeListTwo(activateCheckedType);
   const addListPurposeForChoose = createWaybillPurposeList(activateCheckedPurpose);
-  const addDateFrom = window.moment(activateDateFrom).format(`DD/MM/YY HH:mm`);
-  const addDateTo = window.moment(activateDateTo).format(`DD/MM/YY HH:mm`);
+  const addDateFrom = moment(activateDateFrom).format(`DD/MM/YY HH:mm`);
+  const addDateTo = moment(activateDateTo).format(`DD/MM/YY HH:mm`);
 
   const deleteButtonText = activateButtonText.DELETE_BUTTON_TEXT;
   const saveButtonText = activateButtonText.SAVE_BUTTON_TEXT;
@@ -316,7 +319,7 @@ export default class CardListItemForm extends AbstractSmartComponent {
     const eventStartTime = this.getElement().querySelector(`#event-start-time-1`);
     const eventEndTime = this.getElement().querySelector(`#event-end-time-1`);
 
-    this._startFlatpickr = window.flatpickr(eventStartTime, {
+    this._startFlatpickr = flatpickr(eventStartTime, {
       altInput: true,
       allowInput: true,
       enableTime: true,
@@ -328,7 +331,7 @@ export default class CardListItemForm extends AbstractSmartComponent {
       },
     });
 
-    this._endFlatpickr = window.flatpickr(eventEndTime, {
+    this._endFlatpickr = flatpickr(eventEndTime, {
       altInput: true,
       allowInput: true,
       enableTime: true,

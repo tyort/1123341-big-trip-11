@@ -2,6 +2,7 @@ import CardListItemComponent from '../components/card_list_item.js';
 import CardListItemFormComponent from '../components/card_list_item_form.js';
 import PointModel from '../models/point.js';
 import {renderComponent, replace, remove} from '../formulas.js';
+import moment from 'moment';
 
 const SHAKE_ANIMATION_TIMEOUT = 600;
 
@@ -63,8 +64,8 @@ const parseFormData = (formData) => {
     'type': formData.get(`event-type`),
     'offers': offersForServer,
     'is_favorite': !!formData.get(`event-favorite`),
-    'date_from': window.moment(formData.get(`event-start-time`)).format(),
-    'date_to': window.moment(formData.get(`event-end-time`)).format(),
+    'date_from': moment(formData.get(`event-start-time`)).format(),
+    'date_to': moment(formData.get(`event-end-time`)).format(),
     'base_price': Number(formData.get(`event-price`)),
     'destination': {
       description: document.querySelector(`.event__destination-description`).textContent,

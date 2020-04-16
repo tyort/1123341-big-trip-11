@@ -1,4 +1,6 @@
 import AbstractSmartComponent from './abstract_smart_component.js';
+import Chart from 'chart.js';
+import moment from 'moment';
 
 const createRandomColor = () => {
   const value = Math.floor(Math.random() * 0xffffff);
@@ -10,7 +12,7 @@ const renderMoneyChart = (container, points) => {
   const originalPurpose = points.map((it) => it.type)
     .filter((item, index, array) => array.indexOf(item) === index); // массив оригинальных типов
 
-  return new window.Chart(container, {
+  return new Chart(container, {
     type: `horizontalBar`,
     data: {
       labels: originalPurpose,
@@ -72,7 +74,7 @@ const renderTimeSpentChart = (container, points) => {
   const originalPurpose = points.map((it) => it.name)
     .filter((item, index, array) => array.indexOf(item) === index); // массив оригинальных мест назначений
 
-  return new window.Chart(container, {
+  return new Chart(container, {
     type: `horizontalBar`,
     data: {
       labels: originalPurpose,
@@ -80,8 +82,8 @@ const renderTimeSpentChart = (container, points) => {
         data: originalPurpose.map((currentPurpose) => {
           return Math.floor(points.filter((point) => point.name === currentPurpose)
             .reduce((acc, itemOfPurpose) => {
-              const startDate = window.moment(itemOfPurpose.dateFrom);
-              const endDate = window.moment(itemOfPurpose.dateTo);
+              const startDate = moment(itemOfPurpose.dateFrom);
+              const endDate = moment(itemOfPurpose.dateTo);
               return acc + endDate.diff(startDate, `minutes`);
             }, 0) / 60);
         }),
@@ -138,7 +140,7 @@ const renderTransportChart = (container, points) => {
     .filter((item, index, array) => array.indexOf(item) === index) // массив оригинальных типов
     .filter((item) => !inappropriateType.includes(item)); // без учета элементов inappropriateType
 
-  return new window.Chart(container, {
+  return new Chart(container, {
     type: `horizontalBar`,
     data: {
       labels: originalPurpose,
