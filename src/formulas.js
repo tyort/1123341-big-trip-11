@@ -79,13 +79,3 @@ export const itemTimePeriod = (arr1, arr2) => {
   return `${daysDiff}${hoursDiff}${minDiff}`;
 };
 
-export const dateToArray = (currentDate) => {
-  const arr = [];
-  const instance = new Date(currentDate);
-  arr.push(instance.getFullYear());
-  arr.push(instance.getMonth());
-  arr.push(instance.getDate());
-  arr.push(instance.getHours());
-  arr.push(instance.getMinutes());
-  return arr;
-};

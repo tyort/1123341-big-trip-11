@@ -171,7 +171,7 @@ export default class TableController {
 
     switch (sortType) {
       case SORT_TYPES.TIME_DOWN:
-        sortedItems = points.sort((a, b) => new Date(...b.dateTo).getTime() - new Date(...b.dateFrom).getTime() - new Date(...a.dateTo).getTime() + new Date(...a.dateFrom).getTime());
+        sortedItems = points.sort((a, b) => new Date(b.dateTo).getTime() - new Date(b.dateFrom).getTime() - new Date(a.dateTo).getTime() + new Date(a.dateFrom).getTime());
         break;
       case SORT_TYPES.PRICE_DOWN:
         sortedItems = points.sort((a, b) => b.basePrice - a.basePrice);

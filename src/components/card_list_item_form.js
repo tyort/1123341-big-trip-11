@@ -313,9 +313,6 @@ export default class CardListItemForm extends AbstractSmartComponent {
       this._endFlatpickr = null;
     }
 
-    const dateFrom = new Date(window.moment(this._activateDateFrom).format(`YYYY-MM-DD HH:mm`));
-    const dateTo = new Date(window.moment(this._activateDateTo).format(`YYYY-MM-DD HH:mm`));
-
     const eventStartTime = this.getElement().querySelector(`#event-start-time-1`);
     const eventEndTime = this.getElement().querySelector(`#event-end-time-1`);
 
@@ -324,8 +321,8 @@ export default class CardListItemForm extends AbstractSmartComponent {
       allowInput: true,
       enableTime: true,
       altFormat: `d/m/y H:i`,
-      defaultDate: dateFrom,
-      maxDate: dateTo,
+      defaultDate: this._activateDateFrom,
+      maxDate: this._activateDateTo,
       onClose: (selectedDates, dateStr) => {
         this._endFlatpickr.set(`minDate`, dateStr);
       },
@@ -336,8 +333,8 @@ export default class CardListItemForm extends AbstractSmartComponent {
       allowInput: true,
       enableTime: true,
       altFormat: `d/m/y H:i`,
-      defaultDate: dateTo,
-      minDate: dateFrom,
+      defaultDate: this._activateDateTo,
+      minDate: this._activateDateFrom,
       onClose: (selectedDates, dateStr) => {
         this._startFlatpickr.set(`maxDate`, dateStr);
       },

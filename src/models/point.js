@@ -1,11 +1,9 @@
-import {dateToArray} from '../formulas.js';
-
 export default class Point {
   constructor(data) {
     this.id = data[`id`];
     this.basePrice = data[`base_price`];
-    this.dateFrom = dateToArray(data[`date_from`]);
-    this.dateTo = dateToArray(data[`date_to`]);
+    this.dateFrom = data[`date_from`];
+    this.dateTo = data[`date_to`];
     this.description = data[`destination`].description;
     this.name = data[`destination`].name;
     this.pictures = data[`destination`].pictures;
@@ -23,8 +21,8 @@ export default class Point {
     return {
       'id': this.id,
       'base_price': this.basePrice,
-      'date_from': window.moment(this.dateFrom).format(),
-      'date_to': window.moment(this.dateTo).format(),
+      'date_from': this.dateFrom,
+      'date_to': this.dateTo,
       'destination': {
         'name': this.name,
         'description': this.description,
