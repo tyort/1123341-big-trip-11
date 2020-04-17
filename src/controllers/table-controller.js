@@ -111,7 +111,6 @@ export default class TableController {
   }
 
   _updatePoints() {
-    console.log(this._points.getPointsByFilter());
     this._removePoints();
     this._renderPoints(this._sortType, this._points.getPointsByFilter());
   }

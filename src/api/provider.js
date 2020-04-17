@@ -1,5 +1,5 @@
-import nanoid from "nanoid";
-import Point from "../models/point.js";
+import {nanoid} from "nanoid";
+import Point from '../models/point.js';
 
 const getSyncedPoints =
   (items) => items.filter(({success}) => success).map(({payload}) => payload.point);
@@ -15,17 +15,15 @@ export default class Provider {
     if (this._isOnLine()) {
       return this._api.getPoints().then(
           (points) => {
-            points.forEach((it) => this._store.setItem(it.id, it.toRAW()));
+            points.forEach((it) => this._store.setItem(it.id, it.toRAW())); // при наличии интернета все равно складываем в store данные
             return points;
           }
       );
     }
 
     const storePoints = Object.values(this._store.getAll());
-
     this._isSynchronized = false;
-
-    return Promise.resolve(Point.parsePoins(storePoints));
+    return Promise.resolve(Point.parsePoints(storePoints)); // в качестве значения отправить точки, но в виде json
   }
 
   createPoint(point) {
@@ -119,7 +117,7 @@ export default class Provider {
     return this._isSynchronized;
   }
 
-  _isOnLine() {
+  _isOnLine() { // проверяем наличие интернета false/true
     return window.navigator.onLine;
   }
 }

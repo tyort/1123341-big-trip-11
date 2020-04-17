@@ -4,7 +4,7 @@ export default class Store {
     this._storeKey = key;
   }
 
-  getAll() {
+  getAll() { // возвращает все данные из store
     try {
       return JSON.parse(this._storage.getItem(this._storeKey));
     } catch (err) {

@@ -10,7 +10,7 @@ import Points from './models/points.js';
 import {renderComponent} from './formulas.js';
 import 'flatpickr/dist/flatpickr.css';
 
-const STORE_PREFIX = `taskmanager-localstorage`;
+const STORE_PREFIX = `big-trip-localstorage`;
 const STORE_VER = `v1`;
 const STORE_NAME = `${STORE_PREFIX}-${STORE_VER}`;
 
@@ -25,9 +25,8 @@ const END_POINT = `https://htmlacademy-es-10.appspot.com/big-trip/`;
 window.addEventListener(`load`, () => {
   navigator.serviceWorker.register(`/sw.js`)
     .then(() => {
-      // Действие, в случае успешной регистрации ServiceWorker
-    }).catch(() => {
-      // Действие, в случае ошибки при регистрации ServiceWorker
+    })
+    .catch(() => {
     });
 });
 
@@ -69,8 +68,8 @@ menuComponent.setOnChange((mainViewId) => {
   }
 });
 
-apiWithProvider.getPoints() // запускает this._load из api.js, а тот в свою очередь запускает Promise в режиме pending
-  .then((items) => { // массив из экземпляров с models/point.js в удобном для меня виде
+apiWithProvider.getPoints()
+  .then((items) => {
     const sortedItems = items.sort((a, b) => new Date(a.dateFrom).getTime() - new Date(b.dateFrom).getTime());
     points.setPoints(sortedItems);
     tableController.renderMap();

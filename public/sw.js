@@ -1,4 +1,4 @@
-const CACHE_PREFIX = `taskmanager-cache`;
+const CACHE_PREFIX = `big-trip-cache`;
 const CACHE_VER = `v1`;
 const CACHE_NAME = `${CACHE_PREFIX}-${CACHE_VER}`;
 
@@ -10,18 +10,21 @@ self.addEventListener(`install`, (evt) => {
             `/`,
             `/index.html`,
             `/bundle.js`,
-            `/css/normalize.css`,
             `/css/style.css`,
-            `/fonts/HelveticaNeueCyr-Bold.woff`,
-            `/fonts/HelveticaNeueCyr-Bold.woff2`,
-            `/fonts/HelveticaNeueCyr-Medium.woff`,
-            `/fonts/HelveticaNeueCyr-Medium.woff2`,
-            `/fonts/HelveticaNeueCyr-Roman.woff`,
-            `/fonts/HelveticaNeueCyr-Roman.woff2`,
-            `/img/add-photo.svg`,
-            `/img/close.svg`,
-            `/img/sample-img.jpg`,
-            `/img/wave.svg`,
+            `/img/icons/bus.png`,
+            `/img/icons/check-in.png`,
+            `/img/icons/drive.png`,
+            `/img/icons/flight.png`,
+            `/img/icons/restaurant.png`,
+            `/img/icons/ship.png`,
+            `/img/icons/sightseeing.png`,
+            `/img/icons/taxi.png`,
+            `/img/icons/train.png`,
+            `/img/icons/transport.png`,
+            `/img/icons/trip.png`,
+            `/img/header-bg.png`,
+            `/img/header-bg@2x.png`,
+            `/img/logo.png`,
           ]);
         })
   );
@@ -29,21 +32,14 @@ self.addEventListener(`install`, (evt) => {
 
 self.addEventListener(`activate`, (evt) => {
   evt.waitUntil(
-      // Получаем все названия кэшей
       caches.keys()
         .then(
-            // Перебираем их и составляем набор промисов на удаление
             (keys) => Promise.all(
                 keys.map(
                     (key) => {
-                      // Удаляем только те кэши,
-                      // которые начинаются с нашего префикса,
-                      // но не совпадают по версии
                       if (key.indexOf(CACHE_PREFIX) === 0 && key !== CACHE_NAME) {
                         return caches.delete(key);
                       }
-
-                      // Остальные не обрабатываем
                       return null;
                     }
                 ).filter(
@@ -55,38 +51,23 @@ self.addEventListener(`activate`, (evt) => {
 });
 
 const fetchHandler = (evt) => {
-  const {request} = evt;
+  const {request} = evt; // evt.request - запрос от браузера
 
   evt.respondWith(
-      caches.match(request)
+      caches.match(request) // ...если в кэшах есть наш запрос...
         .then((cacheResponse) => {
-          // Если в кэше нашёлся ответ на запрос (request),
-          // возвращаем его (cacheResponse) вместо запроса к серверу
           if (cacheResponse) {
-            return cacheResponse;
+            return cacheResponse; // ...тогда верни ответ из кэша...
           }
-
-          // Если в кэше не нашёлся ответ,
-          // повторно вызываем fetch
-          // с тем же запросом (request),
-          // и возвращаем его
-          return fetch(request).then(
+          return fetch(request).then( // ...если нет, то сходи на сервер...
               (response) => {
-                // Если ответа нет, или ответ со статусом отличным от 200 OK,
-                // или ответ небезопасного тип (не basic), тогда просто передаём
-                // ответ дальше, никак не обрабатываем
                 if (!response || response.status !== 200 || response.type !== `basic`) {
                   return response;
+                } else {
+                  const clonedResponse = response.clone(); // если ответ пришел, то мы его клонируем
+                  caches.open(CACHE_NAME).then((cache) => cache.put(request, clonedResponse));
+                  return response;
                 }
-
-                // А если ответ удовлетворяет всем условиям, клонируем его
-                const clonedResponse = response.clone();
-
-                // Копию кладём в кэш
-                caches.open(CACHE_NAME).then((cache) => cache.put(request, clonedResponse));
-
-                // Оригинал передаём дальше
-                return response;
               }
           );
         })
