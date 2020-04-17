@@ -3,6 +3,9 @@ import {generateWaybillType} from '../formulas.js';
 import flatpickr from 'flatpickr';
 import he from 'he';
 import moment from 'moment';
+import debounce from 'lodash/debounce';
+
+const DEBOUNCE_TIMEOUT = 2000;
 
 const BUTTON_TEXT = {
   DELETE_BUTTON_TEXT: `Delete`,
@@ -365,10 +368,10 @@ export default class CardListItemForm extends AbstractSmartComponent {
       });
 
     element.querySelector(`.event__favorite-checkbox`)
-      .addEventListener(`click`, () => {
+      .addEventListener(`click`, debounce(() => {
         this._isChangeFavorite = !this._isChangeFavorite;
         this.reRender();
-      });
+      }, DEBOUNCE_TIMEOUT));
 
     const eventTypeGroup = Array.from(element.querySelectorAll(`.event__type-group`));
     eventTypeGroup.forEach((it) => {
