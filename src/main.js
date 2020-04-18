@@ -1,7 +1,7 @@
 import Api from './api/index.js';
 import Store from './api/store.js';
 import Provider from './api/provider.js';
-import WaybillComponent from './components/waybill.js';
+// import WaybillComponent from './components/waybill.js';
 import MenuComponent, {MAIN_VIEW_MODE} from './components/menu.js';
 import StatisticsComponent from './components/statistics.js';
 import FilterController from './controllers/filter-controller.js';
@@ -22,20 +22,20 @@ document.querySelector(`.trip-main__event-add-btn`)
 const AUTHORIZATION = `Basic eo0w590ik29889d`; // это строка должна быть значение заголовка авторизации
 const END_POINT = `https://htmlacademy-es-10.appspot.com/big-trip/`;
 
-window.addEventListener(`load`, () => {
-  navigator.serviceWorker.register(`/sw.js`)
-    .then(() => {
-    })
-    .catch(() => {
-    });
-});
+// window.addEventListener(`load`, () => {
+//   navigator.serviceWorker.register(`/sw.js`)
+//     .then(() => {
+//     })
+//     .catch(() => {
+//     });
+// });
 
 const points = new Points();
 const api = new Api(END_POINT, AUTHORIZATION);
 const store = new Store(STORE_NAME, window.localStorage);
 const apiWithProvider = new Provider(api, store);
 
-const mainTripInfoElement = document.querySelector(`.trip-main`);
+// const mainTripInfoElement = document.querySelector(`.trip-main`);
 
 const mainTripControlsElement = document.querySelector(`.trip-main__trip-controls`);
 const visuallyHiddenElement = mainTripControlsElement.querySelectorAll(`.visually-hidden`);
@@ -73,7 +73,7 @@ apiWithProvider.getPoints()
     const sortedItems = items.sort((a, b) => new Date(a.dateFrom).getTime() - new Date(b.dateFrom).getTime());
     points.setPoints(sortedItems);
     tableController.renderMap();
-    renderComponent(mainTripInfoElement, new WaybillComponent(sortedItems), `afterBegin`);
+    // renderComponent(mainTripInfoElement, new WaybillComponent(sortedItems), `afterBegin`);
   });
 
 

@@ -3,10 +3,12 @@ import TripDaysComponent from '../components/trip_days.js';
 import CardListComponent from '../components/card_list.js';
 import CardListLightComponent from '../components/card_list_light.js';
 import NoCardListComponent from '../components/no_card_list.js';
+import WaybillComponent from '../components/waybill.js';
 import {dayCounter, renderComponent} from '../formulas.js';
 import ItemController, {MODE, EmptyPoint} from './item-controller.js';
 import moment from 'moment';
 
+const mainTripInfoElement = document.querySelector(`.trip-main`);
 const HIDDEN_CLASS = `trip-events--hidden`;
 
 const renderAllPoints = (sortType, container, allPoints, onDataChange, onViewChange) => {
@@ -84,8 +86,9 @@ export default class TableController {
 
     renderComponent(this._container, this._assortmentComponent);
     renderComponent(this._container, this._tripDaysComponent);
+    renderComponent(mainTripInfoElement, new WaybillComponent(this._points.getPointsByFilter()), `afterBegin`);
 
-    this._renderPoints(this._sortType, points); // вызывается один раз, вначале
+    this._renderPoints(this._sortType, points);
   }
 
   createPoint() {
@@ -98,6 +101,7 @@ export default class TableController {
   }
 
   _removePoints() {
+    mainTripInfoElement.querySelector(`.trip-main__trip-info`).remove();
     this._tripDaysComponent.getElement().innerHTML = ``;
     this._showedCardItemControllers.forEach((it) => it.destroy());
     this._showedCardItemControllers = [];
@@ -113,6 +117,7 @@ export default class TableController {
   _updatePoints() {
     this._removePoints();
     this._renderPoints(this._sortType, this._points.getPointsByFilter());
+    renderComponent(mainTripInfoElement, new WaybillComponent(this._points.getPointsByFilter()), `afterBegin`);
   }
 
   _onDataChange(itemController, oldData, newData) {
@@ -172,18 +177,19 @@ export default class TableController {
 
     switch (sortType) {
       case SORT_TYPES.TIME_DOWN:
-        sortedItems = points.sort((a, b) => new Date(b.dateTo).getTime() - new Date(b.dateFrom).getTime() - new Date(a.dateTo).getTime() + new Date(a.dateFrom).getTime());
+        sortedItems = points.slice().sort((a, b) => new Date(b.dateTo).getTime() - new Date(b.dateFrom).getTime() - new Date(a.dateTo).getTime() + new Date(a.dateFrom).getTime());
         break;
       case SORT_TYPES.PRICE_DOWN:
-        sortedItems = points.sort((a, b) => b.basePrice - a.basePrice);
+        sortedItems = points.slice().sort((a, b) => b.basePrice - a.basePrice);
         break;
       case SORT_TYPES.DEFAULT:
-        sortedItems = points;
+        sortedItems = points.slice();
         break;
     }
 
     this._removePoints();
     this._renderPoints(sortType, sortedItems);
+    renderComponent(mainTripInfoElement, new WaybillComponent(sortedItems), `afterBegin`);
   }
 
   _onFilterChange() {
