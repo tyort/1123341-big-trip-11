@@ -390,7 +390,7 @@ export default class CardListItemForm extends AbstractSmartComponent {
       this._activateCheckedPurpose = new Map(this._allPoints.map((it) => [it.name, false]));
       this._activateCheckedPurpose.set(evt.target.value, true);
       const properPoint = this._allPoints.find((item) => item.name === evt.target.value);
-      this._activateDescription = properPoint.description;
+      this._activateDescription = properPoint !== undefined ? properPoint.description : `Anyway anywhere`;
       this.reRender();
     });
 
