@@ -50,7 +50,7 @@ export default class TableController {
     this._points = points;
     this._api = api;
     this._assortmentComponent = new AssortmentComponent();
-    this._tripDaysComponent = new TripDaysComponent(); // контейнер для рендеров
+    this._tripDaysComponent = new TripDaysComponent();
     this._noCardListComponent = new NoCardListComponent();
     this._creatingPoint = null;
     this._onDataChange = this._onDataChange.bind(this);
@@ -76,19 +76,15 @@ export default class TableController {
     }
   }
 
-  renderMap() {
-    const points = this._points.getPointsByFilter();
-
+  renderMap(points) {
     if (points.length === 0) {
       renderComponent(this._container, this._noCardListComponent);
-      return;
+    } else {
+      renderComponent(this._container, this._assortmentComponent);
+      renderComponent(this._container, this._tripDaysComponent);
+      renderComponent(mainTripInfoElement, new WaybillComponent(points), `afterBegin`);
+      this._renderPoints(this._sortType, points);
     }
-
-    renderComponent(this._container, this._assortmentComponent);
-    renderComponent(this._container, this._tripDaysComponent);
-    renderComponent(mainTripInfoElement, new WaybillComponent(this._points.getPointsByFilter()), `afterBegin`);
-
-    this._renderPoints(this._sortType, points);
   }
 
   createPoint() {

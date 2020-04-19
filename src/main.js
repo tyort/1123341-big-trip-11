@@ -18,7 +18,7 @@ document.querySelector(`.trip-main__event-add-btn`)
     tableController.createPoint();
   });
 
-const AUTHORIZATION = `Basic eo0w590ik29889z`; // это строка должна быть значение заголовка авторизации
+const AUTHORIZATION = `Basic eo0w590ik29889y`;
 const END_POINT = `https://htmlacademy-es-10.appspot.com/big-trip/`;
 
 // window.addEventListener(`load`, () => {
@@ -67,6 +67,7 @@ menuComponent.setOnChange((mainViewId) => {
 
 apiWithProvider.getPoints()
   .then((items) => {
+    console.log(items);
     const sortedItems = items.sort((a, b) => new Date(a.dateFrom).getTime() - new Date(b.dateFrom).getTime());
     points.setPoints(sortedItems);
     tableController.renderMap(points.getPointsByFilter());
@@ -78,10 +79,8 @@ window.addEventListener(`online`, () => {
   if (!apiWithProvider.getSynchronize()) {
     apiWithProvider.sync()
       .then(() => {
-        // Действие, в случае успешной синхронизации
       })
       .catch(() => {
-        // Действие, в случае ошибки синхронизации
       });
   }
 });
