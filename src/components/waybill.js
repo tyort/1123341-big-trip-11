@@ -1,6 +1,7 @@
 import AbstractComponent from './abstract_component.js';
 import moment from 'moment';
 
+
 const createWaybillTemplate = (points) => {
   const sortedPoints = points.sort((a, b) => new Date(a.dateFrom).getTime - new Date(b.dateFrom).getTime);
   const uniqueCIty = sortedPoints.map((it) => it.name)
