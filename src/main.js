@@ -18,7 +18,7 @@ document.querySelector(`.trip-main__event-add-btn`)
     tableController.createPoint();
   });
 
-const AUTHORIZATION = `Basic eo0w590ik29889y`;
+const AUTHORIZATION = `Basic eo0w590ik29889z`;
 const END_POINT = `https://htmlacademy-es-10.appspot.com/big-trip/`;
 
 // window.addEventListener(`load`, () => {
@@ -70,7 +70,7 @@ apiWithProvider.getPoints()
     console.log(items);
     const sortedItems = items.sort((a, b) => new Date(a.dateFrom).getTime() - new Date(b.dateFrom).getTime());
     points.setPoints(sortedItems);
-    tableController.renderMap(points.getPointsByFilter());
+    tableController.renderMap();
   });
 
 

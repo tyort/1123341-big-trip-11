@@ -12,9 +12,9 @@ export default class Points {
     return getPointsByFilter(this._points, this._activeFilterType);
   }
 
-  getPointsOnBegining() { // зачем этот метод
-    return this._points;
-  }
+  // getPointsOnBegining() { // зачем этот метод
+  //   return this._points;
+  // }
 
   setPoints(items) { // запись точек маршрута
     this._points = Array.from(items);

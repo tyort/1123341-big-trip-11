@@ -76,7 +76,8 @@ export default class TableController {
     }
   }
 
-  renderMap(points) {
+  renderMap() {
+    const points = this._points.getPointsByFilter();
     if (points.length === 0) {
       renderComponent(this._container, this._noCardListComponent);
     } else {
@@ -97,7 +98,6 @@ export default class TableController {
   }
 
   _removePoints() {
-    mainTripInfoElement.querySelector(`.trip-main__trip-info`).remove();
     this._tripDaysComponent.getElement().innerHTML = ``;
     this._showedCardItemControllers.forEach((it) => it.destroy());
     this._showedCardItemControllers = [];
@@ -111,6 +111,8 @@ export default class TableController {
   }
 
   _updatePoints() {
+    console.log(this._points.getPointsByFilter());
+    mainTripInfoElement.querySelector(`.trip-main__trip-info`).remove();
     this._removePoints();
     this._renderPoints(this._sortType, this._points.getPointsByFilter());
     renderComponent(mainTripInfoElement, new WaybillComponent(this._points.getPointsByFilter()), `afterBegin`);
@@ -182,7 +184,8 @@ export default class TableController {
         sortedItems = points.slice();
         break;
     }
-
+    
+    mainTripInfoElement.querySelector(`.trip-main__trip-info`).remove();
     this._removePoints();
     this._renderPoints(sortType, sortedItems);
     renderComponent(mainTripInfoElement, new WaybillComponent(sortedItems), `afterBegin`);
