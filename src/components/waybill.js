@@ -22,10 +22,10 @@ const createWaybillTemplate = (points) => {
     }
   };
 
-  const addStartDate = sortedPoints[0] !== undefined ? moment(sortedPoints[0].dateFrom).format(`MMM DD`) : `NoDate`;
+  const addStartDate = sortedPoints[0] !== undefined ? moment(sortedPoints[0].dateFrom).format(`MMM DD`) : `No Date`;
   const addEndDate = sortedPoints[sortedPoints.length - 1] !== undefined
     ? moment(sortedPoints[sortedPoints.length - 1].dateTo).format(`MMM DD`)
-    : `NoDate`;
+    : `No Date`;
 
   const totalPrice = sortedPoints.reduce((acc, it) => {
     return acc + it.basePrice;
