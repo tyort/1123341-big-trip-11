@@ -165,7 +165,7 @@ export default class TableController {
         });
 
     } else {
-      this._api.updatePoint(oldData.id, newData) // находится нужный id и сохраняются измененные данные
+      this._api.updatePoint(oldData.id, newData) // находится необходимый id и сохраняются измененные данные
         .then((item) => {
           const isSuccess = this._points.updatePoint(oldData.id, item);
 
