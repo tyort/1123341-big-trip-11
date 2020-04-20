@@ -180,7 +180,7 @@ export default class TableController {
     }
   }
 
-  _onViewChange() { // срабатывает перед началом превращения карточки в форму. Чтобы изначально все задачи были простыми карточками
+  _onViewChange() {
     this._showedCardItemControllers.forEach((it) => it.setDefaultView());
   }
 
