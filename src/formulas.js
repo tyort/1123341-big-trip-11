@@ -81,3 +81,18 @@ export const itemTimePeriod = (arr1, arr2) => {
   return `${daysDiff}${hoursDiff}${minDiff}`;
 };
 
+const VISUALLY_HIDDEN = `visually-hidden`;
+
+export const showComponent = (neededClassName) => {
+  const component = document.querySelector(`.${neededClassName}`);
+  if (component.classList.contains(VISUALLY_HIDDEN)) {
+    component.classList.remove(VISUALLY_HIDDEN);
+  }
+};
+
+export const hideComponent = (neededClassName) => {
+  const component = document.querySelector(`.${neededClassName}`);
+  if (!component.classList.contains(VISUALLY_HIDDEN)) {
+    component.classList.add(VISUALLY_HIDDEN);
+  }
+};

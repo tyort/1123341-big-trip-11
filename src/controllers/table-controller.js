@@ -4,12 +4,12 @@ import CardListComponent from '../components/card_list.js';
 import CardListLightComponent from '../components/card_list_light.js';
 import NoCardListComponent from '../components/no_card_list.js';
 import WaybillComponent from '../components/waybill.js';
-import {dayCounter, renderComponent} from '../formulas.js';
+import {dayCounter, renderComponent, showComponent, hideComponent} from '../formulas.js';
 import ItemController, {MODE, EmptyPoint} from './item-controller.js';
 import moment from 'moment';
 
 const mainTripInfoElement = document.querySelector(`.trip-main`);
-const HIDDEN_CLASS = `trip-events--hidden`;
+const TRIP_EVENTS_HIDDEN = `trip-events--hidden`;
 
 const renderAllPoints = (sortType, container, allPoints, onDataChange, onViewChange) => {
   if (sortType === `event`) {
@@ -62,37 +62,53 @@ export default class TableController {
     this._sortType = `event`;
   }
 
+  chooseEnvelope() {
+    const points = this._points.getPointsByFilter();
+    if (points.length === 0) {
+      showComponent(`trip-events__msg`);
+      hideComponent(`trip-events__trip-sort`);
+      hideComponent(`trip-days`);
+      hideComponent(`trip-main__trip-info`);
+    } else {
+      hideComponent(`trip-events__msg`);
+      showComponent(`trip-events__trip-sort`);
+      showComponent(`trip-days`);
+      showComponent(`trip-main__trip-info`);
+    }
+  }
+
   show() {
     const tripEvents = document.querySelector(`.trip-events`);
-    if (tripEvents.classList.contains(HIDDEN_CLASS)) {
-      tripEvents.classList.remove(HIDDEN_CLASS);
+    if (tripEvents.classList.contains(TRIP_EVENTS_HIDDEN)) {
+      tripEvents.classList.remove(TRIP_EVENTS_HIDDEN);
     }
   }
 
   hide() {
     const tripEvents = document.querySelector(`.trip-events`);
-    if (!tripEvents.classList.contains(HIDDEN_CLASS)) {
-      tripEvents.classList.add(HIDDEN_CLASS);
+    if (!tripEvents.classList.contains(TRIP_EVENTS_HIDDEN)) {
+      tripEvents.classList.add(TRIP_EVENTS_HIDDEN);
     }
   }
 
   renderMap() {
     const points = this._points.getPointsByFilter();
-    if (points.length === 0) {
-      renderComponent(this._container, this._noCardListComponent);
-    } else {
-      renderComponent(this._container, this._assortmentComponent);
-      renderComponent(this._container, this._tripDaysComponent);
-      renderComponent(mainTripInfoElement, new WaybillComponent(points), `afterBegin`);
-      this._renderPoints(this._sortType, points);
-    }
+
+    renderComponent(this._container, this._noCardListComponent);
+
+    renderComponent(this._container, this._assortmentComponent);
+    renderComponent(this._container, this._tripDaysComponent);
+    renderComponent(mainTripInfoElement, new WaybillComponent(points), `afterBegin`);
+    this._renderPoints(this._sortType, points);
+
+    this.chooseEnvelope();
   }
 
   createPoint() {
     if (this._creatingPoint) {
       return;
     }
-
+    hideComponent(`trip-events__msg`);
     this._creatingPoint = new ItemController(this._assortmentComponent.getElement(), this._onDataChange, this._onViewChange, this._points._points);
     this._creatingPoint.renderCardItem(EmptyPoint, MODE.ADDING);
   }
@@ -111,11 +127,11 @@ export default class TableController {
   }
 
   _updatePoints() {
-    console.log(this._points.getPointsByFilter());
     mainTripInfoElement.querySelector(`.trip-main__trip-info`).remove();
     this._removePoints();
     this._renderPoints(this._sortType, this._points.getPointsByFilter());
     renderComponent(mainTripInfoElement, new WaybillComponent(this._points.getPointsByFilter()), `afterBegin`);
+    this.chooseEnvelope();
   }
 
   _onDataChange(itemController, oldData, newData) {
@@ -184,7 +200,7 @@ export default class TableController {
         sortedItems = points.slice();
         break;
     }
-    
+
     mainTripInfoElement.querySelector(`.trip-main__trip-info`).remove();
     this._removePoints();
     this._renderPoints(sortType, sortedItems);

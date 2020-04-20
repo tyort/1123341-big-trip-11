@@ -67,7 +67,6 @@ menuComponent.setOnChange((mainViewId) => {
 
 apiWithProvider.getPoints()
   .then((items) => {
-    console.log(items);
     const sortedItems = items.sort((a, b) => new Date(a.dateFrom).getTime() - new Date(b.dateFrom).getTime());
     points.setPoints(sortedItems);
     tableController.renderMap();
