@@ -181,7 +181,7 @@ const createCardListItemFormTemplate = (cardItem, options = {}) => {
             </svg>
           </label>
 
-          <button class="event__rollup-btn" type="button">
+          <button class="event__rollup-btn evt__rollup-btn__setbymyself" type="button">
             <span class="visually-hidden">Open event</span>
           </button>
         </header>
@@ -368,10 +368,10 @@ export default class CardListItemForm extends AbstractSmartComponent {
       });
 
     element.querySelector(`.event__favorite-checkbox`)
-      .addEventListener(`click`, debounce(() => {
+      .addEventListener(`click`, () => {
         this._isChangeFavorite = !this._isChangeFavorite;
         this.reRender();
-      }, DEBOUNCE_TIMEOUT));
+      });
 
     const eventTypeGroup = Array.from(element.querySelectorAll(`.event__type-group`));
     eventTypeGroup.forEach((it) => {

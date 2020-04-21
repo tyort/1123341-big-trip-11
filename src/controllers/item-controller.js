@@ -98,8 +98,7 @@ export default class ItemController {
     this._cardListItemComponent.setRollupButtonClickHandler(() => {
       this._replaceItemToForm();
       document.addEventListener(`keydown`, this._onEscKeyDown);
-      this._cardListItemFormComponent.getElement().querySelector(`.event__rollup-btn`)
-        .addEventListener(`click`, this._onButtonClick);
+      document.addEventListener(`click`, this._onButtonClick);
     });
 
     this._cardListItemFormComponent.setSubmitHandler((evt) => {
@@ -137,8 +136,7 @@ export default class ItemController {
           remove(oldCardListItemFormComponent);
         }
         document.addEventListener(`keydown`, this._onEscKeyDown);
-        this._cardListItemFormComponent.getElement().querySelector(`.event__rollup-btn`)
-          .addEventListener(`click`, this._onButtonClick);
+        document.addEventListener(`click`, this._onButtonClick);
         renderComponent(this._container, this._cardListItemFormComponent, `afterEnd`);
         break;
     }
@@ -154,8 +152,7 @@ export default class ItemController {
     remove(this._cardListItemFormComponent);
     remove(this._cardListItemComponent);
     document.removeEventListener(`keydown`, this._onEscKeyDown);
-    this._cardListItemFormComponent.getElement().querySelector(`.event__rollup-btn`)
-      .removeEventListener(`click`, this._onButtonClick);
+    document.removeEventListener(`click`, this._onButtonClick);
   }
 
   shake() {
@@ -175,8 +172,7 @@ export default class ItemController {
 
   _replaceFormToItem() {
     document.removeEventListener(`keydown`, this._onEscKeyDown);
-    this._cardListItemFormComponent.getElement().querySelector(`.event__rollup-btn`)
-      .removeEventListener(`click`, this._onButtonClick);
+    document.removeEventListener(`click`, this._onButtonClick);
     this._cardListItemFormComponent.reset();
 
     if (document.contains(this._cardListItemFormComponent.getElement())) {
@@ -201,7 +197,12 @@ export default class ItemController {
     }
   }
 
-  _onButtonClick() {
-    this._replaceFormToItem();
+  _onButtonClick(evt) {
+    if (evt.target.classList.contains(`evt__rollup-btn__setbymyself`)) {
+      if (this._mode === MODE.ADDING) {
+        this._onDataChange(this, EmptyPoint, null);
+      }
+      this._replaceFormToItem();
+    }
   }
 }
