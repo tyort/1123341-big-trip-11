@@ -18,16 +18,16 @@ document.querySelector(`.trip-main__event-add-btn`)
     tableController.createPoint();
   });
 
-const AUTHORIZATION = `Basic eo0w590ik29889z`;
+const AUTHORIZATION = `Basic eo0w590ik29889i`;
 const END_POINT = `https://htmlacademy-es-10.appspot.com/big-trip/`;
 
-window.addEventListener(`load`, () => {
-  navigator.serviceWorker.register(`/sw.js`)
-    .then(() => {
-    })
-    .catch(() => {
-    });
-});
+// window.addEventListener(`load`, () => {
+//   navigator.serviceWorker.register(`/sw.js`)
+//     .then(() => {
+//     })
+//     .catch(() => {
+//     });
+// });
 
 const points = new Points();
 const api = new Api(END_POINT, AUTHORIZATION);

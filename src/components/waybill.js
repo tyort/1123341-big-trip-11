@@ -3,24 +3,20 @@ import moment from 'moment';
 
 
 const createWaybillTemplate = (points) => {
-  const sortedPoints = points.sort((a, b) => new Date(a.dateFrom).getTime - new Date(b.dateFrom).getTime);
-  const uniqueCIty = sortedPoints.map((it) => it.name)
-    .filter((item, index, array) => array.indexOf(item) === index);
+  const sortedPoints = points.sort((a, b) => new Date(a.dateFrom).getTime() - new Date(b.dateFrom).getTime());
+  const uniqueCIty = sortedPoints.map((it) => it.name).filter((item, index, array) => array.indexOf(item) === index);
 
-  const addNameOrDots = () => {
-    switch (uniqueCIty.length) {
-      case 0:
-        return `There is no Cities`;
-      case 1:
-        return `${sortedPoints[0].name}`;
-      case 2:
-        return `${sortedPoints[0].name} - ${sortedPoints[sortedPoints.length - 1].name}`;
-      case 3:
-        return `${sortedPoints[0].name} - ${sortedPoints[1].name} - ${sortedPoints[sortedPoints.length - 1].name}`;
-      default:
-        return `${sortedPoints[0].name} - ... - ${sortedPoints[sortedPoints.length - 1].name}`;
-    }
-  };
+  let tripInfoTitle = ``;
+
+  if (uniqueCIty.length <= 1) {
+    tripInfoTitle = sortedPoints[0] ? sortedPoints[0].name : `There is no point`;
+
+  } else if (uniqueCIty.length <= 3 && sortedPoints.length === 3) {
+    tripInfoTitle = `${sortedPoints[0].name} - ${sortedPoints[1].name} - ${sortedPoints[2].name}`;
+
+  } else {
+    tripInfoTitle = `${sortedPoints[0].name} - ... - ${sortedPoints[sortedPoints.length - 1].name}`;
+  }
 
   const addStartDate = sortedPoints[0] !== undefined ? moment(sortedPoints[0].dateFrom).format(`MMM DD`) : `No Date`;
   const addEndDate = sortedPoints[sortedPoints.length - 1] !== undefined
@@ -34,7 +30,7 @@ const createWaybillTemplate = (points) => {
   return (
     `<section class="trip-main__trip-info  trip-info">
       <div class="trip-info__main">
-        <h1 class="trip-info__title">${addNameOrDots()}</h1>
+        <h1 class="trip-info__title">${tripInfoTitle}</h1>
         <p class="trip-info__dates">${addStartDate}&nbsp;&mdash;&nbsp;${addEndDate}</p>
       </div>
       <p class="trip-info__cost">
