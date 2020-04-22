@@ -1,5 +1,5 @@
 import AbstractComponent from './abstract_component.js';
-import {itemTimePeriod, generateWaybillType} from '../formulas.js';
+import {createPeriodsName, generateWaybillType} from '../formulas.js';
 import moment from 'moment';
 
 const createExtraOptionInsert = (array, newmap) => {
@@ -20,7 +20,7 @@ const createExtraOptionInsert = (array, newmap) => {
 const createCardListItemTemplate = (cardItem) => {
   const {offers, type, name, dateFrom, dateTo, basePrice, offersPrice} = cardItem;
   const addExtraOptions = createExtraOptionInsert(Array.from(offers), offersPrice);
-  const addItemTimePeriod = itemTimePeriod(dateFrom, dateTo);
+  const addItemTimePeriod = createPeriodsName(dateFrom, dateTo);
   const addCardItemDate = moment(dateFrom).format(`YYYY-MM-DDTHH:mm`);
   const addCardItemTime = moment(dateFrom).format(`HH:mm`);
   const addDateTo = moment(dateTo).format(`YYYY-MM-DDTHH:mm`);

@@ -4,7 +4,7 @@ import CardListComponent from '../components/card_list.js';
 import CardListLightComponent from '../components/card_list_light.js';
 import NoCardListComponent from '../components/no_card_list.js';
 import WaybillComponent from '../components/waybill.js';
-import {dayCounter, renderComponent, showComponent, hideComponent} from '../formulas.js';
+import {getDaysCount, renderComponent, showComponent, hideComponent} from '../formulas.js';
 import ItemController, {Mode, EmptyPoint} from './item-controller.js';
 import moment from 'moment';
 
@@ -17,19 +17,19 @@ const renderAllPoints = (sortType, container, allPoints, onDataChange, onViewCha
       .filter((item, index, array) => array.indexOf(item) === index)
       .sort((a, b) => a - b);
 
-    sortedCards.forEach((it, index) => renderComponent(container, new CardListComponent(it, dayCounter(sortedCards)[index])));
+    sortedCards.forEach((it, index) => renderComponent(container, new CardListComponent(it, getDaysCount(sortedCards)[index])));
     const tripEventsListElements = document.querySelectorAll(`.trip-events__list`);
-    const arrayOfItemControllers = [];
+    const itemControllers = [];
 
     sortedCards.forEach((item, index) => {
       allPoints.filter((elem) => item === moment(elem.dateFrom).format(`YYYYMMDD`))
         .forEach((i) => {
           const itemController = new ItemController(tripEventsListElements[index], onDataChange, onViewChange, allPoints);
           itemController.renderCardItem(i, Mode.DEFAULT);
-          arrayOfItemControllers.push(itemController);
+          itemControllers.push(itemController);
         });
     });
-    return arrayOfItemControllers;
+    return itemControllers;
   } else {
     renderComponent(container, new CardListLightComponent());
 
