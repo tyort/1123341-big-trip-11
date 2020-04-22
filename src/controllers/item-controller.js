@@ -109,8 +109,8 @@ export default class ItemController {
       });
 
       const formData = this._cardListItemFormComponent.getChangedDataByView();
-      const data = parseFormData(formData);
-      this._onDataChange(this, cardItem, data);
+      const pointModel = parseFormData(formData);
+      this._onDataChange(this, cardItem, pointModel);
     });
     this._cardListItemFormComponent.setDeleteButtonClickHandler(() => {
 

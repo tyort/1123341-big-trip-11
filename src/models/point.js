@@ -1,19 +1,19 @@
 export default class Point {
-  constructor(data) {
-    this.id = data[`id`];
-    this.basePrice = data[`base_price`];
-    this.dateFrom = data[`date_from`];
-    this.dateTo = data[`date_to`];
-    this.description = data[`destination`].description;
-    this.name = data[`destination`].name;
-    this.pictures = data[`destination`].pictures;
-    this.isFavorite = Boolean(data[`is_favorite`]);
-    this.offers = new Map(data[`offers`].map((it) => [it.title, false]));
-    this.offersPrice = new Map(data[`offers`].map((it) => [it.title, it.price]));
-    this.type = data[`type`];
+  constructor(parameter) {
+    this.id = parameter[`id`];
+    this.basePrice = parameter[`base_price`];
+    this.dateFrom = parameter[`date_from`];
+    this.dateTo = parameter[`date_to`];
+    this.description = parameter[`destination`].description;
+    this.name = parameter[`destination`].name;
+    this.pictures = parameter[`destination`].pictures;
+    this.isFavorite = Boolean(parameter[`is_favorite`]);
+    this.offers = new Map(parameter[`offers`].map((it) => [it.title, false]));
+    this.offersPrice = new Map(parameter[`offers`].map((it) => [it.title, it.price]));
+    this.type = parameter[`type`];
   }
 
-  toRAW() { // этот метод нужен, когда потребуется отправить данные на сервер
+  toRAW() {
     const offersForServer = Array.from(this.offersPrice).map((it) => {
       return {title: it[0], price: it[1]};
     });
@@ -34,16 +34,16 @@ export default class Point {
     };
   }
 
-  static parsePoint(data) { // вызывается на каждый объект. data - это объект
-    return new Point(data); // экземпляр для каждого объекта
+  static parsePoint(item) {
+    return new Point(item);
   }
 
-  static parsePoints(data) { // data массив объектов с неизмененным набором свойств
-    return data.map(Point.parsePoint); // массив экземпляров, т.е. new Point(ов)
+  static parsePoints(items) {
+    return items.map(Point.parsePoint);
   }
 
-  static clone(data) { // создается полная копия нашей модели для редактирования
-    return new Point(data.toRAW());
+  static clone(item) {
+    return new Point(item.toRAW());
   }
 }
 

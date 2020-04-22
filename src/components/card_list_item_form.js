@@ -3,9 +3,6 @@ import {generateWaybillType} from '../formulas.js';
 import flatpickr from 'flatpickr';
 import he from 'he';
 import moment from 'moment';
-import debounce from 'lodash/debounce';
-
-const DEBOUNCE_TIMEOUT = 2000;
 
 const BUTTON_TEXT = {
   DELETE_BUTTON_TEXT: `Delete`,
@@ -293,8 +290,8 @@ export default class CardListItemForm extends AbstractSmartComponent {
     return new FormData(form);
   }
 
-  setChangedDataByView(data) {
-    this._activateButtonText = Object.assign({}, BUTTON_TEXT, data);
+  setChangedDataByView(buttonWaitingText) {
+    this._activateButtonText = Object.assign({}, BUTTON_TEXT, buttonWaitingText);
     this.reRender();
   }
 

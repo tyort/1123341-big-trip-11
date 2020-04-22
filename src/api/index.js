@@ -38,11 +38,11 @@ export default class Api {
       .then(Point.parsePoint);
   }
 
-  updatePoint(id, data) {
+  updatePoint(id, pointModel) {
     return this._load({
       url: `points/${id}`,
       method: METHOD.PUT,
-      body: JSON.stringify(data.toRAW()),
+      body: JSON.stringify(pointModel.toRAW()),
       headers: new Headers({'Content-Type': `application/json`})
     })
       .then((response) => response.json())
@@ -53,11 +53,11 @@ export default class Api {
     return this._load({url: `points/${id}`, method: METHOD.DELETE});
   }
 
-  sync(data) {
+  sync(points) {
     return this._load({
       url: `points/sync`,
       method: METHOD.POST,
-      body: JSON.stringify(data),
+      body: JSON.stringify(points),
       headers: new Headers({'Content-Type': `application/json`})
     })
       .then((response) => response.json());
