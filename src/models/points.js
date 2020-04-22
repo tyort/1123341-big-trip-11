@@ -8,22 +8,22 @@ export default class Points {
     this._dataChangeHandlers = []; // this._points.setDataChangeHandler(this._onDataChange);
   }
 
-  getPointsByFilter() { // получение точек маршрута
+  getPointsByFilter() {
     return getPointsByFilter(this._points, this._activeFilterType);
   }
 
-  // getPointsOnBegining() { // зачем этот метод
-  //   return this._points;
-  // }
-
-  setPoints(items) { // запись точек маршрута
-    this._points = Array.from(items);
-    this._callHandlers(this._dataChangeHandlers);
+  getPointsOnBegining() {
+    return this._points;
   }
 
-  setFilter(filterType) { // фильтрация не происходит при вызове, только меняется тип фильтра
+  setPoints(items) {
+    this._points = Array.from(items);
+  }
+
+  setFilter(filterType) {
     this._activeFilterType = filterType;
     this._callHandlers(this._filterChangeHandlers); // запустить this._onDataChange
+    this._callHandlers(this._dataChangeHandlers);
   }
 
   removePoint(id) {
@@ -38,7 +38,7 @@ export default class Points {
     return true;
   }
 
-  updatePoint(id, item) { // обновление точки маршрута в массиве
+  updatePoint(id, item) {
     const index = this._points.findIndex((it) => it.id === id);
 
     if (index === -1) {
@@ -59,11 +59,11 @@ export default class Points {
     this._filterChangeHandlers.push(handler);
   }
 
-  setDataChangeHandler(handler) { // запускается вначале
+  setDataChangeHandler(handler) {
     this._dataChangeHandlers.push(handler); // handler равен _onDataChange из filter controller
   }
 
-  _callHandlers(handlers) { // вызвать каждый хендлер в массиве
+  _callHandlers(handlers) {
     handlers.forEach((handler) => handler());
   }
 }

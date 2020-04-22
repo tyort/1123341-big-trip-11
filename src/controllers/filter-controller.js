@@ -13,7 +13,8 @@ export default class FilterController {
     this._points.setDataChangeHandler(this._onDataChange);
   }
 
-  renderFilters() { // рисует строку фильтров
+  renderFilters() {
+    console.log(this._points.getPointsOnBegining());
     const container = this._container;
 
     const filters = Object.values(FILTER_TYPE).map((it) => {
@@ -34,7 +35,7 @@ export default class FilterController {
     }
   }
 
-  _onFilterChange(filterType) { // просто меняет наименование фильтра
+  _onFilterChange(filterType) {
     this._points.setFilter(filterType);
     this._activeFilterType = filterType;
   }

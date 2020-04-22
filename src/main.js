@@ -40,7 +40,6 @@ const menuComponent = new MenuComponent();
 renderComponent(visuallyHiddenElement[0], menuComponent, `afterEnd`);
 menuComponent.setActiveViewMode(MAIN_VIEW_MODE.TABLE);
 const filterController = new FilterController(visuallyHiddenElement[1], points);
-filterController.renderFilters();
 
 const pageBodyContainer = document.getElementsByClassName(`page-body__container`)[1];
 const statisticsComponent = new StatisticsComponent(points);
@@ -70,6 +69,7 @@ apiWithProvider.getPoints()
     const sortedItems = items.sort((a, b) => new Date(a.dateFrom).getTime() - new Date(b.dateFrom).getTime());
     points.setPoints(sortedItems);
     tableController.renderMap();
+    filterController.renderFilters();
   });
 
 
