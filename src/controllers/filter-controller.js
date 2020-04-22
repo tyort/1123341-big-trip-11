@@ -36,8 +36,8 @@ export default class FilterController {
   }
 
   _onFilterChange(filterType) {
-    this._points.setFilter(filterType);
     this._activeFilterType = filterType;
+    this._points.setFilter(filterType);
   }
 
   _onDataChange() {
