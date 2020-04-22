@@ -4,7 +4,7 @@ import flatpickr from 'flatpickr';
 import he from 'he';
 import moment from 'moment';
 
-const BUTTON_TEXT = {
+const ButtonText = {
   DELETE_BUTTON_TEXT: `Delete`,
   SAVE_BUTTON_TEXT: `Save`
 };
@@ -222,7 +222,7 @@ export default class CardListItemForm extends AbstractSmartComponent {
     this._activateDescription = cardItem.description;
     this._activateExtraOptionsPrice = cardItem.offersPrice;
     this._activateBasePrice = cardItem.basePrice;
-    this._activateButtonText = BUTTON_TEXT;
+    this._activateButtonText = ButtonText;
     this._activateDateFrom = cardItem.dateFrom;
     this._activateDateTo = cardItem.dateTo;
     this._startFlatpickr = null;
@@ -291,7 +291,7 @@ export default class CardListItemForm extends AbstractSmartComponent {
   }
 
   setChangedDataByView(buttonWaitingText) {
-    this._activateButtonText = Object.assign({}, BUTTON_TEXT, buttonWaitingText);
+    this._activateButtonText = Object.assign({}, ButtonText, buttonWaitingText);
     this.reRender();
   }
 

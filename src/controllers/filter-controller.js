@@ -1,5 +1,5 @@
 import FilterComponent from '../components/filter.js';
-import {FILTER_TYPE} from '../formulas-filter.js';
+import {FilterType} from '../formulas-filter.js';
 import {renderComponent, replace} from '../formulas.js';
 import {getPointsByFilter} from '../formulas-filter.js';
 
@@ -7,7 +7,7 @@ export default class FilterController {
   constructor(container, points) {
     this._container = container;
     this._points = points;
-    this._activeFilterType = FILTER_TYPE.EVERYTHING;
+    this._activeFilterType = FilterType.EVERYTHING;
     this._filterComponent = null;
     this._onDataChange = this._onDataChange.bind(this);
     this._onFilterChange = this._onFilterChange.bind(this);
@@ -17,7 +17,7 @@ export default class FilterController {
   renderFilters() {
     const container = this._container;
 
-    const filters = Object.values(FILTER_TYPE).map((it) => {
+    const filters = Object.values(FilterType).map((it) => {
       const pointsCount = getPointsByFilter(this._points.getPointsOnBegining(), it);
       return {
         name: it,

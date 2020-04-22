@@ -1,7 +1,7 @@
 import Api from './api/index.js';
 import Store from './api/store.js';
 import Provider from './api/provider.js';
-import MenuComponent, {MAIN_VIEW_MODE} from './components/menu.js';
+import MenuComponent from './components/menu.js';
 import StatisticsComponent from './components/statistics.js';
 import FilterController from './controllers/filter-controller.js';
 import TableController from './controllers/table-controller.js';
@@ -12,6 +12,10 @@ import 'flatpickr/dist/flatpickr.css';
 const STORE_PREFIX = `big-trip-localstorage`;
 const STORE_VER = `v1`;
 const STORE_NAME = `${STORE_PREFIX}-${STORE_VER}`;
+const MainViewMode = {
+  STATISTICS: `statistics-setbymyself`,
+  TABLE: `table-setbymyself`,
+};
 
 document.querySelector(`.trip-main__event-add-btn`)
   .addEventListener(`click`, () => {
@@ -38,7 +42,7 @@ const mainTripControlsElement = document.querySelector(`.trip-main__trip-control
 const visuallyHiddenElement = mainTripControlsElement.querySelectorAll(`.visually-hidden`);
 const menuComponent = new MenuComponent();
 renderComponent(visuallyHiddenElement[0], menuComponent, `afterEnd`);
-menuComponent.setActiveViewMode(MAIN_VIEW_MODE.TABLE);
+menuComponent.setActiveViewMode(MainViewMode.TABLE);
 const filterController = new FilterController(visuallyHiddenElement[1], points);
 
 const pageBodyContainer = document.getElementsByClassName(`page-body__container`)[1];
@@ -51,12 +55,12 @@ const tableController = new TableController(tripEventsElement, points, apiWithPr
 
 menuComponent.setOnChange((mainViewId) => {
   switch (mainViewId) {
-    case MAIN_VIEW_MODE.TABLE:
+    case MainViewMode.TABLE:
       menuComponent.setActiveViewMode(mainViewId);
       statisticsComponent.hide();
       tableController.show();
       break;
-    case MAIN_VIEW_MODE.STATISTICS:
+    case MainViewMode.STATISTICS:
       menuComponent.setActiveViewMode(mainViewId);
       tableController.hide();
       statisticsComponent.show();

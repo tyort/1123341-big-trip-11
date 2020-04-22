@@ -6,7 +6,7 @@ import moment from 'moment';
 
 const SHAKE_ANIMATION_TIMEOUT = 600;
 
-export const MODE = {
+export const Mode = {
   ADDING: `adding`,
   DEFAULT: `default`,
   FORM: `form`,
@@ -81,7 +81,7 @@ export default class ItemController {
     this._container = container;
     this._onDataChange = onDataChange;
     this._onViewChange = onViewChange;
-    this._mode = MODE.DEFAULT;
+    this._mode = Mode.DEFAULT;
     this._cardListItemComponent = null;
     this._cardListItemFormComponent = null;
     this._onEscKeyDown = this._onEscKeyDown.bind(this);
@@ -121,7 +121,7 @@ export default class ItemController {
     });
 
     switch (mode) {
-      case MODE.DEFAULT:
+      case Mode.DEFAULT:
         if (oldCardListItemComponent && oldCardListItemFormComponent) {
           replace(this._cardListItemFormComponent, oldCardListItemFormComponent);
           replace(this._cardListItemComponent, oldCardListItemComponent);
@@ -130,7 +130,7 @@ export default class ItemController {
           renderComponent(this._container, this._cardListItemComponent);
         }
         break;
-      case MODE.ADDING:
+      case Mode.ADDING:
         if (oldCardListItemComponent && oldCardListItemFormComponent) {
           remove(oldCardListItemComponent);
           remove(oldCardListItemFormComponent);
@@ -142,8 +142,8 @@ export default class ItemController {
     }
   }
 
-  setDefaultView() { // превратить в строку и поменять MODE
-    if (this._mode !== MODE.DEFAULT) { // если MODE.FORM
+  setDefaultView() { // превратить в строку и поменять Mode
+    if (this._mode !== Mode.DEFAULT) { // если Mode.FORM
       this._replaceFormToItem(); // превратить форму в карточку
     }
   }
@@ -179,18 +179,18 @@ export default class ItemController {
       replace(this._cardListItemComponent, this._cardListItemFormComponent);
     }
 
-    this._mode = MODE.DEFAULT;
+    this._mode = Mode.DEFAULT;
   }
 
   _replaceItemToForm() {
     this._onViewChange();
     replace(this._cardListItemFormComponent, this._cardListItemComponent);
-    this._mode = MODE.FORM;
+    this._mode = Mode.FORM;
   }
 
   _onEscKeyDown(evt) {
     if (evt.key === `Escape` || evt.key === `Esc`) {
-      if (this._mode === MODE.ADDING) {
+      if (this._mode === Mode.ADDING) {
         this._onDataChange(this, EmptyPoint, null);
       }
       this._replaceFormToItem();
@@ -199,7 +199,7 @@ export default class ItemController {
 
   _onButtonClick(evt) {
     if (evt.target.classList.contains(`evt__rollup-btn__setbymyself`)) {
-      if (this._mode === MODE.ADDING) {
+      if (this._mode === Mode.ADDING) {
         this._onDataChange(this, EmptyPoint, null);
       }
       this._replaceFormToItem();

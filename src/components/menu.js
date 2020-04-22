@@ -1,10 +1,5 @@
 import AbstractComponent from './abstract_component.js';
 
-export const MAIN_VIEW_MODE = {
-  STATISTICS: `statistics-setbymyself`,
-  TABLE: `table-setbymyself`,
-};
-
 const createMenuTemplate = () =>
   (
     `<nav class="trip-controls__trip-tabs  trip-tabs">

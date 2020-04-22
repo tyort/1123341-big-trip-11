@@ -1,6 +1,6 @@
 import moment from 'moment';
 
-export const FILTER_TYPE = {
+export const FilterType = {
   EVERYTHING: `everything`,
   FUTURE: `future`,
   PAST: `past`,
@@ -39,11 +39,11 @@ export const getPointsByFilter = (points, filterType) => {
   const currentDate = new Date();
 
   switch (filterType) {
-    case FILTER_TYPE.EVERYTHING:
+    case FilterType.EVERYTHING:
       return points;
-    case FILTER_TYPE.PAST:
+    case FilterType.PAST:
       return getPastPoints(points, currentDate);
-    case FILTER_TYPE.FUTURE:
+    case FilterType.FUTURE:
       return getFuturePoints(points, currentDate);
   }
 

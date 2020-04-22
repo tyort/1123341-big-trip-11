@@ -1,9 +1,9 @@
-import {FILTER_TYPE, getPointsByFilter} from '../formulas-filter.js';
+import {FilterType, getPointsByFilter} from '../formulas-filter.js';
 
 export default class Points {
   constructor() {
     this._points = [];
-    this._activeFilterType = FILTER_TYPE.EVERYTHING;
+    this._activeFilterType = FilterType.EVERYTHING;
     this._filterChangeHandlers = [];
     this._dataChangeHandlers = []; // this._points.setDataChangeHandler(this._onDataChange);
   }
