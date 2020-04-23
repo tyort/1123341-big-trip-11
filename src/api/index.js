@@ -8,11 +8,11 @@ const Method = {
 };
 
 const checkStatus = (response) => {
-  if (response.status >= 200 && response.status < 300) {
-    return response;
-  } else {
+  if (response.status < 200 && response.status >= 300) {
     throw new Error(`${response.status}: ${response.statusText}`);
   }
+
+  return response;
 };
 
 export default class Api {

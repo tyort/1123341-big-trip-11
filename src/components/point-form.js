@@ -4,6 +4,8 @@ import flatpickr from 'flatpickr';
 import he from 'he';
 import moment from 'moment';
 
+const LETTERS_COUNT = 12;
+
 const ButtonText = {
   DELETE_BUTTON_TEXT: `Delete`,
   SAVE_BUTTON_TEXT: `Save`
@@ -81,8 +83,8 @@ const createWaybillPurposeList = (newmap) => {
     .join(``);
 };
 
-const createCardListItemFormTemplate = (cardItem, options = {}) => {
-  const {pictures} = cardItem;
+const createPointFormTemplate = (point, options = {}) => {
+  const {pictures} = point;
   const {
     activateButtonText,
     isChangeFavorite,
@@ -209,22 +211,22 @@ const createCardListItemFormTemplate = (cardItem, options = {}) => {
   );
 };
 
-export default class CardListItemForm extends AbstractSmartComponent {
-  constructor(cardItem, allpoints) {
+export default class PointForm extends AbstractSmartComponent {
+  constructor(point, allpoints) {
     super();
 
-    this._cardItem = cardItem;
+    this._point = point;
     this._allPoints = allpoints;
-    this._isChangeFavorite = !!cardItem.isFavorite;
-    this._activateCheckedType = new Map(this._allPoints.map((it) => [it.type, false])).set(cardItem.type, true); // получу актуальный Map с нужным true
-    this._activateCheckedPurpose = new Map(this._allPoints.map((it) => [it.name, false])).set(cardItem.name, true); // получу актуальный Map с нужным true
-    this._activateExtraOptions = new Map(cardItem.offers);
-    this._activateDescription = cardItem.description;
-    this._activateExtraOptionsPrice = cardItem.offersPrice;
-    this._activateBasePrice = cardItem.basePrice;
+    this._isChangeFavorite = !!point.isFavorite;
+    this._activateCheckedType = new Map(this._allPoints.map((it) => [it.type, false])).set(point.type, true); // получу актуальный Map с нужным true
+    this._activateCheckedPurpose = new Map(this._allPoints.map((it) => [it.name, false])).set(point.name, true); // получу актуальный Map с нужным true
+    this._activateExtraOptions = new Map(point.offers);
+    this._activateDescription = point.description;
+    this._activateExtraOptionsPrice = point.offersPrice;
+    this._activateBasePrice = point.basePrice;
     this._activateButtonText = ButtonText;
-    this._activateDateFrom = cardItem.dateFrom;
-    this._activateDateTo = cardItem.dateTo;
+    this._activateDateFrom = point.dateFrom;
+    this._activateDateTo = point.dateTo;
     this._startFlatpickr = null;
     this._endFlatpickr = null;
     this._submitHandler = null;
@@ -234,7 +236,7 @@ export default class CardListItemForm extends AbstractSmartComponent {
   }
 
   getTemplate() {
-    return createCardListItemFormTemplate(this._cardItem, {
+    return createPointFormTemplate(this._point, {
       isChangeFavorite: this._isChangeFavorite,
       activateCheckedType: this._activateCheckedType,
       activateCheckedPurpose: this._activateCheckedPurpose,
@@ -270,17 +272,17 @@ export default class CardListItemForm extends AbstractSmartComponent {
   }
 
   reset() {
-    const cardItem = this._cardItem;
+    const point = this._point;
 
-    this._isChangeFavorite = !!cardItem.isFavorite;
-    this._activateCheckedType = new Map(this._allPoints.map((it) => [it.type, false])).set(cardItem.type, true); // получу актуальный Map с нужным true
-    this._activateCheckedPurpose = new Map(this._allPoints.map((it) => [it.name, false])).set(cardItem.name, true); // получу актуальный Map с нужным true
-    this._activateExtraOptions = new Map(cardItem.offers);
-    this._activateDescription = cardItem.description;
-    this._activateExtraOptionsPrice = cardItem.offersPrice;
-    this._activateBasePrice = cardItem.basePrice;
-    this._activateDateFrom = cardItem.dateFrom;
-    this._activateDateTo = cardItem.dateTo;
+    this._isChangeFavorite = !!point.isFavorite;
+    this._activateCheckedType = new Map(this._allPoints.map((it) => [it.type, false])).set(point.type, true); // получу актуальный Map с нужным true
+    this._activateCheckedPurpose = new Map(this._allPoints.map((it) => [it.name, false])).set(point.name, true); // получу актуальный Map с нужным true
+    this._activateExtraOptions = new Map(point.offers);
+    this._activateDescription = point.description;
+    this._activateExtraOptionsPrice = point.offersPrice;
+    this._activateBasePrice = point.basePrice;
+    this._activateDateFrom = point.dateFrom;
+    this._activateDateTo = point.dateTo;
 
     this.reRender();
   }
@@ -393,7 +395,7 @@ export default class CardListItemForm extends AbstractSmartComponent {
 
     const eventSectionOffers = element.querySelector(`.event__section--offers`);
     eventSectionOffers.addEventListener(`change`, (evt) => {
-      this._activateExtraOptions.set(evt.target.name.slice(12), evt.target.checked);
+      this._activateExtraOptions.set(evt.target.name.slice(LETTERS_COUNT), evt.target.checked);
       this.reRender();
     });
   }

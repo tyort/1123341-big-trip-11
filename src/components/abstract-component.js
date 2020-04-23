@@ -1,6 +1,4 @@
-import {createElement} from '../formulas.js';
-
-const HIDDEN_CLASS = `visually-hidden`;
+import {createElement, VISUALLY_HIDDEN} from '../formulas.js';
 
 export default class AbstractComponent {
   constructor() {
@@ -28,13 +26,13 @@ export default class AbstractComponent {
 
   show() {
     if (this._element) {
-      this._element.classList.remove(HIDDEN_CLASS);
+      this._element.classList.remove(VISUALLY_HIDDEN);
     }
   }
 
   hide() {
     if (this._element) {
-      this._element.classList.add(HIDDEN_CLASS);
+      this._element.classList.add(VISUALLY_HIDDEN);
     }
   }
 }
