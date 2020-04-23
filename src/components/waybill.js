@@ -11,6 +11,9 @@ const createWaybillTemplate = (points) => {
   if (uniqueCIty.length <= 1) {
     tripInfoTitle = sortedPoints[0] ? sortedPoints[0].name : `There is no point`;
 
+  } else if (uniqueCIty.length === 2 && sortedPoints.length === 2) {
+    tripInfoTitle = `${sortedPoints[0].name} - ${sortedPoints[1].name}`;
+
   } else if (uniqueCIty.length <= 3 && sortedPoints.length === 3) {
     tripInfoTitle = `${sortedPoints[0].name} - ${sortedPoints[1].name} - ${sortedPoints[2].name}`;
 
