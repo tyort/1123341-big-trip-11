@@ -1,8 +1,8 @@
 import AssortmentComponent, {SortType} from '../components/assortment.js';
-import TripDaysComponent from '../components/trip_days.js';
-import CardListComponent from '../components/card_list.js';
-import CardListLightComponent from '../components/card_list_light.js';
-import NoCardListComponent from '../components/no_card_list.js';
+import TripDaysComponent from '../components/trip-days.js';
+import CardListComponent from '../components/card-list.js';
+import CardListLightComponent from '../components/card-list-light.js';
+import NoCardListComponent from '../components/no-card-list.js';
 import WaybillComponent from '../components/waybill.js';
 import {getDaysCount, renderComponent, showComponent, hideComponent} from '../formulas.js';
 import ItemController, {Mode, EmptyPoint} from './item-controller.js';
