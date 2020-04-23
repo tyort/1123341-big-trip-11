@@ -191,7 +191,11 @@ export default class TableController {
 
     switch (sortType) {
       case SortType.TIME_DOWN:
-        sortedItems = points.slice().sort((a, b) => new Date(b.dateTo).getTime() - new Date(b.dateFrom).getTime() - new Date(a.dateTo).getTime() + new Date(a.dateFrom).getTime());
+        sortedItems = points.slice().sort((a, b) => {
+          const periodOfPointTwo = new Date(b.dateTo).getTime() - new Date(b.dateFrom).getTime();
+          const periodOfPointOne = new Date(a.dateTo).getTime() - new Date(a.dateFrom).getTime();
+          return periodOfPointTwo - periodOfPointOne;
+        });
         break;
       case SortType.PRICE_DOWN:
         sortedItems = points.slice().sort((a, b) => b.basePrice - a.basePrice);

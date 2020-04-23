@@ -9,8 +9,7 @@ const createRandomColor = () => {
 };
 
 const renderMoneyChart = (container, points) => {
-  const originalPurpose = points.map((it) => it.type)
-    .filter((item, index, array) => array.indexOf(item) === index); // массив оригинальных типов
+  const originalPurpose = [...new Set(points.map((it) => it.type))];
 
   return new Chart(container, {
     type: `horizontalBar`,
@@ -71,8 +70,7 @@ const renderMoneyChart = (container, points) => {
 };
 
 const renderTimeSpentChart = (container, points) => {
-  const originalPurpose = points.map((it) => it.name)
-    .filter((item, index, array) => array.indexOf(item) === index); // массив оригинальных мест назначений
+  const originalPurpose = [...new Set(points.map((it) => it.name))];
 
   return new Chart(container, {
     type: `horizontalBar`,
@@ -136,8 +134,7 @@ const renderTimeSpentChart = (container, points) => {
 
 const renderTransportChart = (container, points) => {
   const inappropriateType = [`Check-in`, `Sightseeing`, `Restaurant`, `Trip`];
-  const originalPurpose = points.map((it) => it.type)
-    .filter((item, index, array) => array.indexOf(item) === index) // массив оригинальных типов
+  const originalPurpose = [...new Set(points.map((it) => it.type))]
     .filter((item) => !inappropriateType.includes(item)); // без учета элементов inappropriateType
 
   return new Chart(container, {

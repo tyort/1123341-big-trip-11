@@ -4,17 +4,17 @@ import moment from 'moment';
 
 const createWaybillTemplate = (points) => {
   const sortedPoints = points.sort((a, b) => new Date(a.dateFrom).getTime() - new Date(b.dateFrom).getTime());
-  const uniqueCIty = sortedPoints.map((it) => it.name).filter((item, index, array) => array.indexOf(item) === index);
+  const uniqueCities = [...new Set(sortedPoints.map((it) => it.name))];
 
   let tripInfoTitle = ``;
 
-  if (uniqueCIty.length <= 1) {
+  if (uniqueCities.length <= 1) {
     tripInfoTitle = sortedPoints[0] ? sortedPoints[0].name : `There is no point`;
 
-  } else if (uniqueCIty.length === 2 && sortedPoints.length === 2) {
+  } else if (uniqueCities.length === 2 && sortedPoints.length === 2) {
     tripInfoTitle = `${sortedPoints[0].name} - ${sortedPoints[1].name}`;
 
-  } else if (uniqueCIty.length <= 3 && sortedPoints.length === 3) {
+  } else if (uniqueCities.length <= 3 && sortedPoints.length === 3) {
     tripInfoTitle = `${sortedPoints[0].name} - ${sortedPoints[1].name} - ${sortedPoints[2].name}`;
 
   } else {

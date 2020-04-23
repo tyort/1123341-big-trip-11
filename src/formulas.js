@@ -58,14 +58,14 @@ export const replace = (newComponent, oldComponent) => {
   }
 };
 
-export const getDaysCount = (arr) => {
-  return arr.map((it) => moment(it))
+export const getDaysCount = (startDate) => {
+  return startDate.map((it) => moment(it))
     .map((it, index, array) => 1 + it.diff(array[0], `days`));
 };
 
-export const createPeriodsName = (arr1, arr2) => {
-  const startDate = moment(arr1);
-  const endDate = moment(arr2);
+export const createPeriodsName = (startTime, endTime) => {
+  const startDate = moment(startTime);
+  const endDate = moment(endTime);
 
   let daysDiff = endDate.diff(startDate, `days`);
   startDate.add(daysDiff, `days`);
