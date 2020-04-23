@@ -1,6 +1,6 @@
 import Point from '../models/point.js';
 
-const METHOD = {
+const Method = {
   GET: `GET`,
   POST: `POST`,
   PUT: `PUT`,
@@ -8,11 +8,11 @@ const METHOD = {
 };
 
 const checkStatus = (response) => {
-  if (response.status >= 200 && response.status < 300) {
-    return response;
-  } else {
+  if (response.status < 200 && response.status >= 300) {
     throw new Error(`${response.status}: ${response.statusText}`);
   }
+
+  return response;
 };
 
 export default class Api {
@@ -30,7 +30,7 @@ export default class Api {
   createPoint(point) {
     return this._load({
       url: `points`,
-      method: METHOD.POST,
+      method: Method.POST,
       body: JSON.stringify(point.toRAW()),
       headers: new Headers({'Content-Type': `application/json`})
     })
@@ -38,11 +38,11 @@ export default class Api {
       .then(Point.parsePoint);
   }
 
-  updatePoint(id, data) {
+  updatePoint(id, pointModel) {
     return this._load({
       url: `points/${id}`,
-      method: METHOD.PUT,
-      body: JSON.stringify(data.toRAW()),
+      method: Method.PUT,
+      body: JSON.stringify(pointModel.toRAW()),
       headers: new Headers({'Content-Type': `application/json`})
     })
       .then((response) => response.json())
@@ -50,20 +50,20 @@ export default class Api {
   }
 
   deletePoint(id) {
-    return this._load({url: `points/${id}`, method: METHOD.DELETE});
+    return this._load({url: `points/${id}`, method: Method.DELETE});
   }
 
-  sync(data) {
+  sync(points) {
     return this._load({
       url: `points/sync`,
-      method: METHOD.POST,
-      body: JSON.stringify(data),
+      method: Method.POST,
+      body: JSON.stringify(points),
       headers: new Headers({'Content-Type': `application/json`})
     })
       .then((response) => response.json());
   }
 
-  _load({url, method = METHOD.GET, body = null, headers = new Headers()}) {
+  _load({url, method = Method.GET, body = null, headers = new Headers()}) {
   // url - адрес сервера
   // headers - по умолчанию передаем пустые заголовки, если не передаем самостоятельно
     headers.append(`Authorization`, this._authorization);

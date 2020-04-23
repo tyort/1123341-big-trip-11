@@ -1,12 +1,12 @@
-import CardListItemComponent from '../components/card_list_item.js';
-import CardListItemFormComponent from '../components/card_list_item_form.js';
+import PointLineComponent from '../components/point-line.js';
+import PointFormComponent from '../components/point-form.js';
 import PointModel from '../models/point.js';
 import {renderComponent, replace, remove} from '../formulas.js';
 import moment from 'moment';
 
 const SHAKE_ANIMATION_TIMEOUT = 600;
 
-export const MODE = {
+export const Mode = {
   ADDING: `adding`,
   DEFAULT: `default`,
   FORM: `form`,
@@ -81,92 +81,89 @@ export default class ItemController {
     this._container = container;
     this._onDataChange = onDataChange;
     this._onViewChange = onViewChange;
-    this._mode = MODE.DEFAULT;
-    this._cardListItemComponent = null;
-    this._cardListItemFormComponent = null;
+    this._mode = Mode.DEFAULT;
+    this._pointLineComponent = null;
+    this._pointFormComponent = null;
     this._onEscKeyDown = this._onEscKeyDown.bind(this);
     this._onButtonClick = this._onButtonClick.bind(this);
   }
 
   renderCardItem(cardItem, mode) { // рендер для одной карточки
-    const oldCardListItemComponent = this._cardListItemComponent;
-    const oldCardListItemFormComponent = this._cardListItemFormComponent;
+    const oldPointLineComponent = this._pointLineComponent;
+    const oldPointFormComponent = this._pointFormComponent;
     this._mode = mode;
-    this._cardListItemComponent = new CardListItemComponent(cardItem);
-    this._cardListItemFormComponent = new CardListItemFormComponent(cardItem, this._allPoints);
+    this._pointLineComponent = new PointLineComponent(cardItem);
+    this._pointFormComponent = new PointFormComponent(cardItem, this._allPoints);
 
-    this._cardListItemComponent.setRollupButtonClickHandler(() => {
+    this._pointLineComponent.setRollupButtonClickHandler(() => {
       this._replaceItemToForm();
       document.addEventListener(`keydown`, this._onEscKeyDown);
-      this._cardListItemFormComponent.getElement().querySelector(`.event__rollup-btn`)
-        .addEventListener(`click`, this._onButtonClick);
+      document.addEventListener(`click`, this._onButtonClick);
     });
 
-    this._cardListItemFormComponent.setSubmitHandler((evt) => {
+    this._pointFormComponent.setSubmitHandler((evt) => {
       evt.preventDefault();
 
-      this._cardListItemFormComponent.setChangedDataByView({
+      this._pointFormComponent.setChangedDataByView({
         SAVE_BUTTON_TEXT: `Saving...`,
       });
 
-      const formData = this._cardListItemFormComponent.getChangedDataByView();
-      const data = parseFormData(formData);
-      this._onDataChange(this, cardItem, data);
+      const formData = this._pointFormComponent.getChangedDataByView();
+      const pointModel = parseFormData(formData);
+      this._onDataChange(this, cardItem, pointModel);
     });
-    this._cardListItemFormComponent.setDeleteButtonClickHandler(() => {
+    this._pointFormComponent.setDeleteButtonClickHandler(() => {
 
-      this._cardListItemFormComponent.setChangedDataByView({
+      this._pointFormComponent.setChangedDataByView({
         DELETE_BUTTON_TEXT: `Deleting...`,
       });
       this._onDataChange(this, cardItem, null);
     });
 
     switch (mode) {
-      case MODE.DEFAULT:
-        if (oldCardListItemComponent && oldCardListItemFormComponent) {
-          replace(this._cardListItemFormComponent, oldCardListItemFormComponent);
-          replace(this._cardListItemComponent, oldCardListItemComponent);
-          this._replaceFormToItem();
-        } else {
-          renderComponent(this._container, this._cardListItemComponent);
-        }
-        break;
-      case MODE.ADDING:
-        if (oldCardListItemComponent && oldCardListItemFormComponent) {
-          remove(oldCardListItemComponent);
-          remove(oldCardListItemFormComponent);
+      case Mode.ADDING:
+        if (oldPointLineComponent && oldPointFormComponent) {
+          remove(oldPointLineComponent);
+          remove(oldPointFormComponent);
         }
         document.addEventListener(`keydown`, this._onEscKeyDown);
-        this._cardListItemFormComponent.getElement().querySelector(`.event__rollup-btn`)
-          .addEventListener(`click`, this._onButtonClick);
-        renderComponent(this._container, this._cardListItemFormComponent, `afterEnd`);
+        document.addEventListener(`click`, this._onButtonClick);
+        renderComponent(this._container, this._pointFormComponent, `afterEnd`);
+        break;
+      default:
+        if (oldPointLineComponent && oldPointFormComponent) {
+          replace(this._pointFormComponent, oldPointFormComponent);
+          replace(this._pointLineComponent, oldPointLineComponent);
+          this._replaceFormToItem();
+        } else {
+          renderComponent(this._container, this._pointLineComponent);
+        }
         break;
     }
   }
 
-  setDefaultView() { // превратить в строку и поменять MODE
-    if (this._mode !== MODE.DEFAULT) { // если MODE.FORM
+  setDefaultView() { // превратить в строку и поменять Mode
+    if (this._mode !== Mode.DEFAULT) { // если Mode.FORM
       this._replaceFormToItem(); // превратить форму в карточку
     }
   }
 
   destroy() {
-    remove(this._cardListItemFormComponent);
-    remove(this._cardListItemComponent);
+    remove(this._pointFormComponent);
+    remove(this._pointLineComponent);
     document.removeEventListener(`keydown`, this._onEscKeyDown);
-    this._cardListItemFormComponent.getElement().querySelector(`.event__rollup-btn`)
-      .removeEventListener(`click`, this._onButtonClick);
+    document.removeEventListener(`click`, this._onButtonClick);
   }
 
   shake() {
-    this._cardListItemFormComponent.getElement().style.animation = `shake ${SHAKE_ANIMATION_TIMEOUT / 1000}s`;
-    this._cardListItemComponent.getElement().style.animation = `shake ${SHAKE_ANIMATION_TIMEOUT / 1000}s`;
+    this._pointFormComponent.getElement().style.animation = `shake ${SHAKE_ANIMATION_TIMEOUT / 1000}s`;
+    this._pointLineComponent.getElement().style.animation = `shake ${SHAKE_ANIMATION_TIMEOUT / 1000}s`;
 
     setTimeout(() => {
-      this._cardListItemFormComponent.getElement().style.animation = ``;
-      this._cardListItemComponent.getElement().style.animation = ``;
+      this._pointFormComponent.getElement().style.animation = ``;
+      this._pointLineComponent.getElement().style.animation = ``;
 
-      this._cardListItemFormComponent.setChangedDataByView({
+      this._pointFormComponent.setChangedDataByView({
         DELETE_BUTTON_TEXT: `Delete`,
         SAVE_BUTTON_TEXT: `Save`
       });
@@ -175,33 +172,37 @@ export default class ItemController {
 
   _replaceFormToItem() {
     document.removeEventListener(`keydown`, this._onEscKeyDown);
-    this._cardListItemFormComponent.getElement().querySelector(`.event__rollup-btn`)
-      .removeEventListener(`click`, this._onButtonClick);
-    this._cardListItemFormComponent.reset();
+    document.removeEventListener(`click`, this._onButtonClick);
+    this._pointFormComponent.reset();
 
-    if (document.contains(this._cardListItemFormComponent.getElement())) {
-      replace(this._cardListItemComponent, this._cardListItemFormComponent);
+    if (document.contains(this._pointFormComponent.getElement())) {
+      replace(this._pointLineComponent, this._pointFormComponent);
     }
 
-    this._mode = MODE.DEFAULT;
+    this._mode = Mode.DEFAULT;
   }
 
   _replaceItemToForm() {
     this._onViewChange();
-    replace(this._cardListItemFormComponent, this._cardListItemComponent);
-    this._mode = MODE.FORM;
+    replace(this._pointFormComponent, this._pointLineComponent);
+    this._mode = Mode.FORM;
   }
 
   _onEscKeyDown(evt) {
     if (evt.key === `Escape` || evt.key === `Esc`) {
-      if (this._mode === MODE.ADDING) {
+      if (this._mode === Mode.ADDING) {
         this._onDataChange(this, EmptyPoint, null);
       }
       this._replaceFormToItem();
     }
   }
 
-  _onButtonClick() {
-    this._replaceFormToItem();
+  _onButtonClick(evt) {
+    if (evt.target.classList.contains(`evt__rollup-btn__setbymyself`)) {
+      if (this._mode === Mode.ADDING) {
+        this._onDataChange(this, EmptyPoint, null);
+      }
+      this._replaceFormToItem();
+    }
   }
 }

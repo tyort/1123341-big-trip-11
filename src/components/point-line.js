@@ -1,5 +1,5 @@
-import AbstractComponent from './abstract_component.js';
-import {itemTimePeriod, generateWaybillType} from '../formulas.js';
+import AbstractComponent from './abstract-component.js';
+import {createPeriodsName, generateWaybillType} from '../formulas.js';
 import moment from 'moment';
 
 const createExtraOptionInsert = (array, newmap) => {
@@ -17,10 +17,10 @@ const createExtraOptionInsert = (array, newmap) => {
     .join(``);
 };
 
-const createCardListItemTemplate = (cardItem) => {
-  const {offers, type, name, dateFrom, dateTo, basePrice, offersPrice} = cardItem;
+const createPointLineTemplate = (point) => {
+  const {offers, type, name, dateFrom, dateTo, basePrice, offersPrice} = point;
   const addExtraOptions = createExtraOptionInsert(Array.from(offers), offersPrice);
-  const addItemTimePeriod = itemTimePeriod(dateFrom, dateTo);
+  const addItemTimePeriod = createPeriodsName(dateFrom, dateTo);
   const addCardItemDate = moment(dateFrom).format(`YYYY-MM-DDTHH:mm`);
   const addCardItemTime = moment(dateFrom).format(`HH:mm`);
   const addDateTo = moment(dateTo).format(`YYYY-MM-DDTHH:mm`);
@@ -67,13 +67,13 @@ const createCardListItemTemplate = (cardItem) => {
 };
 
 export default class CardListItem extends AbstractComponent {
-  constructor(cardItem) {
+  constructor(point) {
     super();
-    this._cardItem = cardItem;
+    this._point = point;
   }
 
   getTemplate() {
-    return createCardListItemTemplate(this._cardItem);
+    return createPointLineTemplate(this._point);
   }
 
   setRollupButtonClickHandler(handler) {

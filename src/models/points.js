@@ -1,29 +1,29 @@
-import {FILTER_TYPE, getPointsByFilter} from '../formulas-filter.js';
+import {FilterType, getPointsByFilter} from '../formulas-filter.js';
 
 export default class Points {
   constructor() {
     this._points = [];
-    this._activeFilterType = FILTER_TYPE.EVERYTHING;
+    this._activeFilterType = FilterType.EVERYTHING;
     this._filterChangeHandlers = [];
     this._dataChangeHandlers = []; // this._points.setDataChangeHandler(this._onDataChange);
   }
 
-  getPointsByFilter() { // получение точек маршрута
+  getPointsByFilter() {
     return getPointsByFilter(this._points, this._activeFilterType);
   }
 
-  // getPointsOnBegining() { // зачем этот метод
-  //   return this._points;
-  // }
-
-  setPoints(items) { // запись точек маршрута
-    this._points = Array.from(items);
-    this._callHandlers(this._dataChangeHandlers);
+  getPointsOnBegining() {
+    return this._points;
   }
 
-  setFilter(filterType) { // фильтрация не происходит при вызове, только меняется тип фильтра
+  setPoints(items) {
+    this._points = Array.from(items);
+  }
+
+  setFilter(filterType) {
     this._activeFilterType = filterType;
     this._callHandlers(this._filterChangeHandlers); // запустить this._onDataChange
+    this._callHandlers(this._dataChangeHandlers);
   }
 
   removePoint(id) {
@@ -33,37 +33,46 @@ export default class Points {
       return false;
     }
 
-    this._points = [].concat(this._points.slice(0, index), this._points.slice(index + 1));
+    this._points = [
+      ...this._points.slice(0, index),
+      ...this._points.slice(index + 1)
+    ];
+
     this._callHandlers(this._dataChangeHandlers);
     return true;
   }
 
-  updatePoint(id, item) { // обновление точки маршрута в массиве
+  updatePoint(id, item) {
     const index = this._points.findIndex((it) => it.id === id);
 
     if (index === -1) {
       return false;
     }
 
-    this._points = [].concat(this._points.slice(0, index), item, this._points.slice(index + 1));
+    this._points = [
+      ...this._points.slice(0, index),
+      item,
+      ...this._points.slice(index + 1)
+    ];
+
     this._callHandlers(this._dataChangeHandlers);
     return true;
   }
 
   addPoint(point) {
-    this._points = [].concat(point, this._points);
-    this._callHandlers(this._dataChangeHandlers); // вызывает _onDataChange из filter controller
+    this._points = [point, ...this._points];
+    this._callHandlers(this._dataChangeHandlers);
   }
 
   setFilterChangeHandler(handler) {
     this._filterChangeHandlers.push(handler);
   }
 
-  setDataChangeHandler(handler) { // запускается вначале
-    this._dataChangeHandlers.push(handler); // handler равен _onDataChange из filter controller
+  setDataChangeHandler(handler) {
+    this._dataChangeHandlers.push(handler);
   }
 
-  _callHandlers(handlers) { // вызвать каждый хендлер в массиве
+  _callHandlers(handlers) {
     handlers.forEach((handler) => handler());
   }
 }

@@ -1,7 +1,7 @@
 import moment from 'moment';
 
 export const getRandomIntegerNumber = (min, max) => {
-  let rand = min + Math.random() * (max + 1 - min);
+  const rand = min + Math.random() * (max + 1 - min);
   return Math.floor(rand);
 };
 
@@ -58,12 +58,12 @@ export const replace = (newComponent, oldComponent) => {
   }
 };
 
-export const dayCounter = (arr) => {
+export const getDaysCount = (arr) => {
   return arr.map((it) => moment(it))
     .map((it, index, array) => 1 + it.diff(array[0], `days`));
 };
 
-export const itemTimePeriod = (arr1, arr2) => {
+export const createPeriodsName = (arr1, arr2) => {
   const startDate = moment(arr1);
   const endDate = moment(arr2);
 
@@ -81,7 +81,7 @@ export const itemTimePeriod = (arr1, arr2) => {
   return `${daysDiff}${hoursDiff}${minDiff}`;
 };
 
-const VISUALLY_HIDDEN = `visually-hidden`;
+export const VISUALLY_HIDDEN = `visually-hidden`;
 
 export const showComponent = (neededClassName) => {
   const component = document.querySelector(`.${neededClassName}`);

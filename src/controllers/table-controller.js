@@ -1,11 +1,11 @@
-import AssortmentComponent, {SORT_TYPES} from '../components/assortment.js';
-import TripDaysComponent from '../components/trip_days.js';
-import CardListComponent from '../components/card_list.js';
-import CardListLightComponent from '../components/card_list_light.js';
-import NoCardListComponent from '../components/no_card_list.js';
+import AssortmentComponent, {SortType} from '../components/assortment.js';
+import TripDaysComponent from '../components/trip-days.js';
+import CardListComponent from '../components/card-list.js';
+import CardListLightComponent from '../components/card-list-light.js';
+import NoCardListComponent from '../components/no-card-list.js';
 import WaybillComponent from '../components/waybill.js';
-import {dayCounter, renderComponent, showComponent, hideComponent} from '../formulas.js';
-import ItemController, {MODE, EmptyPoint} from './item-controller.js';
+import {getDaysCount, renderComponent, showComponent, hideComponent} from '../formulas.js';
+import ItemController, {Mode, EmptyPoint} from './item-controller.js';
 import moment from 'moment';
 
 const mainTripInfoElement = document.querySelector(`.trip-main`);
@@ -17,19 +17,19 @@ const renderAllPoints = (sortType, container, allPoints, onDataChange, onViewCha
       .filter((item, index, array) => array.indexOf(item) === index)
       .sort((a, b) => a - b);
 
-    sortedCards.forEach((it, index) => renderComponent(container, new CardListComponent(it, dayCounter(sortedCards)[index])));
+    sortedCards.forEach((it, index) => renderComponent(container, new CardListComponent(it, getDaysCount(sortedCards)[index])));
     const tripEventsListElements = document.querySelectorAll(`.trip-events__list`);
-    const arrayOfItemControllers = [];
+    const itemControllers = [];
 
     sortedCards.forEach((item, index) => {
       allPoints.filter((elem) => item === moment(elem.dateFrom).format(`YYYYMMDD`))
         .forEach((i) => {
           const itemController = new ItemController(tripEventsListElements[index], onDataChange, onViewChange, allPoints);
-          itemController.renderCardItem(i, MODE.DEFAULT);
-          arrayOfItemControllers.push(itemController);
+          itemController.renderCardItem(i, Mode.DEFAULT);
+          itemControllers.push(itemController);
         });
     });
-    return arrayOfItemControllers;
+    return itemControllers;
   } else {
     renderComponent(container, new CardListLightComponent());
 
@@ -37,7 +37,7 @@ const renderAllPoints = (sortType, container, allPoints, onDataChange, onViewCha
 
     return allPoints.map((i) => {
       const itemController = new ItemController(tripEventsListElement, onDataChange, onViewChange, allPoints);
-      itemController.renderCardItem(i, MODE.DEFAULT);
+      itemController.renderCardItem(i, Mode.DEFAULT);
       return itemController;
     });
   }
@@ -110,7 +110,7 @@ export default class TableController {
     }
     hideComponent(`trip-events__msg`);
     this._creatingPoint = new ItemController(this._assortmentComponent.getElement(), this._onDataChange, this._onViewChange, this._points._points);
-    this._creatingPoint.renderCardItem(EmptyPoint, MODE.ADDING);
+    this._creatingPoint.renderCardItem(EmptyPoint, Mode.ADDING);
   }
 
   _removePoints() {
@@ -170,7 +170,7 @@ export default class TableController {
           const isSuccess = this._points.updatePoint(oldData.id, item);
 
           if (isSuccess) {
-            itemController.renderCardItem(item, MODE.DEFAULT);
+            itemController.renderCardItem(item, Mode.DEFAULT);
             this._updatePoints();
           }
         })
@@ -190,13 +190,13 @@ export default class TableController {
     const points = this._points.getPointsByFilter();
 
     switch (sortType) {
-      case SORT_TYPES.TIME_DOWN:
+      case SortType.TIME_DOWN:
         sortedItems = points.slice().sort((a, b) => new Date(b.dateTo).getTime() - new Date(b.dateFrom).getTime() - new Date(a.dateTo).getTime() + new Date(a.dateFrom).getTime());
         break;
-      case SORT_TYPES.PRICE_DOWN:
+      case SortType.PRICE_DOWN:
         sortedItems = points.slice().sort((a, b) => b.basePrice - a.basePrice);
         break;
-      case SORT_TYPES.DEFAULT:
+      default:
         sortedItems = points.slice();
         break;
     }
