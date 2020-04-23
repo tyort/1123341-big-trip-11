@@ -52,7 +52,7 @@ export default class Points {
 
   addPoint(point) {
     this._points = [].concat(point, this._points);
-    this._callHandlers(this._dataChangeHandlers); // вызывает _onDataChange из filter controller
+    this._callHandlers(this._dataChangeHandlers);
   }
 
   setFilterChangeHandler(handler) {
@@ -60,7 +60,7 @@ export default class Points {
   }
 
   setDataChangeHandler(handler) {
-    this._dataChangeHandlers.push(handler); // handler равен _onDataChange из filter controller
+    this._dataChangeHandlers.push(handler);
   }
 
   _callHandlers(handlers) {

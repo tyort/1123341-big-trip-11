@@ -1,4 +1,4 @@
-import AbstractSmartComponent from './abstract_smart_component.js';
+import AbstractSmartComponent from './abstract-smart-component.js';
 import Chart from 'chart.js';
 import moment from 'moment';
 

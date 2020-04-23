@@ -1,4 +1,4 @@
-import AbstractComponent from './abstract_component.js';
+import AbstractComponent from './abstract-component.js';
 
 export const SortType = {
   PRICE_DOWN: `price`,

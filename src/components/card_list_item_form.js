@@ -1,4 +1,4 @@
-import AbstractSmartComponent from './abstract_smart_component.js';
+import AbstractSmartComponent from './abstract-smart-component.js';
 import {generateWaybillType} from '../formulas.js';
 import flatpickr from 'flatpickr';
 import he from 'he';

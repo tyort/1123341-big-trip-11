@@ -1,4 +1,4 @@
-import AbstractComponent from './abstract_component.js';
+import AbstractComponent from './abstract-component.js';
 
 const FILTER_ID_PREFIX = `filter-`;
 const getFilterNameById = (id) => id.substring(FILTER_ID_PREFIX.length);
