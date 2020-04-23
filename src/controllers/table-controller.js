@@ -196,7 +196,7 @@ export default class TableController {
       case SortType.PRICE_DOWN:
         sortedItems = points.slice().sort((a, b) => b.basePrice - a.basePrice);
         break;
-      case SortType.DEFAULT:
+      default:
         sortedItems = points.slice();
         break;
     }

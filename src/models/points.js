@@ -33,7 +33,11 @@ export default class Points {
       return false;
     }
 
-    this._points = [].concat(this._points.slice(0, index), this._points.slice(index + 1));
+    this._points = [
+      ...this._points.slice(0, index),
+      ...this._points.slice(index + 1)
+    ];
+
     this._callHandlers(this._dataChangeHandlers);
     return true;
   }
@@ -45,13 +49,18 @@ export default class Points {
       return false;
     }
 
-    this._points = [].concat(this._points.slice(0, index), item, this._points.slice(index + 1));
+    this._points = [
+      ...this._points.slice(0, index),
+      item,
+      ...this._points.slice(index + 1)
+    ];
+
     this._callHandlers(this._dataChangeHandlers);
     return true;
   }
 
   addPoint(point) {
-    this._points = [].concat(point, this._points);
+    this._points = [point, ...this._points];
     this._callHandlers(this._dataChangeHandlers);
   }
 

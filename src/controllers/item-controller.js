@@ -121,15 +121,6 @@ export default class ItemController {
     });
 
     switch (mode) {
-      case Mode.DEFAULT:
-        if (oldPointLineComponent && oldPointFormComponent) {
-          replace(this._pointFormComponent, oldPointFormComponent);
-          replace(this._pointLineComponent, oldPointLineComponent);
-          this._replaceFormToItem();
-        } else {
-          renderComponent(this._container, this._pointLineComponent);
-        }
-        break;
       case Mode.ADDING:
         if (oldPointLineComponent && oldPointFormComponent) {
           remove(oldPointLineComponent);
@@ -138,6 +129,15 @@ export default class ItemController {
         document.addEventListener(`keydown`, this._onEscKeyDown);
         document.addEventListener(`click`, this._onButtonClick);
         renderComponent(this._container, this._pointFormComponent, `afterEnd`);
+        break;
+      default:
+        if (oldPointLineComponent && oldPointFormComponent) {
+          replace(this._pointFormComponent, oldPointFormComponent);
+          replace(this._pointLineComponent, oldPointLineComponent);
+          this._replaceFormToItem();
+        } else {
+          renderComponent(this._container, this._pointLineComponent);
+        }
         break;
     }
   }

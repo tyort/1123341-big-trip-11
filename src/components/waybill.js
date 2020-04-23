@@ -18,8 +18,8 @@ const createWaybillTemplate = (points) => {
     tripInfoTitle = `${sortedPoints[0].name} - ... - ${sortedPoints[sortedPoints.length - 1].name}`;
   }
 
-  const addStartDate = sortedPoints[0] !== undefined ? moment(sortedPoints[0].dateFrom).format(`MMM DD`) : `No Date`;
-  const addEndDate = sortedPoints[sortedPoints.length - 1] !== undefined
+  const addStartDate = sortedPoints[0] ? moment(sortedPoints[0].dateFrom).format(`MMM DD`) : `No Date`;
+  const addEndDate = sortedPoints[sortedPoints.length - 1]
     ? moment(sortedPoints[sortedPoints.length - 1].dateTo).format(`MMM DD`)
     : `No Date`;
 

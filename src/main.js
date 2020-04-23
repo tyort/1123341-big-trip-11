@@ -55,15 +55,15 @@ const tableController = new TableController(tripEventsElement, points, apiWithPr
 
 menuComponent.setOnChange((mainViewId) => {
   switch (mainViewId) {
-    case MainViewMode.TABLE:
-      menuComponent.setActiveViewMode(mainViewId);
-      statisticsComponent.hide();
-      tableController.show();
-      break;
     case MainViewMode.STATISTICS:
       menuComponent.setActiveViewMode(mainViewId);
       tableController.hide();
       statisticsComponent.show();
+      break;
+    default:
+      menuComponent.setActiveViewMode(mainViewId);
+      statisticsComponent.hide();
+      tableController.show();
       break;
   }
 });

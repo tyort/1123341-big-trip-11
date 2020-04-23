@@ -39,13 +39,11 @@ export const getPointsByFilter = (points, filterType) => {
   const currentDate = new Date();
 
   switch (filterType) {
-    case FilterType.EVERYTHING:
-      return points;
     case FilterType.PAST:
       return getPastPoints(points, currentDate);
     case FilterType.FUTURE:
       return getFuturePoints(points, currentDate);
+    default:
+      return points;
   }
-
-  return points; // если фильтра из списка нет
 };
