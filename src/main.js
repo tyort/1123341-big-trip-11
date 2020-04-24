@@ -10,11 +10,18 @@ import Destinations from './models/destinations.js';
 import {renderComponent} from './formulas.js';
 import 'flatpickr/dist/flatpickr.css';
 
-const STORE_POINTS_PREFIX = `big-trip-points-localstorage`;
-const STORE_DESTINATIONS_PREFIX = `big-trip-destinations-localstorage`;
+const StorePrefix = {
+  POINTS: `big-trip-points-localstorage`,
+  DESTINATIONS: `big-trip-destinations-localstorage`
+};
+
 const STORE_VER = `v1`;
-const STORE_POINTS_NAME = `${STORE_POINTS_PREFIX}-${STORE_VER}`;
-const STORE_DESTINATIONS_NAME = `${STORE_DESTINATIONS_PREFIX}-${STORE_VER}`;
+
+const StoreName = {
+  POINTS: `${StorePrefix.POINTS}-${STORE_VER}`,
+  DESTINATIONS: `${StorePrefix.DESTINATIONS}-${STORE_VER}`
+};
+
 const MainViewMode = {
   STATISTICS: `statistics-setbymyself`,
   TABLE: `table-setbymyself`,
@@ -40,8 +47,8 @@ const points = new Points();
 const destinations = new Destinations();
 const api = new Api(END_POINT, AUTHORIZATION);
 const store = {
-  points: new Store(STORE_POINTS_NAME, window.localStorage),
-  destinations: new Store(STORE_DESTINATIONS_NAME, window.localStorage),
+  points: new Store(StoreName.POINTS, window.localStorage),
+  destinations: new Store(StoreName.DESTINATIONS, window.localStorage),
 };
 const apiWithProvider = new Provider(api, store);
 
