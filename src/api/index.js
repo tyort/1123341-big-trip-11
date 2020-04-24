@@ -1,4 +1,5 @@
 import Point from '../models/point.js';
+import Destination from '../models/destination.js';
 
 const Method = {
   GET: `GET`,
@@ -25,6 +26,12 @@ export default class Api {
     return this._load({url: `points`})
       .then((response) => response.json()) // получаю Promise в режиме Pending
       .then(Point.parsePoints); // передаем в models/point точки преобразованные в json
+  }
+
+  getDestinations() {
+    return this._load({url: `destinations`})
+      .then((response) => response.json())
+      .then(Destination.parseDestinations);
   }
 
   createPoint(point) {
