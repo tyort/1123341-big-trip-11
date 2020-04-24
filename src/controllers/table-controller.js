@@ -47,8 +47,7 @@ export default class TableController {
   constructor(container, externalBase, api) {
     this._showedCardItemControllers = [];
     this._container = container;
-    this._points = externalBase.points;
-    this._destinations = externalBase.destinations;
+    this._externalBase = externalBase;
     this._api = api;
     this._assortmentComponent = new AssortmentComponent();
     this._tripDaysComponent = new TripDaysComponent();
@@ -59,12 +58,12 @@ export default class TableController {
     this._onViewChange = this._onViewChange.bind(this);
     this._onFilterChange = this._onFilterChange.bind(this);
     this._assortmentComponent.setSortTypeChangeHandler(this._onSortTypeChange);
-    this._points.setFilterChangeHandler(this._onFilterChange);
+    this._externalBase.setFilterChangeHandler(this._onFilterChange);
     this._sortType = `event`;
   }
 
   chooseEnvelope() {
-    const points = this._points.getPointsByFilter();
+    const points = this._externalBase.getPointsByFilter();
     if (points.length === 0) {
       showComponent(`trip-events__msg`);
       hideComponent(`trip-events__trip-sort`);
@@ -93,7 +92,7 @@ export default class TableController {
   }
 
   renderMap() {
-    const points = this._points.getPointsByFilter();
+    const points = this._externalBase.getPointsByFilter();
 
     renderComponent(this._container, this._noCardListComponent);
 
@@ -107,8 +106,8 @@ export default class TableController {
 
   createPoint() {
     const externalBase = {
-      points: this._points.getPointsByFilter(),
-      destinations: this._destinations.getDestinations()
+      points: this._externalBase.getPointsByFilter(),
+      destinations: this._externalBase.getDestinations()
     };
 
     if (this._creatingPoint) {
@@ -129,7 +128,7 @@ export default class TableController {
   _renderPoints(sortType, points) {
     const externalBase = {
       points,
-      destinations: this._destinations.getDestinations()
+      destinations: this._externalBase.getDestinations()
     };
 
     this._sortType = sortType;
@@ -141,8 +140,8 @@ export default class TableController {
   _updatePoints() {
     mainTripInfoElement.querySelector(`.trip-main__trip-info`).remove();
     this._removePoints();
-    this._renderPoints(this._sortType, this._points.getPointsByFilter());
-    renderComponent(mainTripInfoElement, new WaybillComponent(this._points.getPointsByFilter()), `afterBegin`);
+    this._renderPoints(this._sortType, this._externalBase.getPointsByFilter());
+    renderComponent(mainTripInfoElement, new WaybillComponent(this._externalBase.getPointsByFilter()), `afterBegin`);
     this.chooseEnvelope();
   }
 
@@ -158,7 +157,7 @@ export default class TableController {
 
       this._api.createPoint(newData) // экземпляр Point в удобном для мня формате
           .then((item) => {
-            this._points.addPoint(item);
+            this._externalBase.addPoint(item);
             this._updatePoints();
           })
           .catch(() => {
@@ -169,7 +168,7 @@ export default class TableController {
 
       this._api.deletePoint(oldData.id) // свойство id экземпляра Point
         .then(() => {
-          this._points.removePoint(oldData.id);
+          this._externalBase.removePoint(oldData.id);
           this. _updatePoints();
         })
         .catch(() => {
@@ -179,7 +178,7 @@ export default class TableController {
     } else {
       this._api.updatePoint(oldData.id, newData) // находится необходимый id и сохраняются измененные данные
         .then((item) => {
-          const isSuccess = this._points.updatePoint(oldData.id, item);
+          const isSuccess = this._externalBase.updatePoint(oldData.id, item);
 
           if (isSuccess) {
             itemController.renderCardItem(item, Mode.DEFAULT);
@@ -199,7 +198,7 @@ export default class TableController {
   _onSortTypeChange(sortType) {
     this._tripDaysComponent.getElement().innerHTML = ``;
     let sortedItems = [];
-    const points = this._points.getPointsByFilter();
+    const points = this._externalBase.getPointsByFilter();
 
     switch (sortType) {
       case SortType.TIME_DOWN:

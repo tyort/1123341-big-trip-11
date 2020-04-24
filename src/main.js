@@ -5,8 +5,7 @@ import MenuComponent from './components/menu.js';
 import StatisticsComponent from './components/statistics.js';
 import FilterController from './controllers/filter-controller.js';
 import TableController from './controllers/table-controller.js';
-import Points from './models/points.js';
-import Destinations from './models/destinations.js';
+import ExternalBase from './models/external-base.js';
 import {renderComponent} from './formulas.js';
 import 'flatpickr/dist/flatpickr.css';
 
@@ -35,16 +34,15 @@ document.querySelector(`.trip-main__event-add-btn`)
 const AUTHORIZATION = `Basic eo0w590ik29889g`;
 const END_POINT = `https://htmlacademy-es-10.appspot.com/big-trip/`;
 
-// window.addEventListener(`load`, () => {
-//   navigator.serviceWorker.register(`/sw.js`)
-//     .then(() => {
-//     })
-//     .catch(() => {
-//     });
-// });
+window.addEventListener(`load`, () => {
+  navigator.serviceWorker.register(`/sw.js`)
+    .then(() => {
+    })
+    .catch(() => {
+    });
+});
 
-const points = new Points();
-const destinations = new Destinations();
+const externalBase = new ExternalBase();
 const api = new Api(END_POINT, AUTHORIZATION);
 const store = {
   points: new Store(StoreName.POINTS, window.localStorage),
@@ -57,15 +55,15 @@ const visuallyHiddenElement = mainTripControlsElement.querySelectorAll(`.visuall
 const menuComponent = new MenuComponent();
 renderComponent(visuallyHiddenElement[0], menuComponent, `afterEnd`);
 menuComponent.setActiveViewMode(MainViewMode.TABLE);
-const filterController = new FilterController(visuallyHiddenElement[1], points);
+const filterController = new FilterController(visuallyHiddenElement[1], externalBase);
 
 const pageBodyContainer = document.getElementsByClassName(`page-body__container`)[1];
-const statisticsComponent = new StatisticsComponent(points);
+const statisticsComponent = new StatisticsComponent(externalBase);
 renderComponent(pageBodyContainer, statisticsComponent);
 statisticsComponent.hide();
 
 const tripEventsElement = document.querySelector(`.trip-events`);
-const tableController = new TableController(tripEventsElement, {points, destinations}, apiWithProvider);
+const tableController = new TableController(tripEventsElement, externalBase, apiWithProvider);
 
 menuComponent.setOnChange((mainViewId) => {
   switch (mainViewId) {
@@ -85,15 +83,14 @@ menuComponent.setOnChange((mainViewId) => {
 apiWithProvider.getPoints()
   .then((items) => {
     const sortedItems = items.sort((a, b) => new Date(a.dateFrom).getTime() - new Date(b.dateFrom).getTime());
-    points.setPoints(sortedItems);
+    externalBase.setPoints(sortedItems);
     tableController.renderMap();
     filterController.renderFilters();
   });
 
 apiWithProvider.getDestinations()
   .then((items) => {
-    console.log(items);
-    destinations.setDestinations(items);
+    externalBase.setDestinations(items);
   });
 
 window.addEventListener(`online`, () => {

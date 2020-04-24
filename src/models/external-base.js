@@ -1,11 +1,20 @@
 import {FilterType, getPointsByFilter} from '../formulas-filter.js';
 
-export default class Points {
+export default class ExternalBase {
   constructor() {
     this._points = [];
+    this._destinations = [];
     this._activeFilterType = FilterType.EVERYTHING;
     this._filterChangeHandlers = [];
     this._dataChangeHandlers = []; // this._points.setDataChangeHandler(this._onDataChange);
+  }
+
+  getDestinations() {
+    return this._destinations;
+  }
+
+  setDestinations(items) {
+    this._destinations = Array.from(items);
   }
 
   getPointsByFilter() {
