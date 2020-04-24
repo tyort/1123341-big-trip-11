@@ -32,16 +32,16 @@ document.querySelector(`.trip-main__event-add-btn`)
     tableController.createPoint();
   });
 
-const AUTHORIZATION = `Basic eo0w590ik29889o`;
+const AUTHORIZATION = `Basic eo0w590ik29889g`;
 const END_POINT = `https://htmlacademy-es-10.appspot.com/big-trip/`;
 
-window.addEventListener(`load`, () => {
-  navigator.serviceWorker.register(`/sw.js`)
-    .then(() => {
-    })
-    .catch(() => {
-    });
-});
+// window.addEventListener(`load`, () => {
+//   navigator.serviceWorker.register(`/sw.js`)
+//     .then(() => {
+//     })
+//     .catch(() => {
+//     });
+// });
 
 const points = new Points();
 const destinations = new Destinations();
@@ -65,7 +65,7 @@ renderComponent(pageBodyContainer, statisticsComponent);
 statisticsComponent.hide();
 
 const tripEventsElement = document.querySelector(`.trip-events`);
-const tableController = new TableController(tripEventsElement, points, apiWithProvider);
+const tableController = new TableController(tripEventsElement, {points, destinations}, apiWithProvider);
 
 menuComponent.setOnChange((mainViewId) => {
   switch (mainViewId) {

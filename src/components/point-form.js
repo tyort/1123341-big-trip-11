@@ -83,8 +83,7 @@ const createWaybillPurposeList = (newmap) => {
     .join(``);
 };
 
-const createPointFormTemplate = (point, options = {}) => {
-  const {pictures} = point;
+const createPointFormTemplate = (options = {}) => {
   const {
     activateButtonText,
     isChangeFavorite,
@@ -95,11 +94,12 @@ const createPointFormTemplate = (point, options = {}) => {
     activateExtraOptionsPrice,
     activateBasePrice,
     activateDateFrom,
-    activateDateTo
+    activateDateTo,
+    activatePictures
   } = options;
   const addExtraOptions = createExtraOptionInsert(Array.from(activateExtraOptions), activateExtraOptionsPrice);
   const addDescription = he.encode(activateDescription);
-  const addPhotos = createPhotos(pictures);
+  const addPhotos = createPhotos(activatePictures);
   const addWaybillType = Array.from(activateCheckedType).find((it) => it[1])[0];
   const addWaybillPurpose = Array.from(activateCheckedPurpose).find((it) => it[1])[0];
   const addFavorite = isChangeFavorite ? `checked` : ``;
@@ -212,14 +212,16 @@ const createPointFormTemplate = (point, options = {}) => {
 };
 
 export default class PointForm extends AbstractSmartComponent {
-  constructor(point, allpoints) {
+  constructor(point, externalBase) {
     super();
 
     this._point = point;
-    this._allPoints = allpoints;
+    this._externalBase = externalBase;
+    this._destinations = externalBase.destinations;
+    this._allPoints = externalBase.points;
     this._isChangeFavorite = !!point.isFavorite;
     this._activateCheckedType = new Map(this._allPoints.map((it) => [it.type, false])).set(point.type, true); // получу актуальный Map с нужным true
-    this._activateCheckedPurpose = new Map(this._allPoints.map((it) => [it.name, false])).set(point.name, true); // получу актуальный Map с нужным true
+    this._activateCheckedPurpose = new Map(this._destinations.map((it) => [it.name, false])).set(point.name, true); // получу актуальный Map с нужным true
     this._activateExtraOptions = new Map(point.offers);
     this._activateDescription = point.description;
     this._activateExtraOptionsPrice = point.offersPrice;
@@ -227,6 +229,7 @@ export default class PointForm extends AbstractSmartComponent {
     this._activateButtonText = ButtonText;
     this._activateDateFrom = point.dateFrom;
     this._activateDateTo = point.dateTo;
+    this._activatePictures = point.pictures;
     this._startFlatpickr = null;
     this._endFlatpickr = null;
     this._submitHandler = null;
@@ -236,7 +239,7 @@ export default class PointForm extends AbstractSmartComponent {
   }
 
   getTemplate() {
-    return createPointFormTemplate(this._point, {
+    return createPointFormTemplate({
       isChangeFavorite: this._isChangeFavorite,
       activateCheckedType: this._activateCheckedType,
       activateCheckedPurpose: this._activateCheckedPurpose,
@@ -245,7 +248,8 @@ export default class PointForm extends AbstractSmartComponent {
       activateExtraOptionsPrice: this._activateExtraOptionsPrice,
       activateButtonText: this._activateButtonText,
       activateBasePrice: this._activateBasePrice,
-      activateDateTo: this._activateDateTo
+      activateDateTo: this._activateDateTo,
+      activatePictures: this._activatePictures,
     });
   }
 
@@ -269,6 +273,7 @@ export default class PointForm extends AbstractSmartComponent {
   reRender() {
     super.reRender();
     this._applyFlatpickr();
+    console.log(this._externalBase);
   }
 
   reset() {
@@ -276,13 +281,14 @@ export default class PointForm extends AbstractSmartComponent {
 
     this._isChangeFavorite = !!point.isFavorite;
     this._activateCheckedType = new Map(this._allPoints.map((it) => [it.type, false])).set(point.type, true); // получу актуальный Map с нужным true
-    this._activateCheckedPurpose = new Map(this._allPoints.map((it) => [it.name, false])).set(point.name, true); // получу актуальный Map с нужным true
+    this._activateCheckedPurpose = new Map(this._destinations.map((it) => [it.name, false])).set(point.name, true); // получу актуальный Map с нужным true
     this._activateExtraOptions = new Map(point.offers);
     this._activateDescription = point.description;
     this._activateExtraOptionsPrice = point.offersPrice;
     this._activateBasePrice = point.basePrice;
     this._activateDateFrom = point.dateFrom;
     this._activateDateTo = point.dateTo;
+    this._activatePictures = point.pictures;
 
     this.reRender();
   }
@@ -386,10 +392,12 @@ export default class PointForm extends AbstractSmartComponent {
 
     const eventInputDestination = element.querySelector(`.event__input--destination`);
     eventInputDestination.addEventListener(`change`, (evt) => {
-      this._activateCheckedPurpose = new Map(this._allPoints.map((it) => [it.name, false]));
+      this._activateCheckedPurpose = new Map(this._destinations.map((it) => [it.name, false]));
       this._activateCheckedPurpose.set(evt.target.value, true);
-      const properPoint = this._allPoints.find((item) => item.name === evt.target.value);
-      this._activateDescription = properPoint !== undefined ? properPoint.description : `Anyway anywhere`;
+
+      const properPoint = this._destinations.find((item) => item.name === evt.target.value);
+      this._activateDescription = properPoint ? properPoint.description : `Anyway anywhere`;
+      this._activatePictures = properPoint ? properPoint.pictures : [];
       this.reRender();
     });
 

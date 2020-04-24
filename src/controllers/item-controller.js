@@ -76,8 +76,8 @@ const parseFormData = (formData) => {
 };
 
 export default class ItemController {
-  constructor(container, onDataChange, onViewChange, allPoints) {
-    this._allPoints = allPoints;
+  constructor(container, onDataChange, onViewChange, externalBase) {
+    this._externalBase = externalBase;
     this._container = container;
     this._onDataChange = onDataChange;
     this._onViewChange = onViewChange;
@@ -93,7 +93,7 @@ export default class ItemController {
     const oldPointFormComponent = this._pointFormComponent;
     this._mode = mode;
     this._pointLineComponent = new PointLineComponent(cardItem);
-    this._pointFormComponent = new PointFormComponent(cardItem, this._allPoints);
+    this._pointFormComponent = new PointFormComponent(cardItem, this._externalBase);
 
     this._pointLineComponent.setRollupButtonClickHandler(() => {
       this._replaceItemToForm();
