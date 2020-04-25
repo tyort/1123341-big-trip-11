@@ -33,16 +33,16 @@ document.querySelector(`.trip-main__event-add-btn`)
     tableController.createPoint();
   });
 
-const AUTHORIZATION = `Basic eo0w590ik29889q`;
+const AUTHORIZATION = `Basic eo0w590ik29889qq`;
 const END_POINT = `https://htmlacademy-es-10.appspot.com/big-trip/`;
 
-// window.addEventListener(`load`, () => {
-//   navigator.serviceWorker.register(`/sw.js`)
-//     .then(() => {
-//     })
-//     .catch(() => {
-//     });
-// });
+window.addEventListener(`load`, () => {
+  navigator.serviceWorker.register(`/sw.js`)
+    .then(() => {
+    })
+    .catch(() => {
+    });
+});
 
 const externalBase = new ExternalBase();
 const api = new Api(END_POINT, AUTHORIZATION);
@@ -83,19 +83,11 @@ menuComponent.setOnChange((mainViewId) => {
   }
 });
 
-apiWithProvider.getDestinations()
+Promise.all([apiWithProvider.getDestinations(), apiWithProvider.getOffers(), apiWithProvider.getPoints()])
   .then((items) => {
-    externalBase.setDestinations(items);
-  });
-
-apiWithProvider.getOffers()
-  .then((items) => {
-    externalBase.setOffers(items);
-  });
-
-apiWithProvider.getPoints()
-  .then((items) => {
-    const sortedItems = items.sort((a, b) => new Date(a.dateFrom).getTime() - new Date(b.dateFrom).getTime());
+    externalBase.setDestinations(items[0]);
+    externalBase.setOffers(items[1]);
+    const sortedItems = items[2].sort((a, b) => new Date(a.dateFrom).getTime() - new Date(b.dateFrom).getTime());
     externalBase.setPoints(sortedItems);
     tableController.renderMap();
     filterController.renderFilters();
