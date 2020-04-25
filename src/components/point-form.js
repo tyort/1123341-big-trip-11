@@ -273,7 +273,6 @@ export default class PointForm extends AbstractSmartComponent {
   reRender() {
     super.reRender();
     this._applyFlatpickr();
-    console.log(this._externalBase);
   }
 
   reset() {

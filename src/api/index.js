@@ -1,5 +1,6 @@
 import Point from '../models/point.js';
 import Destination from '../models/destination.js';
+import Offers from '../models/offers.js';
 
 const Method = {
   GET: `GET`,
@@ -32,6 +33,12 @@ export default class Api {
     return this._load({url: `destinations`})
       .then((response) => response.json())
       .then(Destination.parseDestinations);
+  }
+
+  getOffers() {
+    return this._load({url: `offers`})
+      .then((response) => response.json())
+      .then(Offers.parseTypes);
   }
 
   createPoint(point) {

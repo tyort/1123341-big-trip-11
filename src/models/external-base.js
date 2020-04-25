@@ -4,9 +4,18 @@ export default class ExternalBase {
   constructor() {
     this._points = [];
     this._destinations = [];
+    this._offers = [];
     this._activeFilterType = FilterType.EVERYTHING;
     this._filterChangeHandlers = [];
     this._dataChangeHandlers = []; // this._points.setDataChangeHandler(this._onDataChange);
+  }
+
+  getOffers() {
+    return this._offers;
+  }
+
+  setOffers(items) {
+    this._offers = Array.from(items);
   }
 
   getDestinations() {

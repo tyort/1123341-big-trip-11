@@ -11,14 +11,16 @@ import 'flatpickr/dist/flatpickr.css';
 
 const StorePrefix = {
   POINTS: `big-trip-points-localstorage`,
-  DESTINATIONS: `big-trip-destinations-localstorage`
+  DESTINATIONS: `big-trip-destinations-localstorage`,
+  OFFERS: `big-trip-offers-localstorage`
 };
 
 const STORE_VER = `v1`;
 
 const StoreName = {
   POINTS: `${StorePrefix.POINTS}-${STORE_VER}`,
-  DESTINATIONS: `${StorePrefix.DESTINATIONS}-${STORE_VER}`
+  DESTINATIONS: `${StorePrefix.DESTINATIONS}-${STORE_VER}`,
+  OFFERS: `${StorePrefix.OFFERS}-${STORE_VER}`
 };
 
 const MainViewMode = {
@@ -34,19 +36,20 @@ document.querySelector(`.trip-main__event-add-btn`)
 const AUTHORIZATION = `Basic eo0w590ik29889g`;
 const END_POINT = `https://htmlacademy-es-10.appspot.com/big-trip/`;
 
-window.addEventListener(`load`, () => {
-  navigator.serviceWorker.register(`/sw.js`)
-    .then(() => {
-    })
-    .catch(() => {
-    });
-});
+// window.addEventListener(`load`, () => {
+//   navigator.serviceWorker.register(`/sw.js`)
+//     .then(() => {
+//     })
+//     .catch(() => {
+//     });
+// });
 
 const externalBase = new ExternalBase();
 const api = new Api(END_POINT, AUTHORIZATION);
 const store = {
   points: new Store(StoreName.POINTS, window.localStorage),
   destinations: new Store(StoreName.DESTINATIONS, window.localStorage),
+  offers: new Store(StoreName.OFFERS, window.localStorage),
 };
 const apiWithProvider = new Provider(api, store);
 
@@ -91,6 +94,11 @@ apiWithProvider.getPoints()
 apiWithProvider.getDestinations()
   .then((items) => {
     externalBase.setDestinations(items);
+  });
+
+apiWithProvider.getOffers()
+  .then((items) => {
+    externalBase.setOffers(items);
   });
 
 window.addEventListener(`online`, () => {

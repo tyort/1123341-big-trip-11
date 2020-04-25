@@ -1,6 +1,7 @@
 import {nanoid} from "nanoid";
 import Point from '../models/point.js';
 import Destination from '../models/destination.js';
+import Offers from '../models/offers.js';
 
 const getSyncedPoints =
   (items) => items.filter(({success}) => success).map(({payload}) => payload.point);
@@ -10,6 +11,7 @@ export default class Provider {
     this._api = api;
     this._storePoints = store.points;
     this._storeDestinations = store.destinations;
+    this._storeOffers = store.offers;
     this._isSynchronized = true;
   }
 
@@ -41,6 +43,21 @@ export default class Provider {
     const storeDestinations = Object.values(this._storeDestinations.getAll());
     this._isSynchronized = false;
     return Promise.resolve(Destination.parseDestinations(storeDestinations));
+  }
+
+  getOffers() {
+    if (this._isOnLine()) {
+      return this._api.getOffers().then(
+          (types) => {
+            types.forEach((it) => this._storeOffers.setItem(it.type, it.toRAW()));
+            return types;
+          }
+      );
+    }
+
+    const storeOffers = Object.values(this._storeOffers.getAll());
+    this._isSynchronized = false;
+    return Promise.resolve(Offers.parseTypes(storeOffers));
   }
 
   createPoint(point) {
