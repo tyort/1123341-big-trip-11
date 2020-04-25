@@ -25,8 +25,8 @@ export default class Api {
 
   getPoints() {
     return this._load({url: `points`})
-      .then((response) => response.json()) // получаю Promise в режиме Pending
-      .then(Point.parsePoints); // передаем в models/point точки преобразованные в json
+      .then((response) => response.json())
+      .then(Point.parsePoints);
   }
 
   getDestinations() {

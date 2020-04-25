@@ -107,7 +107,8 @@ export default class TableController {
   createPoint() {
     const externalBase = {
       points: this._externalBase.getPointsByFilter(),
-      destinations: this._externalBase.getDestinations()
+      destinations: this._externalBase.getDestinations(),
+      offers: this._externalBase.getOffers()
     };
 
     if (this._creatingPoint) {
@@ -128,7 +129,8 @@ export default class TableController {
   _renderPoints(sortType, points) {
     const externalBase = {
       points,
-      destinations: this._externalBase.getDestinations()
+      destinations: this._externalBase.getDestinations(),
+      offers: this._externalBase.getOffers()
     };
 
     this._sortType = sortType;

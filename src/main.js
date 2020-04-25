@@ -83,14 +83,6 @@ menuComponent.setOnChange((mainViewId) => {
   }
 });
 
-apiWithProvider.getPoints()
-  .then((items) => {
-    const sortedItems = items.sort((a, b) => new Date(a.dateFrom).getTime() - new Date(b.dateFrom).getTime());
-    externalBase.setPoints(sortedItems);
-    tableController.renderMap();
-    filterController.renderFilters();
-  });
-
 apiWithProvider.getDestinations()
   .then((items) => {
     externalBase.setDestinations(items);
@@ -99,6 +91,14 @@ apiWithProvider.getDestinations()
 apiWithProvider.getOffers()
   .then((items) => {
     externalBase.setOffers(items);
+  });
+
+apiWithProvider.getPoints()
+  .then((items) => {
+    const sortedItems = items.sort((a, b) => new Date(a.dateFrom).getTime() - new Date(b.dateFrom).getTime());
+    externalBase.setPoints(sortedItems);
+    tableController.renderMap();
+    filterController.renderFilters();
   });
 
 window.addEventListener(`online`, () => {
