@@ -33,7 +33,7 @@ document.querySelector(`.trip-main__event-add-btn`)
     tableController.createPoint();
   });
 
-const AUTHORIZATION = `Basic eo0w590ik29889g`;
+const AUTHORIZATION = `Basic eo0w590ik29889q`;
 const END_POINT = `https://htmlacademy-es-10.appspot.com/big-trip/`;
 
 // window.addEventListener(`load`, () => {
