@@ -140,10 +140,7 @@ export default class TableController {
   }
 
   _updatePoints() {
-    mainTripInfoElement.querySelector(`.trip-main__trip-info`).remove();
-    this._removePoints();
-    this._renderPoints(this._sortType, this._externalBase.getPointsByFilter());
-    renderComponent(mainTripInfoElement, new WaybillComponent(this._externalBase.getPointsByFilter()), `afterBegin`);
+    this._onSortTypeChange(this._sortType);
     this.chooseEnvelope();
   }
 
@@ -198,9 +195,10 @@ export default class TableController {
   }
 
   _onSortTypeChange(sortType) {
+    this._sortType = sortType;
     this._tripDaysComponent.getElement().innerHTML = ``;
-    let sortedItems = [];
     const points = this._externalBase.getPointsByFilter();
+    let sortedItems = [];
 
     switch (sortType) {
       case SortType.TIME_DOWN:

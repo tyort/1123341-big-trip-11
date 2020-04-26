@@ -7,7 +7,7 @@ export default class ExternalBase {
     this._offers = [];
     this._activeFilterType = FilterType.EVERYTHING;
     this._filterChangeHandlers = [];
-    this._dataChangeHandlers = []; // this._points.setDataChangeHandler(this._onDataChange);
+    this._dataChangeHandlers = [];
   }
 
   setExternalBase(items) {
@@ -34,8 +34,8 @@ export default class ExternalBase {
 
   setFilter(filterType) {
     this._activeFilterType = filterType;
-    this._callHandlers(this._filterChangeHandlers); // запустить this._onDataChange
-    this._callHandlers(this._dataChangeHandlers);
+    this._callHandlers(this._filterChangeHandlers); // _onFilterChange с контекстом table-controller, чтобы запустить updatePoints
+    this._callHandlers(this._dataChangeHandlers); // _onDataChange с контекстом filter-controller, чтобы запустить renderFilters
   }
 
   removePoint(id) {
