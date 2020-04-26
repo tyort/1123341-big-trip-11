@@ -4,8 +4,51 @@ import moment from 'moment';
 
 const createRandomColor = () => {
   const value = Math.floor(Math.random() * 0xffffff);
-
   return `#${value.toString(16)}`;
+};
+
+const createOption = (textContent, symbol) => {
+  return {
+    plugins: {
+      datalabels: {
+        display: false, // легенда возле названия типа
+      }
+    },
+    tooltips: {
+      callbacks: {
+        label: (tooltipItem, data) => {
+          const allData = data.datasets[tooltipItem.datasetIndex].data; // массив евро
+          const tooltipData = allData[tooltipItem.index]; // количество евро для элемента под курсором
+          return `${tooltipData}${symbol}`;
+        }
+      },
+      displayColors: false,
+      backgroundColor: `#ffffff`,
+      bodyFontColor: `#000000`,
+      borderColor: `#000000`,
+      borderWidth: 1,
+      cornerRadius: 0,
+      xPadding: 15,
+      yPadding: 15
+    },
+    title: {// титульное название
+      display: true,
+      position: `left`,
+      text: textContent,
+      fontSize: 24,
+      fontColor: `#000000`
+    },
+    legend: {
+      display: false
+    },
+    scales: {
+      xAxes: [{
+        ticks: {
+          beginAtZero: true,
+        }
+      }]
+    }
+  };
 };
 
 const renderMoneyChart = (container, points) => {
@@ -25,47 +68,7 @@ const renderMoneyChart = (container, points) => {
         backgroundColor: originalPurpose.map(createRandomColor)
       }]
     },
-    options: {
-      plugins: {
-        datalabels: {
-          display: false, // легенда возле названия типа
-        }
-      },
-      tooltips: {
-        callbacks: {
-          label: (tooltipItem, data) => {
-            const allData = data.datasets[tooltipItem.datasetIndex].data; // массив евро
-            const tooltipData = allData[tooltipItem.index]; // количество евро для элемента под курсором
-            return `€ ${tooltipData}`;
-          }
-        },
-        displayColors: false,
-        backgroundColor: `#ffffff`,
-        bodyFontColor: `#000000`,
-        borderColor: `#000000`,
-        borderWidth: 1,
-        cornerRadius: 0,
-        xPadding: 15,
-        yPadding: 15
-      },
-      title: {// титульное название
-        display: true,
-        position: `left`,
-        text: `MONEY`,
-        fontSize: 24,
-        fontColor: `#000000`
-      },
-      legend: {
-        display: false
-      },
-      scales: {
-        xAxes: [{
-          ticks: {
-            beginAtZero: true,
-          }
-        }]
-      }
-    }
+    options: createOption(`MONEY`, ` €`)
   });
 };
 
@@ -88,47 +91,7 @@ const renderTimeSpentChart = (container, points) => {
         backgroundColor: originalPurpose.map(createRandomColor)
       }]
     },
-    options: {
-      plugins: {
-        datalabels: {
-          display: false, // легенда возле названия типа
-        }
-      },
-      tooltips: {
-        callbacks: {
-          label: (tooltipItem, data) => {
-            const allData = data.datasets[tooltipItem.datasetIndex].data; // массив евро
-            const tooltipData = allData[tooltipItem.index]; // количество евро для элемента под курсором
-            return `${tooltipData}H`;
-          }
-        },
-        displayColors: false,
-        backgroundColor: `#ffffff`,
-        bodyFontColor: `#000000`,
-        borderColor: `#000000`,
-        borderWidth: 1,
-        cornerRadius: 0,
-        xPadding: 15,
-        yPadding: 15
-      },
-      title: {// титульное название
-        display: true,
-        position: `left`,
-        text: `TIME SPENT`,
-        fontSize: 24,
-        fontColor: `#000000`
-      },
-      legend: {
-        display: false
-      },
-      scales: {
-        xAxes: [{
-          ticks: {
-            beginAtZero: true,
-          }
-        }]
-      }
-    }
+    options: createOption(`TIME SPENT`, `H`)
   });
 };
 
@@ -148,49 +111,7 @@ const renderTransportChart = (container, points) => {
         backgroundColor: originalPurpose.map(createRandomColor)
       }]
     },
-    options: {
-      plugins: {
-        datalabels: {
-          display: false, // легенда возле названия типа
-        }
-      },
-      tooltips: {
-        callbacks: {
-          label: (tooltipItem, data) => {
-            const allData = data.datasets[tooltipItem.datasetIndex].data; // массив евро
-            const tooltipData = allData[tooltipItem.index]; // количество евро для элемента под курсором
-            return `${tooltipData}x`;
-          }
-        },
-        displayColors: false,
-        backgroundColor: `#ffffff`,
-        bodyFontColor: `#000000`,
-        borderColor: `#000000`,
-        borderWidth: 1,
-        cornerRadius: 0,
-        xPadding: 15,
-        yPadding: 15
-      },
-      title: {// титульное название
-        display: true,
-        position: `left`,
-        text: `TRANSPORT`,
-        fontSize: 24,
-        fontColor: `#000000`
-      },
-      legend: {
-        display: false
-      },
-      scales: {
-        xAxes: [{
-          ticks: {
-            beginAtZero: true,
-            stepSize: 1,
-            suggestedMax: 5
-          }
-        }]
-      }
-    }
+    options: createOption(`TRANSPORT`, `x`)
   });
 };
 
