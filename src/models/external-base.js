@@ -10,20 +10,18 @@ export default class ExternalBase {
     this._dataChangeHandlers = []; // this._points.setDataChangeHandler(this._onDataChange);
   }
 
+  setExternalBase(items) {
+    this._points = Array.from(items[0]);
+    this._offers = Array.from(items[2]);
+    this._destinations = Array.from(items[1]);
+  }
+
   getOffers() {
     return this._offers;
   }
 
-  setOffers(items) {
-    this._offers = Array.from(items);
-  }
-
   getDestinations() {
     return this._destinations;
-  }
-
-  setDestinations(items) {
-    this._destinations = Array.from(items);
   }
 
   getPointsByFilter() {
@@ -32,10 +30,6 @@ export default class ExternalBase {
 
   getPointsOnBegining() {
     return this._points;
-  }
-
-  setPoints(items) {
-    this._points = Array.from(items);
   }
 
   setFilter(filterType) {
