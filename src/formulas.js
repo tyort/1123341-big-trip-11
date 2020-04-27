@@ -96,3 +96,17 @@ export const hideComponent = (neededClassName) => {
     component.classList.add(VISUALLY_HIDDEN);
   }
 };
+
+export const disableComponent = (neededClassName) => {
+  const component = document.querySelector(`.${neededClassName}`);
+  if (!component.getAttribute(`disabled`)) {
+    component.setAttribute(`disabled`, `disabled`);
+  }
+};
+
+export const enableComponent = (neededClassName) => {
+  const component = document.querySelector(`.${neededClassName}`);
+  if (component.getAttribute(`disabled`)) {
+    component.removeAttribute(`disabled`);
+  }
+};

@@ -4,7 +4,7 @@ import CardListComponent from '../components/card-list.js';
 import CardListLightComponent from '../components/card-list-light.js';
 import NoCardListComponent from '../components/no-card-list.js';
 import WaybillComponent from '../components/waybill.js';
-import {getDaysCount, renderComponent, showComponent, hideComponent} from '../formulas.js';
+import {getDaysCount, renderComponent, showComponent, hideComponent, enableComponent} from '../formulas.js';
 import ItemController, {Mode, EmptyPoint} from './item-controller.js';
 import moment from 'moment';
 
@@ -152,6 +152,7 @@ export default class TableController {
       this._creatingPoint = null;
       itemController.destroy();
       this._updatePoints();
+      enableComponent(`trip-main__event-add-btn`);
 
     } else if (oldData === EmptyPoint) {
       this._creatingPoint = null;
@@ -165,6 +166,7 @@ export default class TableController {
           .catch(() => {
             itemController.shake();
           });
+      enableComponent(`trip-main__event-add-btn`);
 
     } else if (newData === null) {
 
