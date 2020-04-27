@@ -7,6 +7,7 @@ import FilterController from './controllers/filter-controller.js';
 import TableController from './controllers/table-controller.js';
 import ExternalBase from './models/external-base.js';
 import {renderComponent} from './formulas.js';
+import {FilterType} from './formulas-filter.js';
 import 'flatpickr/dist/flatpickr.css';
 
 const StorePrefix = {
@@ -31,18 +32,19 @@ const MainViewMode = {
 document.querySelector(`.trip-main__event-add-btn`)
   .addEventListener(`click`, () => {
     tableController.createPoint();
+    filterController._onFilterChange(FilterType.EVERYTHING);
   });
 
 const AUTHORIZATION = `Basic eo0w590ik29889zq`;
 const END_POINT = `https://htmlacademy-es-10.appspot.com/big-trip/`;
 
-// window.addEventListener(`load`, () => {
-//   navigator.serviceWorker.register(`/sw.js`)
-//     .then(() => {
-//     })
-//     .catch(() => {
-//     });
-// });
+window.addEventListener(`load`, () => {
+  navigator.serviceWorker.register(`/sw.js`)
+    .then(() => {
+    })
+    .catch(() => {
+    });
+});
 
 const externalBase = new ExternalBase();
 const api = new Api(END_POINT, AUTHORIZATION);

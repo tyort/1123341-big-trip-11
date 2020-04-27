@@ -117,7 +117,7 @@ export default class TableController {
 
     hideComponent(`trip-events__msg`);
     this._onViewChange();
-
+    this._sortType = SortType.DEFAULT;
     this._creatingPoint = new ItemController(this._assortmentComponent.getElement(), this._onDataChange, this._onViewChange, externalBase);
     this._creatingPoint.renderCardItem(EmptyPoint, Mode.ADDING);
   }
