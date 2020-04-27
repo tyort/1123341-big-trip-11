@@ -12,7 +12,7 @@ const mainTripInfoElement = document.querySelector(`.trip-main`);
 const TRIP_EVENTS_HIDDEN = `trip-events--hidden`;
 
 const renderAllPoints = (sortType, container, externalBase, onDataChange, onViewChange) => {
-  if (sortType === `event`) {
+  if (sortType === SortType.DEFAULT) {
     const sortedCards = externalBase.points.map((it) => moment(it.dateFrom).format(`YYYYMMDD`))
       .filter((item, index, array) => array.indexOf(item) === index)
       .sort((a, b) => a - b);
@@ -59,7 +59,7 @@ export default class TableController {
     this._onFilterChange = this._onFilterChange.bind(this);
     this._assortmentComponent.setSortTypeChangeHandler(this._onSortTypeChange);
     this._externalBase.setFilterChangeHandler(this._onFilterChange);
-    this._sortType = `event`;
+    this._sortType = SortType.DEFAULT;
   }
 
   chooseEnvelope() {
@@ -117,6 +117,7 @@ export default class TableController {
 
     hideComponent(`trip-events__msg`);
     this._onViewChange();
+
     this._creatingPoint = new ItemController(this._assortmentComponent.getElement(), this._onDataChange, this._onViewChange, externalBase);
     this._creatingPoint.renderCardItem(EmptyPoint, Mode.ADDING);
   }
