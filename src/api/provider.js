@@ -137,7 +137,6 @@ export default class Provider {
             this._storePoints.setItem(point.id, point);
           });
 
-          // Помечаем, что всё синхронизировано
           this._isSynchronized = true;
 
           return Promise.resolve();
