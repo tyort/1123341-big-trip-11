@@ -70,8 +70,6 @@ export default class Provider {
       );
     }
 
-    // Нюанс в том, что при создании мы не указываем id задачи, нам его в ответе присылает сервер.
-    // Но на случай временного хранения мы должны позаботиться и о временном id
     const fakeNewPointId = nanoid();
     const fakeNewPoint = Point.parsePoint(Object.assign({}, point.toRAW(), {id: fakeNewPointId}));
 

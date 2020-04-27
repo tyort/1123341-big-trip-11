@@ -24588,9 +24588,13 @@ module.exports = function(module) {
 __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "default", function() { return Api; });
 /* harmony import */ var _models_point_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../models/point.js */ "./src/models/point.js");
+/* harmony import */ var _models_destination_js__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../models/destination.js */ "./src/models/destination.js");
+/* harmony import */ var _models_offers_js__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../models/offers.js */ "./src/models/offers.js");
 
 
-const METHOD = {
+
+
+const Method = {
   GET: `GET`,
   POST: `POST`,
   PUT: `PUT`,
@@ -24598,11 +24602,11 @@ const METHOD = {
 };
 
 const checkStatus = (response) => {
-  if (response.status >= 200 && response.status < 300) {
-    return response;
-  } else {
+  if (response.status < 200 && response.status >= 300) {
     throw new Error(`${response.status}: ${response.statusText}`);
   }
+
+  return response;
 };
 
 class Api {
@@ -24613,14 +24617,26 @@ class Api {
 
   getPoints() {
     return this._load({url: `points`})
-      .then((response) => response.json()) // получаю Promise в режиме Pending
-      .then(_models_point_js__WEBPACK_IMPORTED_MODULE_0__["default"].parsePoints); // передаем в models/point точки преобразованные в json
+      .then((response) => response.json())
+      .then(_models_point_js__WEBPACK_IMPORTED_MODULE_0__["default"].parsePoints);
+  }
+
+  getDestinations() {
+    return this._load({url: `destinations`})
+      .then((response) => response.json())
+      .then(_models_destination_js__WEBPACK_IMPORTED_MODULE_1__["default"].parseDestinations);
+  }
+
+  getOffers() {
+    return this._load({url: `offers`})
+      .then((response) => response.json())
+      .then(_models_offers_js__WEBPACK_IMPORTED_MODULE_2__["default"].parseTypes);
   }
 
   createPoint(point) {
     return this._load({
       url: `points`,
-      method: METHOD.POST,
+      method: Method.POST,
       body: JSON.stringify(point.toRAW()),
       headers: new Headers({'Content-Type': `application/json`})
     })
@@ -24628,11 +24644,11 @@ class Api {
       .then(_models_point_js__WEBPACK_IMPORTED_MODULE_0__["default"].parsePoint);
   }
 
-  updatePoint(id, data) {
+  updatePoint(id, pointModel) {
     return this._load({
       url: `points/${id}`,
-      method: METHOD.PUT,
-      body: JSON.stringify(data.toRAW()),
+      method: Method.PUT,
+      body: JSON.stringify(pointModel.toRAW()),
       headers: new Headers({'Content-Type': `application/json`})
     })
       .then((response) => response.json())
@@ -24640,20 +24656,20 @@ class Api {
   }
 
   deletePoint(id) {
-    return this._load({url: `points/${id}`, method: METHOD.DELETE});
+    return this._load({url: `points/${id}`, method: Method.DELETE});
   }
 
-  sync(data) {
+  sync(points) {
     return this._load({
       url: `points/sync`,
-      method: METHOD.POST,
-      body: JSON.stringify(data),
+      method: Method.POST,
+      body: JSON.stringify(points),
       headers: new Headers({'Content-Type': `application/json`})
     })
       .then((response) => response.json());
   }
 
-  _load({url, method = METHOD.GET, body = null, headers = new Headers()}) {
+  _load({url, method = Method.GET, body = null, headers = new Headers()}) {
   // url - адрес сервера
   // headers - по умолчанию передаем пустые заголовки, если не передаем самостоятельно
     headers.append(`Authorization`, this._authorization);
@@ -24682,6 +24698,10 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "default", function() { return Provider; });
 /* harmony import */ var nanoid__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! nanoid */ "./node_modules/nanoid/index.browser.js");
 /* harmony import */ var _models_point_js__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../models/point.js */ "./src/models/point.js");
+/* harmony import */ var _models_destination_js__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../models/destination.js */ "./src/models/destination.js");
+/* harmony import */ var _models_offers_js__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ../models/offers.js */ "./src/models/offers.js");
+
+
 
 
 
@@ -24691,7 +24711,9 @@ const getSyncedPoints =
 class Provider {
   constructor(api, store) {
     this._api = api;
-    this._store = store;
+    this._storePoints = store.points;
+    this._storeDestinations = store.destinations;
+    this._storeOffers = store.offers;
     this._isSynchronized = true;
   }
 
@@ -24699,24 +24721,52 @@ class Provider {
     if (this._isOnLine()) {
       return this._api.getPoints().then(
           (points) => {
-            points.forEach((it) => this._store.setItem(it.id, it.toRAW()));
+            points.forEach((it) => this._storePoints.setItem(it.id, it.toRAW())); // при наличии интернета все равно складываем в store данные
             return points;
           }
       );
     }
 
-    const storePoints = Object.values(this._store.getAll());
-
+    const storePoints = Object.values(this._storePoints.getAll());
     this._isSynchronized = false;
+    return Promise.resolve(_models_point_js__WEBPACK_IMPORTED_MODULE_1__["default"].parsePoints(storePoints));
+  }
 
-    return Promise.resolve(_models_point_js__WEBPACK_IMPORTED_MODULE_1__["default"].parsePoins(storePoints));
+  getDestinations() {
+    if (this._isOnLine()) {
+      return this._api.getDestinations().then(
+          (destinations) => {
+            destinations.forEach((it) => this._storeDestinations.setItem(it.name, it.toRAW()));
+            return destinations;
+          }
+      );
+    }
+
+    const storeDestinations = Object.values(this._storeDestinations.getAll());
+    this._isSynchronized = false;
+    return Promise.resolve(_models_destination_js__WEBPACK_IMPORTED_MODULE_2__["default"].parseDestinations(storeDestinations));
+  }
+
+  getOffers() {
+    if (this._isOnLine()) {
+      return this._api.getOffers().then(
+          (types) => {
+            types.forEach((it) => this._storeOffers.setItem(it.type, it.toRAW()));
+            return types;
+          }
+      );
+    }
+
+    const storeOffers = Object.values(this._storeOffers.getAll());
+    this._isSynchronized = false;
+    return Promise.resolve(_models_offers_js__WEBPACK_IMPORTED_MODULE_3__["default"].parseTypes(storeOffers));
   }
 
   createPoint(point) {
     if (this._isOnLine()) {
       return this._api.createPoint(point).then(
           (newPoint) => {
-            this._store.setItem(newPoint.id, newPoint.toRAW());
+            this._storePoints.setItem(newPoint.id, newPoint.toRAW());
             return newPoint;
           }
       );
@@ -24724,11 +24774,11 @@ class Provider {
 
     // Нюанс в том, что при создании мы не указываем id задачи, нам его в ответе присылает сервер.
     // Но на случай временного хранения мы должны позаботиться и о временном id
-    const fakeNewPointId = Object(nanoid__WEBPACK_IMPORTED_MODULE_0__["default"])();
+    const fakeNewPointId = Object(nanoid__WEBPACK_IMPORTED_MODULE_0__["nanoid"])();
     const fakeNewPoint = _models_point_js__WEBPACK_IMPORTED_MODULE_1__["default"].parsePoint(Object.assign({}, point.toRAW(), {id: fakeNewPointId}));
 
     this._isSynchronized = false;
-    this._store.setItem(fakeNewPoint.id, Object.assign({}, fakeNewPoint.toRAW(), {offline: true}));
+    this._storePoints.setItem(fakeNewPoint.id, Object.assign({}, fakeNewPoint.toRAW(), {offline: true}));
 
     return Promise.resolve(fakeNewPoint);
   }
@@ -24737,7 +24787,7 @@ class Provider {
     if (this._isOnLine()) {
       return this._api.updatePoint(id, point).then(
           (newPoint) => {
-            this._store.setItem(newPoint.id, newPoint.toRAW());
+            this._storePoints.setItem(newPoint.id, newPoint.toRAW());
             return newPoint;
           }
       );
@@ -24746,7 +24796,7 @@ class Provider {
     const fakeUpdatedPoint = _models_point_js__WEBPACK_IMPORTED_MODULE_1__["default"].parsePoint(Object.assign({}, point.toRAW(), {id}));
 
     this._isSynchronized = false;
-    this._store.setItem(id, Object.assign({}, fakeUpdatedPoint.toRAW(), {offline: true}));
+    this._storePoints.setItem(id, Object.assign({}, fakeUpdatedPoint.toRAW(), {offline: true}));
 
     return Promise.resolve(fakeUpdatedPoint);
   }
@@ -24755,27 +24805,27 @@ class Provider {
     if (this._isOnLine()) {
       return this._api.deletePoint(id).then(
           () => {
-            this._store.removeItem(id);
+            this._storePoints.removeItem(id);
           }
       );
     }
 
     this._isSynchronized = false;
-    this._store.removeItem(id);
+    this._storePoints.removeItem(id);
 
     return Promise.resolve();
   }
 
   sync() {
     if (this._isOnLine()) {
-      const storePoints = Object.values(this._store.getAll());
+      const storePoints = Object.values(this._storePoints.getAll());
 
       return this._api.sync(storePoints)
         .then((response) => {
           // Удаляем из хранилища задачи, что были созданы
           // или изменены в оффлайне. Они нам больше не нужны
           storePoints.filter((point) => point.offline).forEach((point) => {
-            this._store.removeItem(point.id);
+            this._storePoints.removeItem(point.id);
           });
 
           // Забираем из ответа синхронизированные задачи
@@ -24786,10 +24836,9 @@ class Provider {
           // Хранилище должно быть актуальным в любой момент,
           // вдруг сеть пропадёт
           [...createdPoints, ...updatedPoins].forEach((point) => {
-            this._store.setItem(point.id, point);
+            this._storePoints.setItem(point.id, point);
           });
 
-          // Помечаем, что всё синхронизировано
           this._isSynchronized = true;
 
           return Promise.resolve();
@@ -24803,7 +24852,7 @@ class Provider {
     return this._isSynchronized;
   }
 
-  _isOnLine() {
+  _isOnLine() { // проверяем наличие интернета false/true
     return window.navigator.onLine;
   }
 }
@@ -24827,7 +24876,7 @@ class Store {
     this._storeKey = key;
   }
 
-  getAll() {
+  getAll() { // возвращает все данные из store
     try {
       return JSON.parse(this._storage.getItem(this._storeKey));
     } catch (err) {
@@ -24863,9 +24912,9 @@ class Store {
 
 /***/ }),
 
-/***/ "./src/components/abstract_component.js":
+/***/ "./src/components/abstract-component.js":
 /*!**********************************************!*\
-  !*** ./src/components/abstract_component.js ***!
+  !*** ./src/components/abstract-component.js ***!
   \**********************************************/
 /*! exports provided: default */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
@@ -24875,8 +24924,6 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "default", function() { return AbstractComponent; });
 /* harmony import */ var _formulas_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../formulas.js */ "./src/formulas.js");
 
-
-const HIDDEN_CLASS = `visually-hidden`;
 
 class AbstractComponent {
   constructor() {
@@ -24904,13 +24951,13 @@ class AbstractComponent {
 
   show() {
     if (this._element) {
-      this._element.classList.remove(HIDDEN_CLASS);
+      this._element.classList.remove(_formulas_js__WEBPACK_IMPORTED_MODULE_0__["VISUALLY_HIDDEN"]);
     }
   }
 
   hide() {
     if (this._element) {
-      this._element.classList.add(HIDDEN_CLASS);
+      this._element.classList.add(_formulas_js__WEBPACK_IMPORTED_MODULE_0__["VISUALLY_HIDDEN"]);
     }
   }
 }
@@ -24918,9 +24965,9 @@ class AbstractComponent {
 
 /***/ }),
 
-/***/ "./src/components/abstract_smart_component.js":
+/***/ "./src/components/abstract-smart-component.js":
 /*!****************************************************!*\
-  !*** ./src/components/abstract_smart_component.js ***!
+  !*** ./src/components/abstract-smart-component.js ***!
   \****************************************************/
 /*! exports provided: default */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
@@ -24928,7 +24975,7 @@ class AbstractComponent {
 "use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "default", function() { return AbstractSmartComponent; });
-/* harmony import */ var _abstract_component_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./abstract_component.js */ "./src/components/abstract_component.js");
+/* harmony import */ var _abstract_component_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./abstract-component.js */ "./src/components/abstract-component.js");
 
 
 class AbstractSmartComponent extends _abstract_component_js__WEBPACK_IMPORTED_MODULE_0__["default"] {
@@ -24953,17 +25000,17 @@ class AbstractSmartComponent extends _abstract_component_js__WEBPACK_IMPORTED_MO
 /*!**************************************!*\
   !*** ./src/components/assortment.js ***!
   \**************************************/
-/*! exports provided: SORT_TYPES, default */
+/*! exports provided: SortType, default */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "SORT_TYPES", function() { return SORT_TYPES; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "SortType", function() { return SortType; });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "default", function() { return Assortment; });
-/* harmony import */ var _abstract_component_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./abstract_component.js */ "./src/components/abstract_component.js");
+/* harmony import */ var _abstract_component_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./abstract-component.js */ "./src/components/abstract-component.js");
 
 
-const SORT_TYPES = {
+const SortType = {
   PRICE_DOWN: `price`,
   TIME_DOWN: `time`,
   DEFAULT: `event`,
@@ -24975,12 +25022,12 @@ const createAssortmentTemplate = () => (
 
     <div class="trip-sort__item  trip-sort__item--event">
       <input id="sort-event" class="trip-sort__input  visually-hidden" type="radio" name="trip-sort" value="sort-event" checked>
-      <label class="trip-sort__btn" for="sort-event" data-sort-type="${SORT_TYPES.DEFAULT}">Event</label>
+      <label class="trip-sort__btn" for="sort-event" data-sort-type="${SortType.DEFAULT}">Event</label>
     </div>
 
     <div class="trip-sort__item  trip-sort__item--time">
       <input id="sort-time" class="trip-sort__input  visually-hidden" type="radio" name="trip-sort" value="sort-time">
-      <label class="trip-sort__btn" for="sort-time" data-sort-type="${SORT_TYPES.TIME_DOWN}">
+      <label class="trip-sort__btn" for="sort-time" data-sort-type="${SortType.TIME_DOWN}">
         Time
         <svg class="trip-sort__direction-icon" width="8" height="10" viewBox="0 0 8 10">
           <path d="M2.888 4.852V9.694H5.588V4.852L7.91 5.068L4.238 0.00999987L0.548 5.068L2.888 4.852Z"/>
@@ -24990,7 +25037,7 @@ const createAssortmentTemplate = () => (
 
     <div class="trip-sort__item  trip-sort__item--price">
       <input id="sort-price" class="trip-sort__input  visually-hidden" type="radio" name="trip-sort" value="sort-price">
-      <label class="trip-sort__btn" for="sort-price" data-sort-type="${SORT_TYPES.PRICE_DOWN}">
+      <label class="trip-sort__btn" for="sort-price" data-sort-type="${SortType.PRICE_DOWN}">
         Price
         <svg class="trip-sort__direction-icon" width="8" height="10" viewBox="0 0 8 10">
           <path d="M2.888 4.852V9.694H5.588V4.852L7.91 5.068L4.238 0.00999987L0.548 5.068L2.888 4.852Z"/>
@@ -25005,7 +25052,7 @@ const createAssortmentTemplate = () => (
 class Assortment extends _abstract_component_js__WEBPACK_IMPORTED_MODULE_0__["default"] {
   constructor() {
     super();
-    this._currenSortType = SORT_TYPES.DEFAULT;
+    this._currenSortType = SortType.DEFAULT;
   }
 
   getTemplate() {
@@ -25035,9 +25082,44 @@ class Assortment extends _abstract_component_js__WEBPACK_IMPORTED_MODULE_0__["de
 
 /***/ }),
 
-/***/ "./src/components/card_list.js":
+/***/ "./src/components/card-list-light.js":
+/*!*******************************************!*\
+  !*** ./src/components/card-list-light.js ***!
+  \*******************************************/
+/*! exports provided: default */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "default", function() { return CardListLight; });
+/* harmony import */ var _abstract_component_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./abstract-component.js */ "./src/components/abstract-component.js");
+
+
+const createCardListTemplate = () => {
+  return (
+    `<li class="trip-days__item  day">
+      <div class="day__info"></div>
+
+      <ul class="trip-events__list">
+        <!-- вставлять сюда -->
+      </ul>
+    </li>`
+  );
+};
+
+class CardListLight extends _abstract_component_js__WEBPACK_IMPORTED_MODULE_0__["default"] {
+  getTemplate() {
+    return createCardListTemplate(this._card, this._dayCounter);
+  }
+}
+
+
+
+/***/ }),
+
+/***/ "./src/components/card-list.js":
 /*!*************************************!*\
-  !*** ./src/components/card_list.js ***!
+  !*** ./src/components/card-list.js ***!
   \*************************************/
 /*! exports provided: default */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
@@ -25045,7 +25127,7 @@ class Assortment extends _abstract_component_js__WEBPACK_IMPORTED_MODULE_0__["de
 "use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "default", function() { return CardList; });
-/* harmony import */ var _abstract_component_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./abstract_component.js */ "./src/components/abstract_component.js");
+/* harmony import */ var _abstract_component_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./abstract-component.js */ "./src/components/abstract-component.js");
 /* harmony import */ var moment__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! moment */ "./node_modules/moment/moment.js");
 /* harmony import */ var moment__WEBPACK_IMPORTED_MODULE_1___default = /*#__PURE__*/__webpack_require__.n(moment__WEBPACK_IMPORTED_MODULE_1__);
 
@@ -25085,118 +25167,171 @@ class CardList extends _abstract_component_js__WEBPACK_IMPORTED_MODULE_0__["defa
 
 /***/ }),
 
-/***/ "./src/components/card_list_item.js":
-/*!******************************************!*\
-  !*** ./src/components/card_list_item.js ***!
-  \******************************************/
+/***/ "./src/components/filter.js":
+/*!**********************************!*\
+  !*** ./src/components/filter.js ***!
+  \**********************************/
+/*! exports provided: createFilterMarkup, createFilterTemplate, default */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "createFilterMarkup", function() { return createFilterMarkup; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "createFilterTemplate", function() { return createFilterTemplate; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "default", function() { return FIlter; });
+/* harmony import */ var _abstract_component_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./abstract-component.js */ "./src/components/abstract-component.js");
+
+
+const FILTER_ID_PREFIX = `filter-`;
+const getFilterNameById = (id) => id.substring(FILTER_ID_PREFIX.length);
+
+const createFilterMarkup = (filter) => {
+  return (
+    `<div class="trip-filters__filter">
+      <input id="filter-${filter.name}"
+        class="trip-filters__filter-input  visually-hidden"
+        type="radio"
+        name="trip-filter"
+        value="${filter.name}"
+        ${filter.checked ? `checked` : ``}
+        ${filter.disabled ? `disabled` : ``}
+      />
+      <label class="trip-filters__filter-label" for="filter-${filter.name}">${filter.name}</label>
+    </div>`
+  );
+};
+
+const createFilterTemplate = (filters) => {
+  const filtersMarkup = filters.map((it) => createFilterMarkup(it)).join(``);
+
+  return (
+    `<form class="trip-filters" action="#" method="get">
+      ${filtersMarkup}
+      <button class="visually-hidden" type="submit">Accept filter</button>
+    </form>`
+  );
+};
+
+class FIlter extends _abstract_component_js__WEBPACK_IMPORTED_MODULE_0__["default"] {
+  constructor(filters) {
+    super();
+    this._filters = filters;
+  }
+
+  getTemplate() {
+    return createFilterTemplate(this._filters);
+  }
+
+  setFilterChangeHandler(handler) {
+    this.getElement().addEventListener(`change`, (evt) => {
+      const filterName = getFilterNameById(evt.target.id);
+      handler(filterName);
+    });
+  }
+}
+
+
+
+
+/***/ }),
+
+/***/ "./src/components/menu.js":
+/*!********************************!*\
+  !*** ./src/components/menu.js ***!
+  \********************************/
 /*! exports provided: default */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "default", function() { return CardListItem; });
-/* harmony import */ var _abstract_component_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./abstract_component.js */ "./src/components/abstract_component.js");
-/* harmony import */ var _formulas_js__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../formulas.js */ "./src/formulas.js");
-/* harmony import */ var moment__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! moment */ "./node_modules/moment/moment.js");
-/* harmony import */ var moment__WEBPACK_IMPORTED_MODULE_2___default = /*#__PURE__*/__webpack_require__.n(moment__WEBPACK_IMPORTED_MODULE_2__);
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "default", function() { return Menu; });
+/* harmony import */ var _abstract_component_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./abstract-component.js */ "./src/components/abstract-component.js");
 
 
-
-
-const createExtraOptionInsert = (array, newmap) => {
-  return array
-    .map((item) => {
-      return (
-        `<li class="event__offer">
-          <span class="event__offer-title">${item[0]}</span>
-          &plus;&euro;&nbsp;
-          <span class="event__offer-price">${newmap.get(item[0])}</span>
-        </li>`
-      );
-    })
-    .slice(0, 3)
-    .join(``);
-};
-
-const createCardListItemTemplate = (cardItem) => {
-  const {offers, type, name, dateFrom, dateTo, basePrice, offersPrice} = cardItem;
-  const addExtraOptions = createExtraOptionInsert(Array.from(offers), offersPrice);
-  const addItemTimePeriod = Object(_formulas_js__WEBPACK_IMPORTED_MODULE_1__["itemTimePeriod"])(dateFrom, dateTo);
-  const addCardItemDate = moment__WEBPACK_IMPORTED_MODULE_2___default()(dateFrom).format(`YYYY-MM-DDTHH:mm`);
-  const addCardItemTime = moment__WEBPACK_IMPORTED_MODULE_2___default()(dateFrom).format(`HH:mm`);
-  const addDateTo = moment__WEBPACK_IMPORTED_MODULE_2___default()(dateTo).format(`YYYY-MM-DDTHH:mm`);
-  const addDateToOnly = moment__WEBPACK_IMPORTED_MODULE_2___default()(dateTo).format(`HH:mm`);
-
-  return (
-    `<li class="trip-events__item">
-      <div class="event">
-        <div class="event__type">
-          <img class="event__type-icon" width="42" height="42" src="img/icons/${type}.png" alt="Event type icon">
-        </div>
-        <h3 class="event__title">${Object(_formulas_js__WEBPACK_IMPORTED_MODULE_1__["generateWaybillType"])(type)} ${name}</h3>
-
-        <div class="event__schedule">
-          <p class="event__time">
-            <time class="event__start-time"
-              datetime="${addCardItemDate}">
-              ${addCardItemTime}
-            </time>
-            &mdash;
-            <time class="event__end-time"
-              datetime="${addDateTo}">
-              ${addDateToOnly}
-            </time>
-          </p>
-          <p class="event__duration">${addItemTimePeriod}</p>
-        </div>
-
-        <p class="event__price">
-          &euro;&nbsp;<span class="event__price-value">${basePrice}</span>
-        </p>
-
-        <h4 class="visually-hidden">Offers:</h4>
-        <ul class="event__selected-offers">
-          ${addExtraOptions}
-        </ul>
-
-        <button class="event__rollup-btn" type="button">
-          <span class="visually-hidden">Open event</span>
-        </button>
-      </div>
-    </li>`
+const createMenuTemplate = () =>
+  (
+    `<nav class="trip-controls__trip-tabs  trip-tabs">
+      <a class="trip-tabs__btn" href="#" id="table-setbymyself">Table</a>
+      <a class="trip-tabs__btn" href="#" id="statistics-setbymyself">Stats</a>
+    </nav>`
   );
-};
 
-class CardListItem extends _abstract_component_js__WEBPACK_IMPORTED_MODULE_0__["default"] {
-  constructor(cardItem) {
-    super();
-    this._cardItem = cardItem;
-  }
-
+class Menu extends _abstract_component_js__WEBPACK_IMPORTED_MODULE_0__["default"] {
   getTemplate() {
-    return createCardListItemTemplate(this._cardItem);
+    return createMenuTemplate();
   }
 
-  setRollupButtonClickHandler(handler) {
-    this.getElement().querySelector(`.event__rollup-btn`)
-      .addEventListener(`click`, handler);
+  setActiveViewMode(mainViewId) {
+    Array.from(this.getElement().querySelectorAll(`.trip-tabs__btn`))
+      .forEach((it) => {
+        if (it.classList.contains(`trip-tabs__btn--active`)) {
+          it.classList.remove(`trip-tabs__btn--active`);
+        }
+      });
+
+    const item = this.getElement().querySelector(`#${mainViewId}`);
+
+    if (item) {
+      item.classList.add(`trip-tabs__btn--active`);
+    }
+  }
+
+  setOnChange(handler) {
+    this.getElement().addEventListener(`click`, (evt) => {
+      if (evt.target.className !== `trip-tabs__btn`) {
+        return;
+      }
+
+      const mainViewMode = evt.target.id;
+      handler(mainViewMode);
+    });
   }
 }
 
 
 /***/ }),
 
-/***/ "./src/components/card_list_item_form.js":
-/*!***********************************************!*\
-  !*** ./src/components/card_list_item_form.js ***!
-  \***********************************************/
+/***/ "./src/components/no-card-list.js":
+/*!****************************************!*\
+  !*** ./src/components/no-card-list.js ***!
+  \****************************************/
 /*! exports provided: default */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "default", function() { return CardListItemForm; });
-/* harmony import */ var _abstract_smart_component_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./abstract_smart_component.js */ "./src/components/abstract_smart_component.js");
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "default", function() { return NoCardList; });
+/* harmony import */ var _abstract_component_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./abstract-component.js */ "./src/components/abstract-component.js");
+
+
+const createNoCardListTemplate = () => {
+  return (
+    `<p class="trip-events__msg"><font color="black">Click New Event to create your first point</br>
+      or live in isolation, Buddy :)
+    </font></p>`
+  );
+};
+
+class NoCardList extends _abstract_component_js__WEBPACK_IMPORTED_MODULE_0__["default"] {
+  getTemplate() {
+    return createNoCardListTemplate();
+  }
+}
+
+
+/***/ }),
+
+/***/ "./src/components/point-form.js":
+/*!**************************************!*\
+  !*** ./src/components/point-form.js ***!
+  \**************************************/
+/*! exports provided: default */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "default", function() { return PointForm; });
+/* harmony import */ var _abstract_smart_component_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./abstract-smart-component.js */ "./src/components/abstract-smart-component.js");
 /* harmony import */ var _formulas_js__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../formulas.js */ "./src/formulas.js");
 /* harmony import */ var flatpickr__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! flatpickr */ "./node_modules/flatpickr/dist/flatpickr.js");
 /* harmony import */ var flatpickr__WEBPACK_IMPORTED_MODULE_2___default = /*#__PURE__*/__webpack_require__.n(flatpickr__WEBPACK_IMPORTED_MODULE_2__);
@@ -25210,7 +25345,9 @@ __webpack_require__.r(__webpack_exports__);
 
 
 
-const BUTTON_TEXT = {
+const LETTERS_COUNT = 12;
+
+const ButtonText = {
   DELETE_BUTTON_TEXT: `Delete`,
   SAVE_BUTTON_TEXT: `Save`
 };
@@ -25287,8 +25424,7 @@ const createWaybillPurposeList = (newmap) => {
     .join(``);
 };
 
-const createCardListItemFormTemplate = (cardItem, options = {}) => {
-  const {pictures} = cardItem;
+const createPointFormTemplate = (options = {}) => {
   const {
     activateButtonText,
     isChangeFavorite,
@@ -25299,11 +25435,12 @@ const createCardListItemFormTemplate = (cardItem, options = {}) => {
     activateExtraOptionsPrice,
     activateBasePrice,
     activateDateFrom,
-    activateDateTo
+    activateDateTo,
+    activatePictures
   } = options;
   const addExtraOptions = createExtraOptionInsert(Array.from(activateExtraOptions), activateExtraOptionsPrice);
   const addDescription = he__WEBPACK_IMPORTED_MODULE_3___default.a.encode(activateDescription);
-  const addPhotos = createPhotos(pictures);
+  const addPhotos = createPhotos(activatePictures);
   const addWaybillType = Array.from(activateCheckedType).find((it) => it[1])[0];
   const addWaybillPurpose = Array.from(activateCheckedPurpose).find((it) => it[1])[0];
   const addFavorite = isChangeFavorite ? `checked` : ``;
@@ -25384,7 +25521,7 @@ const createCardListItemFormTemplate = (cardItem, options = {}) => {
             </svg>
           </label>
 
-          <button class="event__rollup-btn" type="button">
+          <button class="event__rollup-btn evt__rollup-btn__setbymyself" type="button">
             <span class="visually-hidden">Open event</span>
           </button>
         </header>
@@ -25415,22 +25552,26 @@ const createCardListItemFormTemplate = (cardItem, options = {}) => {
   );
 };
 
-class CardListItemForm extends _abstract_smart_component_js__WEBPACK_IMPORTED_MODULE_0__["default"] {
-  constructor(cardItem, allpoints) {
+class PointForm extends _abstract_smart_component_js__WEBPACK_IMPORTED_MODULE_0__["default"] {
+  constructor(point, externalBase) {
     super();
 
-    this._cardItem = cardItem;
-    this._allPoints = allpoints;
-    this._isChangeFavorite = !!cardItem.isFavorite;
-    this._activateCheckedType = new Map(this._allPoints.map((it) => [it.type, false])).set(cardItem.type, true); // получу актуальный Map с нужным true
-    this._activateCheckedPurpose = new Map(this._allPoints.map((it) => [it.name, false])).set(cardItem.name, true); // получу актуальный Map с нужным true
-    this._activateExtraOptions = new Map(cardItem.offers);
-    this._activateDescription = cardItem.description;
-    this._activateExtraOptionsPrice = cardItem.offersPrice;
-    this._activateBasePrice = cardItem.basePrice;
-    this._activateButtonText = BUTTON_TEXT;
-    this._activateDateFrom = cardItem.dateFrom;
-    this._activateDateTo = cardItem.dateTo;
+    this._point = point;
+    this._externalBase = externalBase;
+    this._destinations = externalBase.destinations;
+    this._offers = externalBase.offers;
+    this._allPoints = externalBase.points;
+    this._isChangeFavorite = !!point.isFavorite;
+    this._activateCheckedType = new Map(this._offers.map((it) => [it.type, false])).set(point.type, true); // получу актуальный Map с нужным true
+    this._activateCheckedPurpose = new Map(this._destinations.map((it) => [it.name, false])).set(point.name, true); // получу актуальный Map с нужным true
+    this._activateExtraOptions = new Map(point.offers);
+    this._activateDescription = point.description;
+    this._activateExtraOptionsPrice = point.offersPrice;
+    this._activateBasePrice = point.basePrice;
+    this._activateButtonText = ButtonText;
+    this._activateDateFrom = point.dateFrom;
+    this._activateDateTo = point.dateTo;
+    this._activatePictures = point.pictures;
     this._startFlatpickr = null;
     this._endFlatpickr = null;
     this._submitHandler = null;
@@ -25440,7 +25581,7 @@ class CardListItemForm extends _abstract_smart_component_js__WEBPACK_IMPORTED_MO
   }
 
   getTemplate() {
-    return createCardListItemFormTemplate(this._cardItem, {
+    return createPointFormTemplate({
       isChangeFavorite: this._isChangeFavorite,
       activateCheckedType: this._activateCheckedType,
       activateCheckedPurpose: this._activateCheckedPurpose,
@@ -25449,7 +25590,8 @@ class CardListItemForm extends _abstract_smart_component_js__WEBPACK_IMPORTED_MO
       activateExtraOptionsPrice: this._activateExtraOptionsPrice,
       activateButtonText: this._activateButtonText,
       activateBasePrice: this._activateBasePrice,
-      activateDateTo: this._activateDateTo
+      activateDateTo: this._activateDateTo,
+      activatePictures: this._activatePictures,
     });
   }
 
@@ -25476,17 +25618,18 @@ class CardListItemForm extends _abstract_smart_component_js__WEBPACK_IMPORTED_MO
   }
 
   reset() {
-    const cardItem = this._cardItem;
+    const point = this._point;
 
-    this._isChangeFavorite = !!cardItem.isFavorite;
-    this._activateCheckedType = new Map(this._allPoints.map((it) => [it.type, false])).set(cardItem.type, true); // получу актуальный Map с нужным true
-    this._activateCheckedPurpose = new Map(this._allPoints.map((it) => [it.name, false])).set(cardItem.name, true); // получу актуальный Map с нужным true
-    this._activateExtraOptions = new Map(cardItem.offers);
-    this._activateDescription = cardItem.description;
-    this._activateExtraOptionsPrice = cardItem.offersPrice;
-    this._activateBasePrice = cardItem.basePrice;
-    this._activateDateFrom = cardItem.dateFrom;
-    this._activateDateTo = cardItem.dateTo;
+    this._isChangeFavorite = !!point.isFavorite;
+    this._activateCheckedType = new Map(this._offers.map((it) => [it.type, false])).set(point.type, true); // получу актуальный Map с нужным true
+    this._activateCheckedPurpose = new Map(this._destinations.map((it) => [it.name, false])).set(point.name, true); // получу актуальный Map с нужным true
+    this._activateExtraOptions = new Map(point.offers);
+    this._activateDescription = point.description;
+    this._activateExtraOptionsPrice = point.offersPrice;
+    this._activateBasePrice = point.basePrice;
+    this._activateDateFrom = point.dateFrom;
+    this._activateDateTo = point.dateTo;
+    this._activatePictures = point.pictures;
 
     this.reRender();
   }
@@ -25496,8 +25639,8 @@ class CardListItemForm extends _abstract_smart_component_js__WEBPACK_IMPORTED_MO
     return new FormData(form);
   }
 
-  setChangedDataByView(data) {
-    this._activateButtonText = Object.assign({}, BUTTON_TEXT, data);
+  setChangedDataByView(buttonWaitingText) {
+    this._activateButtonText = Object.assign({}, ButtonText, buttonWaitingText);
     this.reRender();
   }
 
@@ -25529,7 +25672,7 @@ class CardListItemForm extends _abstract_smart_component_js__WEBPACK_IMPORTED_MO
       altInput: true,
       allowInput: true,
       enableTime: true,
-      altFormat: `d/m/y H:i`,
+      altFormat: `d/m/Y H:i`,
       defaultDate: this._activateDateFrom,
       maxDate: this._activateDateTo,
       onClose: (selectedDates, dateStr) => {
@@ -25541,7 +25684,7 @@ class CardListItemForm extends _abstract_smart_component_js__WEBPACK_IMPORTED_MO
       altInput: true,
       allowInput: true,
       enableTime: true,
-      altFormat: `d/m/y H:i`,
+      altFormat: `d/m/Y H:i`,
       defaultDate: this._activateDateTo,
       minDate: this._activateDateFrom,
       onClose: (selectedDates, dateStr) => {
@@ -25579,9 +25722,9 @@ class CardListItemForm extends _abstract_smart_component_js__WEBPACK_IMPORTED_MO
     const eventTypeGroup = Array.from(element.querySelectorAll(`.event__type-group`));
     eventTypeGroup.forEach((it) => {
       it.addEventListener(`change`, (evt) => {
-        this._activateCheckedType = new Map(this._allPoints.map((item) => [item.type, false]));
+        this._activateCheckedType = new Map(this._offers.map((item) => [item.type, false]));
         this._activateCheckedType.set(evt.target.value, evt.target.checked);
-        const properPoint = this._allPoints.find((item) => item.type === evt.target.value);
+        const properPoint = this._offers.find((item) => item.type === evt.target.value);
         this._activateExtraOptions = properPoint.offers;
         this._activateExtraOptionsPrice = properPoint.offersPrice;
         this.reRender();
@@ -25590,16 +25733,18 @@ class CardListItemForm extends _abstract_smart_component_js__WEBPACK_IMPORTED_MO
 
     const eventInputDestination = element.querySelector(`.event__input--destination`);
     eventInputDestination.addEventListener(`change`, (evt) => {
-      this._activateCheckedPurpose = new Map(this._allPoints.map((it) => [it.name, false]));
+      this._activateCheckedPurpose = new Map(this._destinations.map((it) => [it.name, false]));
       this._activateCheckedPurpose.set(evt.target.value, true);
-      const properPoint = this._allPoints.find((item) => item.name === evt.target.value);
-      this._activateDescription = properPoint.description;
+
+      const properPoint = this._destinations.find((item) => item.name === evt.target.value);
+      this._activateDescription = properPoint ? properPoint.description : `Anyway anywhere`;
+      this._activatePictures = properPoint ? properPoint.pictures : [];
       this.reRender();
     });
 
     const eventSectionOffers = element.querySelector(`.event__section--offers`);
     eventSectionOffers.addEventListener(`change`, (evt) => {
-      this._activateExtraOptions.set(evt.target.name.slice(12), evt.target.checked);
+      this._activateExtraOptions.set(evt.target.name.slice(LETTERS_COUNT), evt.target.checked);
       this.reRender();
     });
   }
@@ -25610,193 +25755,101 @@ class CardListItemForm extends _abstract_smart_component_js__WEBPACK_IMPORTED_MO
 
 /***/ }),
 
-/***/ "./src/components/card_list_light.js":
-/*!*******************************************!*\
-  !*** ./src/components/card_list_light.js ***!
-  \*******************************************/
+/***/ "./src/components/point-line.js":
+/*!**************************************!*\
+  !*** ./src/components/point-line.js ***!
+  \**************************************/
 /*! exports provided: default */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "default", function() { return CardListLight; });
-/* harmony import */ var _abstract_component_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./abstract_component.js */ "./src/components/abstract_component.js");
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "default", function() { return CardListItem; });
+/* harmony import */ var _abstract_component_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./abstract-component.js */ "./src/components/abstract-component.js");
+/* harmony import */ var _formulas_js__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../formulas.js */ "./src/formulas.js");
+/* harmony import */ var moment__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! moment */ "./node_modules/moment/moment.js");
+/* harmony import */ var moment__WEBPACK_IMPORTED_MODULE_2___default = /*#__PURE__*/__webpack_require__.n(moment__WEBPACK_IMPORTED_MODULE_2__);
 
 
-const createCardListTemplate = () => {
+
+
+const createExtraOptionInsert = (array, newmap) => {
+  return array
+    .map((item) => {
+      return (
+        `<li class="event__offer">
+          <span class="event__offer-title">${item[0]}</span>
+          &plus;&euro;&nbsp;
+          <span class="event__offer-price">${newmap.get(item[0])}</span>
+        </li>`
+      );
+    })
+    .slice(0, 3)
+    .join(``);
+};
+
+const createPointLineTemplate = (point) => {
+  const {offers, type, name, dateFrom, dateTo, basePrice, offersPrice} = point;
+  const addExtraOptions = createExtraOptionInsert(Array.from(offers), offersPrice);
+  const addItemTimePeriod = Object(_formulas_js__WEBPACK_IMPORTED_MODULE_1__["createPeriodsName"])(dateFrom, dateTo);
+  const addCardItemDate = moment__WEBPACK_IMPORTED_MODULE_2___default()(dateFrom).format(`YYYY-MM-DDTHH:mm`);
+  const addCardItemTime = moment__WEBPACK_IMPORTED_MODULE_2___default()(dateFrom).format(`HH:mm`);
+  const addDateTo = moment__WEBPACK_IMPORTED_MODULE_2___default()(dateTo).format(`YYYY-MM-DDTHH:mm`);
+  const addDateToOnly = moment__WEBPACK_IMPORTED_MODULE_2___default()(dateTo).format(`HH:mm`);
+
   return (
-    `<li class="trip-days__item  day">
-      <div class="day__info"></div>
+    `<li class="trip-events__item">
+      <div class="event">
+        <div class="event__type">
+          <img class="event__type-icon" width="42" height="42" src="img/icons/${type}.png" alt="Event type icon">
+        </div>
+        <h3 class="event__title">${Object(_formulas_js__WEBPACK_IMPORTED_MODULE_1__["generateWaybillType"])(type)} ${name}</h3>
 
-      <ul class="trip-events__list">
-        <!-- вставлять сюда -->
-      </ul>
+        <div class="event__schedule">
+          <p class="event__time">
+            <time class="event__start-time"
+              datetime="${addCardItemDate}">
+              ${addCardItemTime}
+            </time>
+            &mdash;
+            <time class="event__end-time"
+              datetime="${addDateTo}">
+              ${addDateToOnly}
+            </time>
+          </p>
+          <p class="event__duration">${addItemTimePeriod}</p>
+        </div>
+
+        <p class="event__price">
+          &euro;&nbsp;<span class="event__price-value">${basePrice}</span>
+        </p>
+
+        <h4 class="visually-hidden">Offers:</h4>
+        <ul class="event__selected-offers">
+          ${addExtraOptions}
+        </ul>
+
+        <button class="event__rollup-btn" type="button">
+          <span class="visually-hidden">Open event</span>
+        </button>
+      </div>
     </li>`
   );
 };
 
-class CardListLight extends _abstract_component_js__WEBPACK_IMPORTED_MODULE_0__["default"] {
-  getTemplate() {
-    return createCardListTemplate(this._card, this._dayCounter);
-  }
-}
-
-
-
-/***/ }),
-
-/***/ "./src/components/filter.js":
-/*!**********************************!*\
-  !*** ./src/components/filter.js ***!
-  \**********************************/
-/*! exports provided: createFilterMarkup, createFilterTemplate, default */
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
-
-"use strict";
-__webpack_require__.r(__webpack_exports__);
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "createFilterMarkup", function() { return createFilterMarkup; });
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "createFilterTemplate", function() { return createFilterTemplate; });
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "default", function() { return FIlter; });
-/* harmony import */ var _abstract_component_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./abstract_component.js */ "./src/components/abstract_component.js");
-
-
-const FILTER_ID_PREFIX = `filter-`;
-const getFilterNameById = (id) => id.substring(FILTER_ID_PREFIX.length);
-
-const createFilterMarkup = (filter) => {
-  return (
-    `<div class="trip-filters__filter">
-      <input id="filter-${filter.name}"
-        class="trip-filters__filter-input  visually-hidden"
-        type="radio"
-        name="trip-filter"
-        value="${filter.name}"
-        ${filter.checked ? `checked` : ``}
-      />
-      <label class="trip-filters__filter-label" for="filter-${filter.name}">${filter.name}</label>
-    </div>`
-  );
-};
-
-const createFilterTemplate = (filters) => {
-  // filters массив объектов типа {name: "past", checked: false} получаем из filter controller
-  const filtersMarkup = filters.map((it) => createFilterMarkup(it)).join(``);
-
-  return (
-    `<form class="trip-filters" action="#" method="get">
-      ${filtersMarkup}
-      <button class="visually-hidden" type="submit">Accept filter</button>
-    </form>`
-  );
-};
-
-class FIlter extends _abstract_component_js__WEBPACK_IMPORTED_MODULE_0__["default"] {
-  constructor(filters) {
+class CardListItem extends _abstract_component_js__WEBPACK_IMPORTED_MODULE_0__["default"] {
+  constructor(point) {
     super();
-    this._filters = filters;
+    this._point = point;
   }
 
   getTemplate() {
-    return createFilterTemplate(this._filters);
+    return createPointLineTemplate(this._point);
   }
 
-  setFilterChangeHandler(handler) {
-    this.getElement().addEventListener(`change`, (evt) => {
-      const filterName = getFilterNameById(evt.target.id);
-      handler(filterName);
-    });
-  }
-}
-
-
-
-
-/***/ }),
-
-/***/ "./src/components/menu.js":
-/*!********************************!*\
-  !*** ./src/components/menu.js ***!
-  \********************************/
-/*! exports provided: MAIN_VIEW_MODE, default */
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
-
-"use strict";
-__webpack_require__.r(__webpack_exports__);
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "MAIN_VIEW_MODE", function() { return MAIN_VIEW_MODE; });
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "default", function() { return Menu; });
-/* harmony import */ var _abstract_component_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./abstract_component.js */ "./src/components/abstract_component.js");
-
-
-const MAIN_VIEW_MODE = {
-  STATISTICS: `statistics-setbymyself`,
-  TABLE: `table-setbymyself`,
-};
-
-const createMenuTemplate = () =>
-  (
-    `<nav class="trip-controls__trip-tabs  trip-tabs">
-      <a class="trip-tabs__btn" href="#" id="table-setbymyself">Table</a>
-      <a class="trip-tabs__btn" href="#" id="statistics-setbymyself">Stats</a>
-    </nav>`
-  );
-
-class Menu extends _abstract_component_js__WEBPACK_IMPORTED_MODULE_0__["default"] {
-  getTemplate() {
-    return createMenuTemplate();
-  }
-
-  setActiveViewMode(mainViewId) {
-    Array.from(this.getElement().querySelectorAll(`.trip-tabs__btn`))
-      .forEach((it) => {
-        if (it.classList.contains(`trip-tabs__btn--active`)) {
-          it.classList.remove(`trip-tabs__btn--active`);
-        }
-      });
-
-    const item = this.getElement().querySelector(`#${mainViewId}`);
-
-    if (item) {
-      item.classList.add(`trip-tabs__btn--active`);
-    }
-  }
-
-  setOnChange(handler) {
-    this.getElement().addEventListener(`click`, (evt) => {
-      if (evt.target.className !== `trip-tabs__btn`) {
-        return;
-      }
-
-      const mainViewMode = evt.target.id;
-      handler(mainViewMode);
-    });
-  }
-}
-
-
-/***/ }),
-
-/***/ "./src/components/no_card_list.js":
-/*!****************************************!*\
-  !*** ./src/components/no_card_list.js ***!
-  \****************************************/
-/*! exports provided: default */
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
-
-"use strict";
-__webpack_require__.r(__webpack_exports__);
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "default", function() { return NoCardList; });
-/* harmony import */ var _abstract_component_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./abstract_component.js */ "./src/components/abstract_component.js");
-
-
-const createNoCardListTemplate = () => {
-  return (
-    `<p class="trip-events__msg">Click New Event to create your first point</p>`
-  );
-};
-
-class NoCardList extends _abstract_component_js__WEBPACK_IMPORTED_MODULE_0__["default"] {
-  getTemplate() {
-    return createNoCardListTemplate();
+  setRollupButtonClickHandler(handler) {
+    this.getElement().querySelector(`.event__rollup-btn`)
+      .addEventListener(`click`, handler);
   }
 }
 
@@ -25813,7 +25866,7 @@ class NoCardList extends _abstract_component_js__WEBPACK_IMPORTED_MODULE_0__["de
 "use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "default", function() { return Statistics; });
-/* harmony import */ var _abstract_smart_component_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./abstract_smart_component.js */ "./src/components/abstract_smart_component.js");
+/* harmony import */ var _abstract_smart_component_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./abstract-smart-component.js */ "./src/components/abstract-smart-component.js");
 /* harmony import */ var chart_js__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! chart.js */ "./node_modules/chart.js/dist/Chart.js");
 /* harmony import */ var chart_js__WEBPACK_IMPORTED_MODULE_1___default = /*#__PURE__*/__webpack_require__.n(chart_js__WEBPACK_IMPORTED_MODULE_1__);
 /* harmony import */ var moment__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! moment */ "./node_modules/moment/moment.js");
@@ -25824,13 +25877,55 @@ __webpack_require__.r(__webpack_exports__);
 
 const createRandomColor = () => {
   const value = Math.floor(Math.random() * 0xffffff);
-
   return `#${value.toString(16)}`;
 };
 
+const createOption = (textContent, symbol) => {
+  return {
+    plugins: {
+      datalabels: {
+        display: false, // легенда возле названия типа
+      }
+    },
+    tooltips: {
+      callbacks: {
+        label: (tooltipItem, data) => {
+          const allData = data.datasets[tooltipItem.datasetIndex].data; // массив евро
+          const tooltipData = allData[tooltipItem.index]; // количество евро для элемента под курсором
+          return `${tooltipData}${symbol}`;
+        }
+      },
+      displayColors: false,
+      backgroundColor: `#ffffff`,
+      bodyFontColor: `#000000`,
+      borderColor: `#000000`,
+      borderWidth: 1,
+      cornerRadius: 0,
+      xPadding: 15,
+      yPadding: 15
+    },
+    title: {// титульное название
+      display: true,
+      position: `left`,
+      text: textContent,
+      fontSize: 24,
+      fontColor: `#000000`
+    },
+    legend: {
+      display: false
+    },
+    scales: {
+      xAxes: [{
+        ticks: {
+          beginAtZero: true,
+        }
+      }]
+    }
+  };
+};
+
 const renderMoneyChart = (container, points) => {
-  const originalPurpose = points.map((it) => it.type)
-    .filter((item, index, array) => array.indexOf(item) === index); // массив оригинальных типов
+  const originalPurpose = [...new Set(points.map((it) => it.type))];
 
   return new chart_js__WEBPACK_IMPORTED_MODULE_1___default.a(container, {
     type: `horizontalBar`,
@@ -25846,53 +25941,12 @@ const renderMoneyChart = (container, points) => {
         backgroundColor: originalPurpose.map(createRandomColor)
       }]
     },
-    options: {
-      plugins: {
-        datalabels: {
-          display: false, // легенда возле названия типа
-        }
-      },
-      tooltips: {
-        callbacks: {
-          label: (tooltipItem, data) => {
-            const allData = data.datasets[tooltipItem.datasetIndex].data; // массив евро
-            const tooltipData = allData[tooltipItem.index]; // количество евро для элемента под курсором
-            return `€ ${tooltipData}`;
-          }
-        },
-        displayColors: false,
-        backgroundColor: `#ffffff`,
-        bodyFontColor: `#000000`,
-        borderColor: `#000000`,
-        borderWidth: 1,
-        cornerRadius: 0,
-        xPadding: 15,
-        yPadding: 15
-      },
-      title: {// титульное название
-        display: true,
-        position: `left`,
-        text: `MONEY`,
-        fontSize: 24,
-        fontColor: `#000000`
-      },
-      legend: {
-        display: false
-      },
-      scales: {
-        xAxes: [{
-          ticks: {
-            beginAtZero: true,
-          }
-        }]
-      }
-    }
+    options: createOption(`MONEY`, ` €`)
   });
 };
 
 const renderTimeSpentChart = (container, points) => {
-  const originalPurpose = points.map((it) => it.name)
-    .filter((item, index, array) => array.indexOf(item) === index); // массив оригинальных мест назначений
+  const originalPurpose = [...new Set(points.map((it) => it.name))];
 
   return new chart_js__WEBPACK_IMPORTED_MODULE_1___default.a(container, {
     type: `horizontalBar`,
@@ -25910,54 +25964,13 @@ const renderTimeSpentChart = (container, points) => {
         backgroundColor: originalPurpose.map(createRandomColor)
       }]
     },
-    options: {
-      plugins: {
-        datalabels: {
-          display: false, // легенда возле названия типа
-        }
-      },
-      tooltips: {
-        callbacks: {
-          label: (tooltipItem, data) => {
-            const allData = data.datasets[tooltipItem.datasetIndex].data; // массив евро
-            const tooltipData = allData[tooltipItem.index]; // количество евро для элемента под курсором
-            return `${tooltipData}H`;
-          }
-        },
-        displayColors: false,
-        backgroundColor: `#ffffff`,
-        bodyFontColor: `#000000`,
-        borderColor: `#000000`,
-        borderWidth: 1,
-        cornerRadius: 0,
-        xPadding: 15,
-        yPadding: 15
-      },
-      title: {// титульное название
-        display: true,
-        position: `left`,
-        text: `TIME SPENT`,
-        fontSize: 24,
-        fontColor: `#000000`
-      },
-      legend: {
-        display: false
-      },
-      scales: {
-        xAxes: [{
-          ticks: {
-            beginAtZero: true,
-          }
-        }]
-      }
-    }
+    options: createOption(`TIME SPENT`, `H`)
   });
 };
 
 const renderTransportChart = (container, points) => {
   const inappropriateType = [`Check-in`, `Sightseeing`, `Restaurant`, `Trip`];
-  const originalPurpose = points.map((it) => it.type)
-    .filter((item, index, array) => array.indexOf(item) === index) // массив оригинальных типов
+  const originalPurpose = [...new Set(points.map((it) => it.type))]
     .filter((item) => !inappropriateType.includes(item)); // без учета элементов inappropriateType
 
   return new chart_js__WEBPACK_IMPORTED_MODULE_1___default.a(container, {
@@ -25971,49 +25984,7 @@ const renderTransportChart = (container, points) => {
         backgroundColor: originalPurpose.map(createRandomColor)
       }]
     },
-    options: {
-      plugins: {
-        datalabels: {
-          display: false, // легенда возле названия типа
-        }
-      },
-      tooltips: {
-        callbacks: {
-          label: (tooltipItem, data) => {
-            const allData = data.datasets[tooltipItem.datasetIndex].data; // массив евро
-            const tooltipData = allData[tooltipItem.index]; // количество евро для элемента под курсором
-            return `${tooltipData}x`;
-          }
-        },
-        displayColors: false,
-        backgroundColor: `#ffffff`,
-        bodyFontColor: `#000000`,
-        borderColor: `#000000`,
-        borderWidth: 1,
-        cornerRadius: 0,
-        xPadding: 15,
-        yPadding: 15
-      },
-      title: {// титульное название
-        display: true,
-        position: `left`,
-        text: `TRANSPORT`,
-        fontSize: 24,
-        fontColor: `#000000`
-      },
-      legend: {
-        display: false
-      },
-      scales: {
-        xAxes: [{
-          ticks: {
-            beginAtZero: true,
-            stepSize: 1,
-            suggestedMax: 5
-          }
-        }]
-      }
-    }
+    options: createOption(`TRANSPORT`, `x`)
   });
 };
 
@@ -26100,9 +26071,9 @@ class Statistics extends _abstract_smart_component_js__WEBPACK_IMPORTED_MODULE_0
 
 /***/ }),
 
-/***/ "./src/components/trip_days.js":
+/***/ "./src/components/trip-days.js":
 /*!*************************************!*\
-  !*** ./src/components/trip_days.js ***!
+  !*** ./src/components/trip-days.js ***!
   \*************************************/
 /*! exports provided: default */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
@@ -26110,7 +26081,7 @@ class Statistics extends _abstract_smart_component_js__WEBPACK_IMPORTED_MODULE_0
 "use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "default", function() { return TripDays; });
-/* harmony import */ var _abstract_component_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./abstract_component.js */ "./src/components/abstract_component.js");
+/* harmony import */ var _abstract_component_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./abstract-component.js */ "./src/components/abstract-component.js");
 
 
 const createTripDaysTemplate = () =>
@@ -26139,15 +26110,37 @@ class TripDays extends _abstract_component_js__WEBPACK_IMPORTED_MODULE_0__["defa
 "use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "default", function() { return Waybill; });
-/* harmony import */ var _abstract_component_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./abstract_component.js */ "./src/components/abstract_component.js");
+/* harmony import */ var _abstract_component_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./abstract-component.js */ "./src/components/abstract-component.js");
 /* harmony import */ var moment__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! moment */ "./node_modules/moment/moment.js");
 /* harmony import */ var moment__WEBPACK_IMPORTED_MODULE_1___default = /*#__PURE__*/__webpack_require__.n(moment__WEBPACK_IMPORTED_MODULE_1__);
 
 
 
-const createWaybillTemplate = (sortedPoints) => {
-  const addStartDate = moment__WEBPACK_IMPORTED_MODULE_1___default()(sortedPoints[0].dateFrom).format(`MMM DD`);
-  const addEndDate = moment__WEBPACK_IMPORTED_MODULE_1___default()(sortedPoints[sortedPoints.length - 1].dateTo).format(`MMM DD`);
+
+const createWaybillTemplate = (points) => {
+  const sortedPoints = points.sort((a, b) => new Date(a.dateFrom).getTime() - new Date(b.dateFrom).getTime());
+  const uniqueCities = [...new Set(sortedPoints.map((it) => it.name))];
+
+  let tripInfoTitle = ``;
+
+  if (uniqueCities.length <= 1) {
+    tripInfoTitle = sortedPoints[0] ? sortedPoints[0].name : `There is no point`;
+
+  } else if (uniqueCities.length === 2 && sortedPoints.length === 2) {
+    tripInfoTitle = `${sortedPoints[0].name} - ${sortedPoints[1].name}`;
+
+  } else if (uniqueCities.length <= 3 && sortedPoints.length === 3) {
+    tripInfoTitle = `${sortedPoints[0].name} - ${sortedPoints[1].name} - ${sortedPoints[2].name}`;
+
+  } else {
+    tripInfoTitle = `${sortedPoints[0].name} - ... - ${sortedPoints[sortedPoints.length - 1].name}`;
+  }
+
+  const addStartDate = sortedPoints[0] ? moment__WEBPACK_IMPORTED_MODULE_1___default()(sortedPoints[0].dateFrom).format(`MMM DD`) : `No Date`;
+  const addEndDate = sortedPoints[sortedPoints.length - 1]
+    ? moment__WEBPACK_IMPORTED_MODULE_1___default()(sortedPoints[sortedPoints.length - 1].dateTo).format(`MMM DD`)
+    : `No Date`;
+
   const totalPrice = sortedPoints.reduce((acc, it) => {
     return acc + it.basePrice;
   }, 0);
@@ -26155,7 +26148,7 @@ const createWaybillTemplate = (sortedPoints) => {
   return (
     `<section class="trip-main__trip-info  trip-info">
       <div class="trip-info__main">
-        <h1 class="trip-info__title">${sortedPoints[0].name} &mdash; ... &mdash; ${sortedPoints[sortedPoints.length - 1].name}</h1>
+        <h1 class="trip-info__title">${tripInfoTitle}</h1>
         <p class="trip-info__dates">${addStartDate}&nbsp;&mdash;&nbsp;${addEndDate}</p>
       </div>
       <p class="trip-info__cost">
@@ -26195,24 +26188,27 @@ __webpack_require__.r(__webpack_exports__);
 
 
 
+
 class FilterController {
   constructor(container, points) {
     this._container = container;
     this._points = points;
-    this._activeFilterType = _formulas_filter_js__WEBPACK_IMPORTED_MODULE_1__["FILTER_TYPE"].EVERYTHING;
+    this._activeFilterType = _formulas_filter_js__WEBPACK_IMPORTED_MODULE_1__["FilterType"].EVERYTHING;
     this._filterComponent = null;
     this._onDataChange = this._onDataChange.bind(this);
     this._onFilterChange = this._onFilterChange.bind(this);
     this._points.setDataChangeHandler(this._onDataChange);
   }
 
-  renderFilters() { // рисует строку фильтров
+  renderFilters() {
     const container = this._container;
 
-    const filters = Object.values(_formulas_filter_js__WEBPACK_IMPORTED_MODULE_1__["FILTER_TYPE"]).map((it) => {
+    const filters = Object.values(_formulas_filter_js__WEBPACK_IMPORTED_MODULE_1__["FilterType"]).map((it) => {
+      const pointsCount = Object(_formulas_filter_js__WEBPACK_IMPORTED_MODULE_1__["getPointsByFilter"])(this._points.getPointsOnBegining(), it);
       return {
         name: it,
         checked: it === this._activeFilterType,
+        disabled: pointsCount.length === 0
       };
     });
     const oldComponent = this._filterComponent;
@@ -26227,9 +26223,9 @@ class FilterController {
     }
   }
 
-  _onFilterChange(filterType) { // просто меняет наименование фильтра
-    this._points.setFilter(filterType);
+  _onFilterChange(filterType) {
     this._activeFilterType = filterType;
+    this._points.setFilter(filterType);
   }
 
   _onDataChange() {
@@ -26244,16 +26240,16 @@ class FilterController {
 /*!********************************************!*\
   !*** ./src/controllers/item-controller.js ***!
   \********************************************/
-/*! exports provided: MODE, EmptyPoint, default */
+/*! exports provided: Mode, EmptyPoint, default */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "MODE", function() { return MODE; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "Mode", function() { return Mode; });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "EmptyPoint", function() { return EmptyPoint; });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "default", function() { return ItemController; });
-/* harmony import */ var _components_card_list_item_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../components/card_list_item.js */ "./src/components/card_list_item.js");
-/* harmony import */ var _components_card_list_item_form_js__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../components/card_list_item_form.js */ "./src/components/card_list_item_form.js");
+/* harmony import */ var _components_point_line_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../components/point-line.js */ "./src/components/point-line.js");
+/* harmony import */ var _components_point_form_js__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../components/point-form.js */ "./src/components/point-form.js");
 /* harmony import */ var _models_point_js__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../models/point.js */ "./src/models/point.js");
 /* harmony import */ var _formulas_js__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ../formulas.js */ "./src/formulas.js");
 /* harmony import */ var moment__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! moment */ "./node_modules/moment/moment.js");
@@ -26266,7 +26262,7 @@ __webpack_require__.r(__webpack_exports__);
 
 const SHAKE_ANIMATION_TIMEOUT = 600;
 
-const MODE = {
+const Mode = {
   ADDING: `adding`,
   DEFAULT: `default`,
   FORM: `form`,
@@ -26285,8 +26281,8 @@ const EmptyPoint = {
     .map((it) => {
       return {src: it, description: `где-то далеко`};
     }),
-  dateFrom: null,
-  dateTo: null,
+  dateFrom: new Date(),
+  dateTo: new Date(),
   basePrice: Number(),
   isFavorite: false,
 };
@@ -26336,97 +26332,94 @@ const parseFormData = (formData) => {
 };
 
 class ItemController {
-  constructor(container, onDataChange, onViewChange, allPoints) {
-    this._allPoints = allPoints;
+  constructor(container, onDataChange, onViewChange, externalBase) {
+    this._externalBase = externalBase;
     this._container = container;
     this._onDataChange = onDataChange;
     this._onViewChange = onViewChange;
-    this._mode = MODE.DEFAULT;
-    this._cardListItemComponent = null;
-    this._cardListItemFormComponent = null;
+    this._mode = Mode.DEFAULT;
+    this._pointLineComponent = null;
+    this._pointFormComponent = null;
     this._onEscKeyDown = this._onEscKeyDown.bind(this);
     this._onButtonClick = this._onButtonClick.bind(this);
   }
 
   renderCardItem(cardItem, mode) { // рендер для одной карточки
-    const oldCardListItemComponent = this._cardListItemComponent;
-    const oldCardListItemFormComponent = this._cardListItemFormComponent;
+    const oldPointLineComponent = this._pointLineComponent;
+    const oldPointFormComponent = this._pointFormComponent;
     this._mode = mode;
-    this._cardListItemComponent = new _components_card_list_item_js__WEBPACK_IMPORTED_MODULE_0__["default"](cardItem);
-    this._cardListItemFormComponent = new _components_card_list_item_form_js__WEBPACK_IMPORTED_MODULE_1__["default"](cardItem, this._allPoints);
+    this._pointLineComponent = new _components_point_line_js__WEBPACK_IMPORTED_MODULE_0__["default"](cardItem);
+    this._pointFormComponent = new _components_point_form_js__WEBPACK_IMPORTED_MODULE_1__["default"](cardItem, this._externalBase);
 
-    this._cardListItemComponent.setRollupButtonClickHandler(() => {
+    this._pointLineComponent.setRollupButtonClickHandler(() => {
       this._replaceItemToForm();
       document.addEventListener(`keydown`, this._onEscKeyDown);
-      this._cardListItemFormComponent.getElement().querySelector(`.event__rollup-btn`)
-        .addEventListener(`click`, this._onButtonClick);
+      document.addEventListener(`click`, this._onButtonClick);
     });
 
-    this._cardListItemFormComponent.setSubmitHandler((evt) => {
+    this._pointFormComponent.setSubmitHandler((evt) => {
       evt.preventDefault();
 
-      this._cardListItemFormComponent.setChangedDataByView({
+      this._pointFormComponent.setChangedDataByView({
         SAVE_BUTTON_TEXT: `Saving...`,
       });
 
-      const formData = this._cardListItemFormComponent.getChangedDataByView();
-      const data = parseFormData(formData);
-      this._onDataChange(this, cardItem, data);
+      const formData = this._pointFormComponent.getChangedDataByView();
+      const pointModel = parseFormData(formData);
+      this._onDataChange(this, cardItem, pointModel);
     });
-    this._cardListItemFormComponent.setDeleteButtonClickHandler(() => {
+    this._pointFormComponent.setDeleteButtonClickHandler(() => {
 
-      this._cardListItemFormComponent.setChangedDataByView({
+      this._pointFormComponent.setChangedDataByView({
         DELETE_BUTTON_TEXT: `Deleting...`,
       });
       this._onDataChange(this, cardItem, null);
     });
 
     switch (mode) {
-      case MODE.DEFAULT:
-        if (oldCardListItemComponent && oldCardListItemFormComponent) {
-          Object(_formulas_js__WEBPACK_IMPORTED_MODULE_3__["replace"])(this._cardListItemFormComponent, oldCardListItemFormComponent);
-          Object(_formulas_js__WEBPACK_IMPORTED_MODULE_3__["replace"])(this._cardListItemComponent, oldCardListItemComponent);
-          this._replaceFormToItem();
-        } else {
-          Object(_formulas_js__WEBPACK_IMPORTED_MODULE_3__["renderComponent"])(this._container, this._cardListItemComponent);
-        }
-        break;
-      case MODE.ADDING:
-        if (oldCardListItemComponent && oldCardListItemFormComponent) {
-          Object(_formulas_js__WEBPACK_IMPORTED_MODULE_3__["remove"])(oldCardListItemComponent);
-          Object(_formulas_js__WEBPACK_IMPORTED_MODULE_3__["remove"])(oldCardListItemFormComponent);
+      case Mode.ADDING:
+        if (oldPointLineComponent && oldPointFormComponent) {
+          Object(_formulas_js__WEBPACK_IMPORTED_MODULE_3__["remove"])(oldPointLineComponent);
+          Object(_formulas_js__WEBPACK_IMPORTED_MODULE_3__["remove"])(oldPointFormComponent);
         }
         document.addEventListener(`keydown`, this._onEscKeyDown);
-        this._cardListItemFormComponent.getElement().querySelector(`.event__rollup-btn`)
-          .addEventListener(`click`, this._onButtonClick);
-        Object(_formulas_js__WEBPACK_IMPORTED_MODULE_3__["renderComponent"])(this._container, this._cardListItemFormComponent, `afterEnd`);
+        document.addEventListener(`click`, this._onButtonClick);
+        Object(_formulas_js__WEBPACK_IMPORTED_MODULE_3__["renderComponent"])(this._container, this._pointFormComponent, `afterEnd`);
+        break;
+      default:
+        if (oldPointLineComponent && oldPointFormComponent) {
+          Object(_formulas_js__WEBPACK_IMPORTED_MODULE_3__["replace"])(this._pointFormComponent, oldPointFormComponent);
+          Object(_formulas_js__WEBPACK_IMPORTED_MODULE_3__["replace"])(this._pointLineComponent, oldPointLineComponent);
+          this._replaceFormToItem();
+        } else {
+          Object(_formulas_js__WEBPACK_IMPORTED_MODULE_3__["renderComponent"])(this._container, this._pointLineComponent);
+        }
         break;
     }
   }
 
-  setDefaultView() { // превратить в строку и поменять MODE
-    if (this._mode !== MODE.DEFAULT) { // если MODE.FORM
+  setDefaultView() { // превратить в строку и поменять Mode
+    if (this._mode !== Mode.DEFAULT) { // если Mode.FORM
       this._replaceFormToItem(); // превратить форму в карточку
     }
   }
 
   destroy() {
-    Object(_formulas_js__WEBPACK_IMPORTED_MODULE_3__["remove"])(this._cardListItemFormComponent);
-    Object(_formulas_js__WEBPACK_IMPORTED_MODULE_3__["remove"])(this._cardListItemComponent);
+    Object(_formulas_js__WEBPACK_IMPORTED_MODULE_3__["remove"])(this._pointFormComponent);
+    Object(_formulas_js__WEBPACK_IMPORTED_MODULE_3__["remove"])(this._pointLineComponent);
     document.removeEventListener(`keydown`, this._onEscKeyDown);
-    this._cardListItemFormComponent.getElement().querySelector(`.event__rollup-btn`)
-      .removeEventListener(`click`, this._onButtonClick);
+    document.removeEventListener(`click`, this._onButtonClick);
   }
 
   shake() {
-    this._cardListItemFormComponent.getElement().style.animation = `shake ${SHAKE_ANIMATION_TIMEOUT / 1000}s`;
-    this._cardListItemComponent.getElement().style.animation = `shake ${SHAKE_ANIMATION_TIMEOUT / 1000}s`;
+    this._pointFormComponent.getElement().style.animation = `shake ${SHAKE_ANIMATION_TIMEOUT / 1000}s`;
+    this._pointLineComponent.getElement().style.animation = `shake ${SHAKE_ANIMATION_TIMEOUT / 1000}s`;
 
     setTimeout(() => {
-      this._cardListItemFormComponent.getElement().style.animation = ``;
-      this._cardListItemComponent.getElement().style.animation = ``;
+      this._pointFormComponent.getElement().style.animation = ``;
+      this._pointLineComponent.getElement().style.animation = ``;
 
-      this._cardListItemFormComponent.setChangedDataByView({
+      this._pointFormComponent.setChangedDataByView({
         DELETE_BUTTON_TEXT: `Delete`,
         SAVE_BUTTON_TEXT: `Save`
       });
@@ -26435,34 +26428,38 @@ class ItemController {
 
   _replaceFormToItem() {
     document.removeEventListener(`keydown`, this._onEscKeyDown);
-    this._cardListItemFormComponent.getElement().querySelector(`.event__rollup-btn`)
-      .removeEventListener(`click`, this._onButtonClick);
-    this._cardListItemFormComponent.reset();
+    document.removeEventListener(`click`, this._onButtonClick);
+    this._pointFormComponent.reset();
 
-    if (document.contains(this._cardListItemFormComponent.getElement())) {
-      Object(_formulas_js__WEBPACK_IMPORTED_MODULE_3__["replace"])(this._cardListItemComponent, this._cardListItemFormComponent);
+    if (document.contains(this._pointFormComponent.getElement())) {
+      Object(_formulas_js__WEBPACK_IMPORTED_MODULE_3__["replace"])(this._pointLineComponent, this._pointFormComponent);
     }
 
-    this._mode = MODE.DEFAULT;
+    this._mode = Mode.DEFAULT;
   }
 
   _replaceItemToForm() {
     this._onViewChange();
-    Object(_formulas_js__WEBPACK_IMPORTED_MODULE_3__["replace"])(this._cardListItemFormComponent, this._cardListItemComponent);
-    this._mode = MODE.FORM;
+    Object(_formulas_js__WEBPACK_IMPORTED_MODULE_3__["replace"])(this._pointFormComponent, this._pointLineComponent);
+    this._mode = Mode.FORM;
   }
 
   _onEscKeyDown(evt) {
     if (evt.key === `Escape` || evt.key === `Esc`) {
-      if (this._mode === MODE.ADDING) {
+      if (this._mode === Mode.ADDING) {
         this._onDataChange(this, EmptyPoint, null);
       }
       this._replaceFormToItem();
     }
   }
 
-  _onButtonClick() {
-    this._replaceFormToItem();
+  _onButtonClick(evt) {
+    if (evt.target.classList.contains(`evt__rollup-btn__setbymyself`)) {
+      if (this._mode === Mode.ADDING) {
+        this._onDataChange(this, EmptyPoint, null);
+      }
+      this._replaceFormToItem();
+    }
   }
 }
 
@@ -26480,14 +26477,15 @@ class ItemController {
 __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "default", function() { return TableController; });
 /* harmony import */ var _components_assortment_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../components/assortment.js */ "./src/components/assortment.js");
-/* harmony import */ var _components_trip_days_js__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../components/trip_days.js */ "./src/components/trip_days.js");
-/* harmony import */ var _components_card_list_js__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../components/card_list.js */ "./src/components/card_list.js");
-/* harmony import */ var _components_card_list_light_js__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ../components/card_list_light.js */ "./src/components/card_list_light.js");
-/* harmony import */ var _components_no_card_list_js__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ../components/no_card_list.js */ "./src/components/no_card_list.js");
-/* harmony import */ var _formulas_js__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ../formulas.js */ "./src/formulas.js");
-/* harmony import */ var _item_controller_js__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! ./item-controller.js */ "./src/controllers/item-controller.js");
-/* harmony import */ var moment__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! moment */ "./node_modules/moment/moment.js");
-/* harmony import */ var moment__WEBPACK_IMPORTED_MODULE_7___default = /*#__PURE__*/__webpack_require__.n(moment__WEBPACK_IMPORTED_MODULE_7__);
+/* harmony import */ var _components_trip_days_js__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../components/trip-days.js */ "./src/components/trip-days.js");
+/* harmony import */ var _components_card_list_js__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../components/card-list.js */ "./src/components/card-list.js");
+/* harmony import */ var _components_card_list_light_js__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ../components/card-list-light.js */ "./src/components/card-list-light.js");
+/* harmony import */ var _components_no_card_list_js__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ../components/no-card-list.js */ "./src/components/no-card-list.js");
+/* harmony import */ var _components_waybill_js__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ../components/waybill.js */ "./src/components/waybill.js");
+/* harmony import */ var _formulas_js__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! ../formulas.js */ "./src/formulas.js");
+/* harmony import */ var _item_controller_js__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! ./item-controller.js */ "./src/controllers/item-controller.js");
+/* harmony import */ var moment__WEBPACK_IMPORTED_MODULE_8__ = __webpack_require__(/*! moment */ "./node_modules/moment/moment.js");
+/* harmony import */ var moment__WEBPACK_IMPORTED_MODULE_8___default = /*#__PURE__*/__webpack_require__.n(moment__WEBPACK_IMPORTED_MODULE_8__);
 
 
 
@@ -26497,48 +26495,50 @@ __webpack_require__.r(__webpack_exports__);
 
 
 
-const HIDDEN_CLASS = `trip-events--hidden`;
 
-const renderAllPoints = (sortType, container, allPoints, onDataChange, onViewChange) => {
+const mainTripInfoElement = document.querySelector(`.trip-main`);
+const TRIP_EVENTS_HIDDEN = `trip-events--hidden`;
+
+const renderAllPoints = (sortType, container, externalBase, onDataChange, onViewChange) => {
   if (sortType === `event`) {
-    const sortedCards = allPoints.map((it) => moment__WEBPACK_IMPORTED_MODULE_7___default()(it.dateFrom).format(`YYYYMMDD`))
+    const sortedCards = externalBase.points.map((it) => moment__WEBPACK_IMPORTED_MODULE_8___default()(it.dateFrom).format(`YYYYMMDD`))
       .filter((item, index, array) => array.indexOf(item) === index)
       .sort((a, b) => a - b);
 
-    sortedCards.forEach((it, index) => Object(_formulas_js__WEBPACK_IMPORTED_MODULE_5__["renderComponent"])(container, new _components_card_list_js__WEBPACK_IMPORTED_MODULE_2__["default"](it, Object(_formulas_js__WEBPACK_IMPORTED_MODULE_5__["dayCounter"])(sortedCards)[index])));
+    sortedCards.forEach((it, index) => Object(_formulas_js__WEBPACK_IMPORTED_MODULE_6__["renderComponent"])(container, new _components_card_list_js__WEBPACK_IMPORTED_MODULE_2__["default"](it, Object(_formulas_js__WEBPACK_IMPORTED_MODULE_6__["getDaysCount"])(sortedCards)[index])));
     const tripEventsListElements = document.querySelectorAll(`.trip-events__list`);
-    const arrayOfItemControllers = [];
+    const itemControllers = [];
 
     sortedCards.forEach((item, index) => {
-      allPoints.filter((elem) => item === moment__WEBPACK_IMPORTED_MODULE_7___default()(elem.dateFrom).format(`YYYYMMDD`))
+      externalBase.points.filter((elem) => item === moment__WEBPACK_IMPORTED_MODULE_8___default()(elem.dateFrom).format(`YYYYMMDD`))
         .forEach((i) => {
-          const itemController = new _item_controller_js__WEBPACK_IMPORTED_MODULE_6__["default"](tripEventsListElements[index], onDataChange, onViewChange, allPoints);
-          itemController.renderCardItem(i, _item_controller_js__WEBPACK_IMPORTED_MODULE_6__["MODE"].DEFAULT);
-          arrayOfItemControllers.push(itemController);
+          const itemController = new _item_controller_js__WEBPACK_IMPORTED_MODULE_7__["default"](tripEventsListElements[index], onDataChange, onViewChange, externalBase);
+          itemController.renderCardItem(i, _item_controller_js__WEBPACK_IMPORTED_MODULE_7__["Mode"].DEFAULT);
+          itemControllers.push(itemController);
         });
     });
-    return arrayOfItemControllers;
+    return itemControllers;
   } else {
-    Object(_formulas_js__WEBPACK_IMPORTED_MODULE_5__["renderComponent"])(container, new _components_card_list_light_js__WEBPACK_IMPORTED_MODULE_3__["default"]());
+    Object(_formulas_js__WEBPACK_IMPORTED_MODULE_6__["renderComponent"])(container, new _components_card_list_light_js__WEBPACK_IMPORTED_MODULE_3__["default"]());
 
     const tripEventsListElement = document.querySelector(`.trip-events__list`);
 
-    return allPoints.map((i) => {
-      const itemController = new _item_controller_js__WEBPACK_IMPORTED_MODULE_6__["default"](tripEventsListElement, onDataChange, onViewChange, allPoints);
-      itemController.renderCardItem(i, _item_controller_js__WEBPACK_IMPORTED_MODULE_6__["MODE"].DEFAULT);
+    return externalBase.points.map((i) => {
+      const itemController = new _item_controller_js__WEBPACK_IMPORTED_MODULE_7__["default"](tripEventsListElement, onDataChange, onViewChange, externalBase);
+      itemController.renderCardItem(i, _item_controller_js__WEBPACK_IMPORTED_MODULE_7__["Mode"].DEFAULT);
       return itemController;
     });
   }
 };
 
 class TableController {
-  constructor(container, points, api) {
+  constructor(container, externalBase, api) {
     this._showedCardItemControllers = [];
     this._container = container;
-    this._points = points;
+    this._externalBase = externalBase;
     this._api = api;
     this._assortmentComponent = new _components_assortment_js__WEBPACK_IMPORTED_MODULE_0__["default"]();
-    this._tripDaysComponent = new _components_trip_days_js__WEBPACK_IMPORTED_MODULE_1__["default"](); // контейнер для рендеров
+    this._tripDaysComponent = new _components_trip_days_js__WEBPACK_IMPORTED_MODULE_1__["default"]();
     this._noCardListComponent = new _components_no_card_list_js__WEBPACK_IMPORTED_MODULE_4__["default"]();
     this._creatingPoint = null;
     this._onDataChange = this._onDataChange.bind(this);
@@ -26546,45 +26546,66 @@ class TableController {
     this._onViewChange = this._onViewChange.bind(this);
     this._onFilterChange = this._onFilterChange.bind(this);
     this._assortmentComponent.setSortTypeChangeHandler(this._onSortTypeChange);
-    this._points.setFilterChangeHandler(this._onFilterChange);
+    this._externalBase.setFilterChangeHandler(this._onFilterChange);
     this._sortType = `event`;
+  }
+
+  chooseEnvelope() {
+    const points = this._externalBase.getPointsByFilter();
+    if (points.length === 0) {
+      Object(_formulas_js__WEBPACK_IMPORTED_MODULE_6__["showComponent"])(`trip-events__msg`);
+      Object(_formulas_js__WEBPACK_IMPORTED_MODULE_6__["hideComponent"])(`trip-events__trip-sort`);
+      Object(_formulas_js__WEBPACK_IMPORTED_MODULE_6__["hideComponent"])(`trip-days`);
+      Object(_formulas_js__WEBPACK_IMPORTED_MODULE_6__["hideComponent"])(`trip-main__trip-info`);
+    } else {
+      Object(_formulas_js__WEBPACK_IMPORTED_MODULE_6__["hideComponent"])(`trip-events__msg`);
+      Object(_formulas_js__WEBPACK_IMPORTED_MODULE_6__["showComponent"])(`trip-events__trip-sort`);
+      Object(_formulas_js__WEBPACK_IMPORTED_MODULE_6__["showComponent"])(`trip-days`);
+      Object(_formulas_js__WEBPACK_IMPORTED_MODULE_6__["showComponent"])(`trip-main__trip-info`);
+    }
   }
 
   show() {
     const tripEvents = document.querySelector(`.trip-events`);
-    if (tripEvents.classList.contains(HIDDEN_CLASS)) {
-      tripEvents.classList.remove(HIDDEN_CLASS);
+    if (tripEvents.classList.contains(TRIP_EVENTS_HIDDEN)) {
+      tripEvents.classList.remove(TRIP_EVENTS_HIDDEN);
     }
   }
 
   hide() {
     const tripEvents = document.querySelector(`.trip-events`);
-    if (!tripEvents.classList.contains(HIDDEN_CLASS)) {
-      tripEvents.classList.add(HIDDEN_CLASS);
+    if (!tripEvents.classList.contains(TRIP_EVENTS_HIDDEN)) {
+      tripEvents.classList.add(TRIP_EVENTS_HIDDEN);
     }
   }
 
   renderMap() {
-    const points = this._points.getPointsByFilter();
+    const points = this._externalBase.getPointsByFilter();
 
-    if (points.length === 0) {
-      Object(_formulas_js__WEBPACK_IMPORTED_MODULE_5__["renderComponent"])(this._container, this._noCardListComponent);
-      return;
-    }
+    Object(_formulas_js__WEBPACK_IMPORTED_MODULE_6__["renderComponent"])(this._container, this._noCardListComponent);
 
-    Object(_formulas_js__WEBPACK_IMPORTED_MODULE_5__["renderComponent"])(this._container, this._assortmentComponent);
-    Object(_formulas_js__WEBPACK_IMPORTED_MODULE_5__["renderComponent"])(this._container, this._tripDaysComponent);
+    Object(_formulas_js__WEBPACK_IMPORTED_MODULE_6__["renderComponent"])(this._container, this._assortmentComponent);
+    Object(_formulas_js__WEBPACK_IMPORTED_MODULE_6__["renderComponent"])(this._container, this._tripDaysComponent);
+    Object(_formulas_js__WEBPACK_IMPORTED_MODULE_6__["renderComponent"])(mainTripInfoElement, new _components_waybill_js__WEBPACK_IMPORTED_MODULE_5__["default"](points), `afterBegin`);
+    this._renderPoints(this._sortType, points);
 
-    this._renderPoints(this._sortType, points); // вызывается один раз, вначале
+    this.chooseEnvelope();
   }
 
   createPoint() {
+    const externalBase = {
+      points: this._externalBase.getPointsByFilter(),
+      destinations: this._externalBase.getDestinations(),
+      offers: this._externalBase.getOffers()
+    };
+
     if (this._creatingPoint) {
       return;
     }
 
-    this._creatingPoint = new _item_controller_js__WEBPACK_IMPORTED_MODULE_6__["default"](this._assortmentComponent.getElement(), this._onDataChange, this._onViewChange, this._points._points);
-    this._creatingPoint.renderCardItem(_item_controller_js__WEBPACK_IMPORTED_MODULE_6__["EmptyPoint"], _item_controller_js__WEBPACK_IMPORTED_MODULE_6__["MODE"].ADDING);
+    Object(_formulas_js__WEBPACK_IMPORTED_MODULE_6__["hideComponent"])(`trip-events__msg`);
+    this._creatingPoint = new _item_controller_js__WEBPACK_IMPORTED_MODULE_7__["default"](this._assortmentComponent.getElement(), this._onDataChange, this._onViewChange, externalBase);
+    this._creatingPoint.renderCardItem(_item_controller_js__WEBPACK_IMPORTED_MODULE_7__["EmptyPoint"], _item_controller_js__WEBPACK_IMPORTED_MODULE_7__["Mode"].ADDING);
   }
 
   _removePoints() {
@@ -26594,30 +26615,36 @@ class TableController {
   }
 
   _renderPoints(sortType, points) {
+    const externalBase = {
+      points,
+      destinations: this._externalBase.getDestinations(),
+      offers: this._externalBase.getOffers()
+    };
+
     this._sortType = sortType;
     const pointsList = this._tripDaysComponent.getElement();
-    const newCardItems = renderAllPoints(this._sortType, pointsList, points, this._onDataChange, this._onViewChange);
+    const newCardItems = renderAllPoints(this._sortType, pointsList, externalBase, this._onDataChange, this._onViewChange);
     this._showedCardItemControllers = this._showedCardItemControllers.concat(newCardItems);
   }
 
   _updatePoints() {
-    this._removePoints();
-    this._renderPoints(this._sortType, this._points.getPointsByFilter());
+    this._onSortTypeChange(this._sortType);
+    this.chooseEnvelope();
   }
 
   _onDataChange(itemController, oldData, newData) {
-    if (oldData === _item_controller_js__WEBPACK_IMPORTED_MODULE_6__["EmptyPoint"] && newData === null) {
+    if (oldData === _item_controller_js__WEBPACK_IMPORTED_MODULE_7__["EmptyPoint"] && newData === null) {
       this._creatingPoint = null;
       itemController.destroy();
       this._updatePoints();
 
-    } else if (oldData === _item_controller_js__WEBPACK_IMPORTED_MODULE_6__["EmptyPoint"]) {
+    } else if (oldData === _item_controller_js__WEBPACK_IMPORTED_MODULE_7__["EmptyPoint"]) {
       this._creatingPoint = null;
       itemController.destroy();
 
       this._api.createPoint(newData) // экземпляр Point в удобном для мня формате
           .then((item) => {
-            this._points.addPoint(item);
+            this._externalBase.addPoint(item);
             this._updatePoints();
           })
           .catch(() => {
@@ -26628,7 +26655,7 @@ class TableController {
 
       this._api.deletePoint(oldData.id) // свойство id экземпляра Point
         .then(() => {
-          this._points.removePoint(oldData.id);
+          this._externalBase.removePoint(oldData.id);
           this. _updatePoints();
         })
         .catch(() => {
@@ -26636,12 +26663,12 @@ class TableController {
         });
 
     } else {
-      this._api.updatePoint(oldData.id, newData) // находится нужный id и сохраняются измененные данные
+      this._api.updatePoint(oldData.id, newData) // находится необходимый id и сохраняются измененные данные
         .then((item) => {
-          const isSuccess = this._points.updatePoint(oldData.id, item);
+          const isSuccess = this._externalBase.updatePoint(oldData.id, item);
 
           if (isSuccess) {
-            itemController.renderCardItem(item, _item_controller_js__WEBPACK_IMPORTED_MODULE_6__["MODE"].DEFAULT);
+            itemController.renderCardItem(item, _item_controller_js__WEBPACK_IMPORTED_MODULE_7__["Mode"].DEFAULT);
             this._updatePoints();
           }
         })
@@ -26651,29 +26678,36 @@ class TableController {
     }
   }
 
-  _onViewChange() { // срабатывает перед началом превращения карточки в форму. Чтобы изначально все задачи были простыми карточками
+  _onViewChange() {
     this._showedCardItemControllers.forEach((it) => it.setDefaultView());
   }
 
   _onSortTypeChange(sortType) {
+    this._sortType = sortType;
     this._tripDaysComponent.getElement().innerHTML = ``;
+    const points = this._externalBase.getPointsByFilter();
     let sortedItems = [];
-    const points = this._points.getPointsByFilter();
 
     switch (sortType) {
-      case _components_assortment_js__WEBPACK_IMPORTED_MODULE_0__["SORT_TYPES"].TIME_DOWN:
-        sortedItems = points.sort((a, b) => new Date(b.dateTo).getTime() - new Date(b.dateFrom).getTime() - new Date(a.dateTo).getTime() + new Date(a.dateFrom).getTime());
+      case _components_assortment_js__WEBPACK_IMPORTED_MODULE_0__["SortType"].TIME_DOWN:
+        sortedItems = points.slice().sort((a, b) => {
+          const periodOfPointTwo = new Date(b.dateTo).getTime() - new Date(b.dateFrom).getTime();
+          const periodOfPointOne = new Date(a.dateTo).getTime() - new Date(a.dateFrom).getTime();
+          return periodOfPointTwo - periodOfPointOne;
+        });
         break;
-      case _components_assortment_js__WEBPACK_IMPORTED_MODULE_0__["SORT_TYPES"].PRICE_DOWN:
-        sortedItems = points.sort((a, b) => b.basePrice - a.basePrice);
+      case _components_assortment_js__WEBPACK_IMPORTED_MODULE_0__["SortType"].PRICE_DOWN:
+        sortedItems = points.slice().sort((a, b) => b.basePrice - a.basePrice);
         break;
-      case _components_assortment_js__WEBPACK_IMPORTED_MODULE_0__["SORT_TYPES"].DEFAULT:
-        sortedItems = points;
+      default:
+        sortedItems = points.slice();
         break;
     }
 
+    mainTripInfoElement.querySelector(`.trip-main__trip-info`).remove();
     this._removePoints();
     this._renderPoints(sortType, sortedItems);
+    Object(_formulas_js__WEBPACK_IMPORTED_MODULE_6__["renderComponent"])(mainTripInfoElement, new _components_waybill_js__WEBPACK_IMPORTED_MODULE_5__["default"](sortedItems), `afterBegin`);
   }
 
   _onFilterChange() {
@@ -26688,12 +26722,12 @@ class TableController {
 /*!********************************!*\
   !*** ./src/formulas-filter.js ***!
   \********************************/
-/*! exports provided: FILTER_TYPE, isPastDate, isFutureDate, isOneDay, getPastPoints, getFuturePoints, getPointsByFilter */
+/*! exports provided: FilterType, isPastDate, isFutureDate, isOneDay, getPastPoints, getFuturePoints, getPointsByFilter */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "FILTER_TYPE", function() { return FILTER_TYPE; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "FilterType", function() { return FilterType; });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "isPastDate", function() { return isPastDate; });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "isFutureDate", function() { return isFutureDate; });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "isOneDay", function() { return isOneDay; });
@@ -26704,7 +26738,7 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var moment__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(moment__WEBPACK_IMPORTED_MODULE_0__);
 
 
-const FILTER_TYPE = {
+const FilterType = {
   EVERYTHING: `everything`,
   FUTURE: `future`,
   PAST: `past`,
@@ -26743,15 +26777,13 @@ const getPointsByFilter = (points, filterType) => {
   const currentDate = new Date();
 
   switch (filterType) {
-    case FILTER_TYPE.EVERYTHING:
-      return points;
-    case FILTER_TYPE.PAST:
+    case FilterType.PAST:
       return getPastPoints(points, currentDate);
-    case FILTER_TYPE.FUTURE:
+    case FilterType.FUTURE:
       return getFuturePoints(points, currentDate);
+    default:
+      return points;
   }
-
-  return points; // если фильтра из списка нет
 };
 
 
@@ -26761,7 +26793,7 @@ const getPointsByFilter = (points, filterType) => {
 /*!*************************!*\
   !*** ./src/formulas.js ***!
   \*************************/
-/*! exports provided: getRandomIntegerNumber, generateWaybillType, renderComponent, createElement, castTimeFormat, remove, replace, dayCounter, itemTimePeriod */
+/*! exports provided: getRandomIntegerNumber, generateWaybillType, renderComponent, createElement, castTimeFormat, remove, replace, getDaysCount, createPeriodsName, VISUALLY_HIDDEN, showComponent, hideComponent */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -26773,14 +26805,17 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "castTimeFormat", function() { return castTimeFormat; });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "remove", function() { return remove; });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "replace", function() { return replace; });
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "dayCounter", function() { return dayCounter; });
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "itemTimePeriod", function() { return itemTimePeriod; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "getDaysCount", function() { return getDaysCount; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "createPeriodsName", function() { return createPeriodsName; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "VISUALLY_HIDDEN", function() { return VISUALLY_HIDDEN; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "showComponent", function() { return showComponent; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "hideComponent", function() { return hideComponent; });
 /* harmony import */ var moment__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! moment */ "./node_modules/moment/moment.js");
 /* harmony import */ var moment__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(moment__WEBPACK_IMPORTED_MODULE_0__);
 
 
 const getRandomIntegerNumber = (min, max) => {
-  let rand = min + Math.random() * (max + 1 - min);
+  const rand = min + Math.random() * (max + 1 - min);
   return Math.floor(rand);
 };
 
@@ -26837,14 +26872,14 @@ const replace = (newComponent, oldComponent) => {
   }
 };
 
-const dayCounter = (arr) => {
-  return arr.map((it) => moment__WEBPACK_IMPORTED_MODULE_0___default()(it))
+const getDaysCount = (startDate) => {
+  return startDate.map((it) => moment__WEBPACK_IMPORTED_MODULE_0___default()(it))
     .map((it, index, array) => 1 + it.diff(array[0], `days`));
 };
 
-const itemTimePeriod = (arr1, arr2) => {
-  const startDate = moment__WEBPACK_IMPORTED_MODULE_0___default()(arr1);
-  const endDate = moment__WEBPACK_IMPORTED_MODULE_0___default()(arr2);
+const createPeriodsName = (startTime, endTime) => {
+  const startDate = moment__WEBPACK_IMPORTED_MODULE_0___default()(startTime);
+  const endDate = moment__WEBPACK_IMPORTED_MODULE_0___default()(endTime);
 
   let daysDiff = endDate.diff(startDate, `days`);
   startDate.add(daysDiff, `days`);
@@ -26860,6 +26895,21 @@ const itemTimePeriod = (arr1, arr2) => {
   return `${daysDiff}${hoursDiff}${minDiff}`;
 };
 
+const VISUALLY_HIDDEN = `visually-hidden`;
+
+const showComponent = (neededClassName) => {
+  const component = document.querySelector(`.${neededClassName}`);
+  if (component.classList.contains(VISUALLY_HIDDEN)) {
+    component.classList.remove(VISUALLY_HIDDEN);
+  }
+};
+
+const hideComponent = (neededClassName) => {
+  const component = document.querySelector(`.${neededClassName}`);
+  if (!component.classList.contains(VISUALLY_HIDDEN)) {
+    component.classList.add(VISUALLY_HIDDEN);
+  }
+};
 
 
 /***/ }),
@@ -26876,15 +26926,14 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _api_index_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./api/index.js */ "./src/api/index.js");
 /* harmony import */ var _api_store_js__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./api/store.js */ "./src/api/store.js");
 /* harmony import */ var _api_provider_js__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./api/provider.js */ "./src/api/provider.js");
-/* harmony import */ var _components_waybill_js__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./components/waybill.js */ "./src/components/waybill.js");
-/* harmony import */ var _components_menu_js__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ./components/menu.js */ "./src/components/menu.js");
-/* harmony import */ var _components_statistics_js__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ./components/statistics.js */ "./src/components/statistics.js");
-/* harmony import */ var _controllers_filter_controller_js__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! ./controllers/filter-controller.js */ "./src/controllers/filter-controller.js");
-/* harmony import */ var _controllers_table_controller_js__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! ./controllers/table-controller.js */ "./src/controllers/table-controller.js");
-/* harmony import */ var _models_points_js__WEBPACK_IMPORTED_MODULE_8__ = __webpack_require__(/*! ./models/points.js */ "./src/models/points.js");
-/* harmony import */ var _formulas_js__WEBPACK_IMPORTED_MODULE_9__ = __webpack_require__(/*! ./formulas.js */ "./src/formulas.js");
-/* harmony import */ var flatpickr_dist_flatpickr_css__WEBPACK_IMPORTED_MODULE_10__ = __webpack_require__(/*! flatpickr/dist/flatpickr.css */ "./node_modules/flatpickr/dist/flatpickr.css");
-/* harmony import */ var flatpickr_dist_flatpickr_css__WEBPACK_IMPORTED_MODULE_10___default = /*#__PURE__*/__webpack_require__.n(flatpickr_dist_flatpickr_css__WEBPACK_IMPORTED_MODULE_10__);
+/* harmony import */ var _components_menu_js__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./components/menu.js */ "./src/components/menu.js");
+/* harmony import */ var _components_statistics_js__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ./components/statistics.js */ "./src/components/statistics.js");
+/* harmony import */ var _controllers_filter_controller_js__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ./controllers/filter-controller.js */ "./src/controllers/filter-controller.js");
+/* harmony import */ var _controllers_table_controller_js__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! ./controllers/table-controller.js */ "./src/controllers/table-controller.js");
+/* harmony import */ var _models_external_base_js__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! ./models/external-base.js */ "./src/models/external-base.js");
+/* harmony import */ var _formulas_js__WEBPACK_IMPORTED_MODULE_8__ = __webpack_require__(/*! ./formulas.js */ "./src/formulas.js");
+/* harmony import */ var flatpickr_dist_flatpickr_css__WEBPACK_IMPORTED_MODULE_9__ = __webpack_require__(/*! flatpickr/dist/flatpickr.css */ "./node_modules/flatpickr/dist/flatpickr.css");
+/* harmony import */ var flatpickr_dist_flatpickr_css__WEBPACK_IMPORTED_MODULE_9___default = /*#__PURE__*/__webpack_require__.n(flatpickr_dist_flatpickr_css__WEBPACK_IMPORTED_MODULE_9__);
 
 
 
@@ -26896,17 +26945,31 @@ __webpack_require__.r(__webpack_exports__);
 
 
 
+const StorePrefix = {
+  POINTS: `big-trip-points-localstorage`,
+  DESTINATIONS: `big-trip-destinations-localstorage`,
+  OFFERS: `big-trip-offers-localstorage`
+};
 
-const STORE_PREFIX = `big-trip-localstorage`;
 const STORE_VER = `v1`;
-const STORE_NAME = `${STORE_PREFIX}-${STORE_VER}`;
+
+const StoreName = {
+  POINTS: `${StorePrefix.POINTS}-${STORE_VER}`,
+  DESTINATIONS: `${StorePrefix.DESTINATIONS}-${STORE_VER}`,
+  OFFERS: `${StorePrefix.OFFERS}-${STORE_VER}`
+};
+
+const MainViewMode = {
+  STATISTICS: `statistics-setbymyself`,
+  TABLE: `table-setbymyself`,
+};
 
 document.querySelector(`.trip-main__event-add-btn`)
   .addEventListener(`click`, () => {
     tableController.createPoint();
   });
 
-const AUTHORIZATION = `Basic eo0w590ik29889d`; // это строка должна быть значение заголовка авторизации
+const AUTHORIZATION = `Basic eo0w590ik29889qq`;
 const END_POINT = `https://htmlacademy-es-10.appspot.com/big-trip/`;
 
 window.addEventListener(`load`, () => {
@@ -26917,62 +26980,59 @@ window.addEventListener(`load`, () => {
     });
 });
 
-const points = new _models_points_js__WEBPACK_IMPORTED_MODULE_8__["default"]();
+const externalBase = new _models_external_base_js__WEBPACK_IMPORTED_MODULE_7__["default"]();
 const api = new _api_index_js__WEBPACK_IMPORTED_MODULE_0__["default"](END_POINT, AUTHORIZATION);
-const store = new _api_store_js__WEBPACK_IMPORTED_MODULE_1__["default"](STORE_NAME, window.localStorage);
+const store = {
+  points: new _api_store_js__WEBPACK_IMPORTED_MODULE_1__["default"](StoreName.POINTS, window.localStorage),
+  destinations: new _api_store_js__WEBPACK_IMPORTED_MODULE_1__["default"](StoreName.DESTINATIONS, window.localStorage),
+  offers: new _api_store_js__WEBPACK_IMPORTED_MODULE_1__["default"](StoreName.OFFERS, window.localStorage),
+};
 const apiWithProvider = new _api_provider_js__WEBPACK_IMPORTED_MODULE_2__["default"](api, store);
-
-const mainTripInfoElement = document.querySelector(`.trip-main`);
 
 const mainTripControlsElement = document.querySelector(`.trip-main__trip-controls`);
 const visuallyHiddenElement = mainTripControlsElement.querySelectorAll(`.visually-hidden`);
-const menuComponent = new _components_menu_js__WEBPACK_IMPORTED_MODULE_4__["default"]();
-Object(_formulas_js__WEBPACK_IMPORTED_MODULE_9__["renderComponent"])(visuallyHiddenElement[0], menuComponent, `afterEnd`);
-menuComponent.setActiveViewMode(_components_menu_js__WEBPACK_IMPORTED_MODULE_4__["MAIN_VIEW_MODE"].TABLE);
-const filterController = new _controllers_filter_controller_js__WEBPACK_IMPORTED_MODULE_6__["default"](visuallyHiddenElement[1], points);
-filterController.renderFilters();
+const menuComponent = new _components_menu_js__WEBPACK_IMPORTED_MODULE_3__["default"]();
+Object(_formulas_js__WEBPACK_IMPORTED_MODULE_8__["renderComponent"])(visuallyHiddenElement[0], menuComponent, `afterEnd`);
+menuComponent.setActiveViewMode(MainViewMode.TABLE);
+const filterController = new _controllers_filter_controller_js__WEBPACK_IMPORTED_MODULE_5__["default"](visuallyHiddenElement[1], externalBase);
 
 const pageBodyContainer = document.getElementsByClassName(`page-body__container`)[1];
-const statisticsComponent = new _components_statistics_js__WEBPACK_IMPORTED_MODULE_5__["default"](points);
-Object(_formulas_js__WEBPACK_IMPORTED_MODULE_9__["renderComponent"])(pageBodyContainer, statisticsComponent);
+const statisticsComponent = new _components_statistics_js__WEBPACK_IMPORTED_MODULE_4__["default"](externalBase);
+Object(_formulas_js__WEBPACK_IMPORTED_MODULE_8__["renderComponent"])(pageBodyContainer, statisticsComponent);
 statisticsComponent.hide();
 
 const tripEventsElement = document.querySelector(`.trip-events`);
-const tableController = new _controllers_table_controller_js__WEBPACK_IMPORTED_MODULE_7__["default"](tripEventsElement, points, apiWithProvider);
+const tableController = new _controllers_table_controller_js__WEBPACK_IMPORTED_MODULE_6__["default"](tripEventsElement, externalBase, apiWithProvider);
 
 menuComponent.setOnChange((mainViewId) => {
   switch (mainViewId) {
-    case _components_menu_js__WEBPACK_IMPORTED_MODULE_4__["MAIN_VIEW_MODE"].TABLE:
-      menuComponent.setActiveViewMode(mainViewId);
-      statisticsComponent.hide();
-      tableController.show();
-      break;
-    case _components_menu_js__WEBPACK_IMPORTED_MODULE_4__["MAIN_VIEW_MODE"].STATISTICS:
+    case MainViewMode.STATISTICS:
       menuComponent.setActiveViewMode(mainViewId);
       tableController.hide();
       statisticsComponent.show();
       break;
+    default:
+      menuComponent.setActiveViewMode(mainViewId);
+      statisticsComponent.hide();
+      tableController.show();
+      break;
   }
 });
 
-apiWithProvider.getPoints()
+Promise.all([apiWithProvider.getPoints(), apiWithProvider.getDestinations(), apiWithProvider.getOffers()])
   .then((items) => {
-    const sortedItems = items.sort((a, b) => new Date(a.dateFrom).getTime() - new Date(b.dateFrom).getTime());
-    points.setPoints(sortedItems);
+    externalBase.setExternalBase(items);
     tableController.renderMap();
-    Object(_formulas_js__WEBPACK_IMPORTED_MODULE_9__["renderComponent"])(mainTripInfoElement, new _components_waybill_js__WEBPACK_IMPORTED_MODULE_3__["default"](sortedItems), `afterBegin`);
+    filterController.renderFilters();
   });
-
 
 window.addEventListener(`online`, () => {
   document.title = document.title.replace(` [offline]`, ``);
   if (!apiWithProvider.getSynchronize()) {
     apiWithProvider.sync()
       .then(() => {
-        // Действие, в случае успешной синхронизации
       })
       .catch(() => {
-        // Действие, в случае ошибки синхронизации
       });
   }
 });
@@ -26980,6 +27040,200 @@ window.addEventListener(`online`, () => {
 window.addEventListener(`offline`, () => {
   document.title += ` [offline]`;
 });
+
+
+/***/ }),
+
+/***/ "./src/models/destination.js":
+/*!***********************************!*\
+  !*** ./src/models/destination.js ***!
+  \***********************************/
+/*! exports provided: default */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "default", function() { return Destination; });
+class Destination {
+  constructor(destination) {
+    this.description = destination[`description`];
+    this.name = destination[`name`];
+    this.pictures = destination[`pictures`];
+  }
+
+  toRAW() {
+    return {
+      'name': this.name,
+      'description': this.description,
+      'pictures': this.pictures
+    };
+  }
+
+  static parseDestination(item) {
+    return new Destination(item);
+  }
+
+  static parseDestinations(items) {
+    return items.map(Destination.parseDestination);
+  }
+
+  static clone(item) {
+    return new Destination(item.toRAW());
+  }
+}
+
+
+
+
+/***/ }),
+
+/***/ "./src/models/external-base.js":
+/*!*************************************!*\
+  !*** ./src/models/external-base.js ***!
+  \*************************************/
+/*! exports provided: default */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "default", function() { return ExternalBase; });
+/* harmony import */ var _formulas_filter_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../formulas-filter.js */ "./src/formulas-filter.js");
+
+
+class ExternalBase {
+  constructor() {
+    this._points = [];
+    this._destinations = [];
+    this._offers = [];
+    this._activeFilterType = _formulas_filter_js__WEBPACK_IMPORTED_MODULE_0__["FilterType"].EVERYTHING;
+    this._filterChangeHandlers = [];
+    this._dataChangeHandlers = [];
+  }
+
+  setExternalBase(items) {
+    this._points = Array.from(items[0]);
+    this._offers = Array.from(items[2]);
+    this._destinations = Array.from(items[1]);
+  }
+
+  getOffers() {
+    return this._offers;
+  }
+
+  getDestinations() {
+    return this._destinations;
+  }
+
+  getPointsByFilter() {
+    return Object(_formulas_filter_js__WEBPACK_IMPORTED_MODULE_0__["getPointsByFilter"])(this._points, this._activeFilterType);
+  }
+
+  getPointsOnBegining() {
+    return this._points;
+  }
+
+  setFilter(filterType) {
+    this._activeFilterType = filterType;
+    this._callHandlers(this._filterChangeHandlers); // _onFilterChange с контекстом table-controller, чтобы запустить updatePoints
+    this._callHandlers(this._dataChangeHandlers); // _onDataChange с контекстом filter-controller, чтобы запустить renderFilters
+  }
+
+  removePoint(id) {
+    const index = this._points.findIndex((it) => it.id === id);
+
+    if (index === -1) {
+      return false;
+    }
+
+    this._points = [
+      ...this._points.slice(0, index),
+      ...this._points.slice(index + 1)
+    ];
+
+    this._callHandlers(this._dataChangeHandlers);
+    return true;
+  }
+
+  updatePoint(id, item) {
+    const index = this._points.findIndex((it) => it.id === id);
+
+    if (index === -1) {
+      return false;
+    }
+
+    this._points = [
+      ...this._points.slice(0, index),
+      item,
+      ...this._points.slice(index + 1)
+    ];
+
+    this._callHandlers(this._dataChangeHandlers);
+    return true;
+  }
+
+  addPoint(point) {
+    this._points = [point, ...this._points];
+    this._callHandlers(this._dataChangeHandlers);
+  }
+
+  setFilterChangeHandler(handler) {
+    this._filterChangeHandlers.push(handler);
+  }
+
+  setDataChangeHandler(handler) {
+    this._dataChangeHandlers.push(handler);
+  }
+
+  _callHandlers(handlers) {
+    handlers.forEach((handler) => handler());
+  }
+}
+
+
+/***/ }),
+
+/***/ "./src/models/offers.js":
+/*!******************************!*\
+  !*** ./src/models/offers.js ***!
+  \******************************/
+/*! exports provided: default */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "default", function() { return Offers; });
+class Offers {
+  constructor(typeOffers) {
+    this.offers = new Map(typeOffers[`offers`].map((it) => [it.title, false]));
+    this.offersPrice = new Map(typeOffers[`offers`].map((it) => [it.title, it.price]));
+    this.type = typeOffers[`type`];
+  }
+
+  toRAW() {
+    const offersForServer = Array.from(this.offersPrice).map((it) => {
+      return {title: it[0], price: it[1]};
+    });
+
+    return {
+      'offers': offersForServer,
+      'type': this.type
+    };
+  }
+
+  static parseType(item) {
+    return new Offers(item);
+  }
+
+  static parseTypes(items) {
+    return items.map(Offers.parseType);
+  }
+
+  static clone(item) {
+    return new Offers(item.toRAW());
+  }
+}
+
+
 
 
 /***/ }),
@@ -26995,21 +27249,21 @@ window.addEventListener(`offline`, () => {
 __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "default", function() { return Point; });
 class Point {
-  constructor(data) {
-    this.id = data[`id`];
-    this.basePrice = data[`base_price`];
-    this.dateFrom = data[`date_from`];
-    this.dateTo = data[`date_to`];
-    this.description = data[`destination`].description;
-    this.name = data[`destination`].name;
-    this.pictures = data[`destination`].pictures;
-    this.isFavorite = Boolean(data[`is_favorite`]);
-    this.offers = new Map(data[`offers`].map((it) => [it.title, false]));
-    this.offersPrice = new Map(data[`offers`].map((it) => [it.title, it.price]));
-    this.type = data[`type`];
+  constructor(parameter) {
+    this.id = parameter[`id`];
+    this.basePrice = parameter[`base_price`];
+    this.dateFrom = parameter[`date_from`];
+    this.dateTo = parameter[`date_to`];
+    this.description = parameter[`destination`].description;
+    this.name = parameter[`destination`].name;
+    this.pictures = parameter[`destination`].pictures;
+    this.isFavorite = Boolean(parameter[`is_favorite`]);
+    this.offers = new Map(parameter[`offers`].map((it) => [it.title, false]));
+    this.offersPrice = new Map(parameter[`offers`].map((it) => [it.title, it.price]));
+    this.type = parameter[`type`];
   }
 
-  toRAW() { // этот метод нужен, когда потребуется отправить данные на сервер
+  toRAW() {
     const offersForServer = Array.from(this.offersPrice).map((it) => {
       return {title: it[0], price: it[1]};
     });
@@ -27030,104 +27284,20 @@ class Point {
     };
   }
 
-  static parsePoint(data) { // вызывается на каждый объект. data - это объект
-    return new Point(data); // экземпляр для каждого объекта
+  static parsePoint(item) {
+    return new Point(item);
   }
 
-  static parsePoints(data) { // data массив объектов с неизмененным набором свойств
-    return data.map(Point.parsePoint); // массив экземпляров, т.е. new Point(ов)
+  static parsePoints(items) {
+    return items.map(Point.parsePoint);
   }
 
-  static clone(data) { // создается полная копия нашей модели для редактирования
-    return new Point(data.toRAW());
-  }
-}
-
-
-
-
-/***/ }),
-
-/***/ "./src/models/points.js":
-/*!******************************!*\
-  !*** ./src/models/points.js ***!
-  \******************************/
-/*! exports provided: default */
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
-
-"use strict";
-__webpack_require__.r(__webpack_exports__);
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "default", function() { return Points; });
-/* harmony import */ var _formulas_filter_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../formulas-filter.js */ "./src/formulas-filter.js");
-
-
-class Points {
-  constructor() {
-    this._points = [];
-    this._activeFilterType = _formulas_filter_js__WEBPACK_IMPORTED_MODULE_0__["FILTER_TYPE"].EVERYTHING;
-    this._filterChangeHandlers = [];
-    this._dataChangeHandlers = []; // this._points.setDataChangeHandler(this._onDataChange);
-  }
-
-  getPointsByFilter() { // получение точек маршрута
-    return Object(_formulas_filter_js__WEBPACK_IMPORTED_MODULE_0__["getPointsByFilter"])(this._points, this._activeFilterType);
-  }
-
-  getPointsOnBegining() { // зачем этот метод
-    return this._points;
-  }
-
-  setPoints(items) { // запись точек маршрута
-    this._points = Array.from(items);
-    this._callHandlers(this._dataChangeHandlers);
-  }
-
-  setFilter(filterType) { // фильтрация не происходит при вызове, только меняется тип фильтра
-    this._activeFilterType = filterType;
-    this._callHandlers(this._filterChangeHandlers); // запустить this._onDataChange
-  }
-
-  removePoint(id) {
-    const index = this._points.findIndex((it) => it.id === id);
-
-    if (index === -1) {
-      return false;
-    }
-
-    this._points = [].concat(this._points.slice(0, index), this._points.slice(index + 1));
-    this._callHandlers(this._dataChangeHandlers);
-    return true;
-  }
-
-  updatePoint(id, item) { // обновление точки маршрута в массиве
-    const index = this._points.findIndex((it) => it.id === id);
-
-    if (index === -1) {
-      return false;
-    }
-
-    this._points = [].concat(this._points.slice(0, index), item, this._points.slice(index + 1));
-    this._callHandlers(this._dataChangeHandlers);
-    return true;
-  }
-
-  addPoint(point) {
-    this._points = [].concat(point, this._points);
-    this._callHandlers(this._dataChangeHandlers); // вызывает _onDataChange из filter controller
-  }
-
-  setFilterChangeHandler(handler) {
-    this._filterChangeHandlers.push(handler);
-  }
-
-  setDataChangeHandler(handler) { // запускается вначале
-    this._dataChangeHandlers.push(handler); // handler равен _onDataChange из filter controller
-  }
-
-  _callHandlers(handlers) { // вызвать каждый хендлер в массиве
-    handlers.forEach((handler) => handler());
+  static clone(item) {
+    return new Point(item.toRAW());
   }
 }
+
+
 
 
 /***/ })
