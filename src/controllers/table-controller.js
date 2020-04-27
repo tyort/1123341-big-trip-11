@@ -64,16 +64,17 @@ export default class TableController {
 
   chooseEnvelope() {
     const points = this._externalBase.getPointsByFilter();
-    if (points.length === 0) {
-      showComponent(`trip-events__msg`);
-      hideComponent(`trip-events__trip-sort`);
-      hideComponent(`trip-days`);
-      hideComponent(`trip-main__trip-info`);
-    } else {
+    if (points.length !== 0 || this._creatingPoint !== null) {
       hideComponent(`trip-events__msg`);
       showComponent(`trip-events__trip-sort`);
       showComponent(`trip-days`);
       showComponent(`trip-main__trip-info`);
+      this._creatingPoint = null;
+    } else {
+      showComponent(`trip-events__msg`);
+      hideComponent(`trip-events__trip-sort`);
+      hideComponent(`trip-days`);
+      hideComponent(`trip-main__trip-info`);
     }
   }
 
