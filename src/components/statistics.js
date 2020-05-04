@@ -11,14 +11,14 @@ const createOption = (textContent, symbol) => {
   return {
     plugins: {
       datalabels: {
-        display: false, // легенда возле названия типа
+        display: false,
       }
     },
     tooltips: {
       callbacks: {
         label: (tooltipItem, data) => {
-          const allData = data.datasets[tooltipItem.datasetIndex].data; // массив евро
-          const tooltipData = allData[tooltipItem.index]; // количество евро для элемента под курсором
+          const allData = data.datasets[tooltipItem.datasetIndex].data;
+          const tooltipData = allData[tooltipItem.index];
           return `${tooltipData}${symbol}`;
         }
       },
@@ -31,7 +31,7 @@ const createOption = (textContent, symbol) => {
       xPadding: 15,
       yPadding: 15
     },
-    title: {// титульное название
+    title: {
       display: true,
       position: `left`,
       text: textContent,
@@ -64,7 +64,7 @@ const renderMoneyChart = (container, points) => {
             .reduce((acc, itemOfCurrentPurpose) => {
               return acc + itemOfCurrentPurpose.basePrice;
             }, 0);
-        }), // массив денег потраченных в сумме для каждого типа
+        }),
         backgroundColor: originalPurpose.map(createRandomColor)
       }]
     },
@@ -98,7 +98,7 @@ const renderTimeSpentChart = (container, points) => {
 const renderTransportChart = (container, points) => {
   const inappropriateType = [`Check-in`, `Sightseeing`, `Restaurant`, `Trip`];
   const originalPurpose = [...new Set(points.map((it) => it.type))]
-    .filter((item) => !inappropriateType.includes(item)); // без учета элементов inappropriateType
+    .filter((item) => !inappropriateType.includes(item));
 
   return new Chart(container, {
     type: `horizontalBar`,

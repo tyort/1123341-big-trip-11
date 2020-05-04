@@ -6,11 +6,11 @@ export default class AbstractSmartComponent extends AbstractComponent {
   }
 
   reRender() {
-    const oldElement = this.getElement(); // возвращает существующий или рисует новый компонент, this._element уже не null
+    const oldElement = this.getElement();
     const parent = oldElement.parentElement;
-    this.removeElement(); // делаем this._element = null, чтобы создать новый компонент
-    const newElement = this.getElement(); // создаем новый компонент
+    this.removeElement();
+    const newElement = this.getElement();
     parent.replaceChild(newElement, oldElement);
-    this.recoveryListeners(); // восстанавливает все обработчики
+    this.recoveryListeners();
   }
 }

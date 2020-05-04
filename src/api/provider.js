@@ -118,19 +118,13 @@ export default class Provider {
 
       return this._api.sync(storePoints)
         .then((response) => {
-          // Удаляем из хранилища задачи, что были созданы
-          // или изменены в оффлайне. Они нам больше не нужны
           storePoints.filter((point) => point.offline).forEach((point) => {
             this._storePoints.removeItem(point.id);
           });
 
-          // Забираем из ответа синхронизированные задачи
           const createdPoints = getSyncedPoints(response.created);
           const updatedPoins = getSyncedPoints(response.updated);
 
-          // Добавляем синхронизированные задачи в хранилище.
-          // Хранилище должно быть актуальным в любой момент,
-          // вдруг сеть пропадёт
           [...createdPoints, ...updatedPoins].forEach((point) => {
             this._storePoints.setItem(point.id, point);
           });
@@ -148,7 +142,7 @@ export default class Provider {
     return this._isSynchronized;
   }
 
-  _isOnLine() { // проверяем наличие интернета false/true
+  _isOnLine() {
     return window.navigator.onLine;
   }
 }

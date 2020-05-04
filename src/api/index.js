@@ -19,8 +19,8 @@ const checkStatus = (response) => {
 
 export default class Api {
   constructor(endPoint, authorization) {
-    this._endPoint = endPoint; // передаем из main https://htmlacademy-es-10.appspot.com/big-trip/
-    this._authorization = authorization; // передаем из main Basic eo0w590ik29889a
+    this._endPoint = endPoint;
+    this._authorization = authorization;
   }
 
   getPoints() {
@@ -78,8 +78,6 @@ export default class Api {
   }
 
   _load({url, method = Method.GET, body = null, headers = new Headers()}) {
-  // url - адрес сервера
-  // headers - по умолчанию передаем пустые заголовки, если не передаем самостоятельно
     headers.append(`Authorization`, this._authorization);
 
     return fetch(`${this._endPoint}/${url}`, {method, body, headers})

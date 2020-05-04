@@ -88,7 +88,7 @@ export default class ItemController {
     this._onButtonClick = this._onButtonClick.bind(this);
   }
 
-  renderCardItem(cardItem, mode) { // рендер для одной карточки
+  renderCardItem(cardItem, mode) {
     const oldPointLineComponent = this._pointLineComponent;
     const oldPointFormComponent = this._pointFormComponent;
     this._mode = mode;
@@ -142,9 +142,9 @@ export default class ItemController {
     }
   }
 
-  setDefaultView() { // превратить в строку и поменять Mode
-    if (this._mode !== Mode.DEFAULT) { // если Mode.FORM
-      this._replaceFormToItem(); // превратить форму в карточку
+  setDefaultView() {
+    if (this._mode !== Mode.DEFAULT) {
+      this._replaceFormToItem();
     }
   }
 

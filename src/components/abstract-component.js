@@ -6,21 +6,21 @@ export default class AbstractComponent {
       throw new Error(`Can't instantiate AbstractComponent, only concrete one.`);
     }
 
-    this._element = null; // приватный DOM-элемент
+    this._element = null;
   }
 
-  getTemplate() { // Запретит использовать абстрактный класс как компонент
+  getTemplate() {
     throw new Error(`Abstract method not implemented: getTemplate`);
   }
 
   getElement() {
-    if (!this._element) { // если элемент не существует, то содзадим на основании шаблона
+    if (!this._element) {
       this._element = createElement(this.getTemplate());
     }
     return this._element;
   }
 
-  removeElement() { // удаляем ссылку на элемент. Удалив элемент из DOM он не исчезнет из памяти, если не удалим на него ссылку
+  removeElement() {
     this._element = null;
   }
 

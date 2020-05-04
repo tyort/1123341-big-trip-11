@@ -53,18 +53,18 @@ export default class Assortment extends AbstractComponent {
     this.getElement().addEventListener(`click`, (evt) => {
       evt.preventDefault();
 
-      if (evt.target.className !== `trip-sort__btn`) { // если не тот класс, то ничего не происходит
+      if (evt.target.className !== `trip-sort__btn`) {
         return;
       }
 
-      const sortType = evt.target.dataset.sortType; // клик происходит по sortType
+      const sortType = evt.target.dataset.sortType;
 
-      if (this._currenSortType === sortType) { // если клик по текущему sortType, то ничего не изменять
+      if (this._currenSortType === sortType) {
         return;
       }
 
-      this._currenSortType = sortType; // изменить currenSortType
-      handler(this._currenSortType); // запустить обработчик с нужным sortType
+      this._currenSortType = sortType;
+      handler(this._currenSortType);
     });
   }
 }

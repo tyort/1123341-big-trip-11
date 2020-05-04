@@ -221,8 +221,8 @@ export default class PointForm extends AbstractSmartComponent {
     this._offers = externalBase.offers;
     this._allPoints = externalBase.points;
     this._isChangeFavorite = !!point.isFavorite;
-    this._activateCheckedType = new Map(this._offers.map((it) => [it.type, false])).set(point.type, true); // получу актуальный Map с нужным true
-    this._activateCheckedPurpose = new Map(this._destinations.map((it) => [it.name, false])).set(point.name, true); // получу актуальный Map с нужным true
+    this._activateCheckedType = new Map(this._offers.map((it) => [it.type, false])).set(point.type, true);
+    this._activateCheckedPurpose = new Map(this._destinations.map((it) => [it.name, false])).set(point.name, true);
     this._activateExtraOptions = new Map(point.offers);
     this._activateDescription = point.description;
     this._activateExtraOptionsPrice = point.offersPrice;
@@ -265,7 +265,7 @@ export default class PointForm extends AbstractSmartComponent {
     super.removeElement();
   }
 
-  recoveryListeners() { // восстанавливает слушателей
+  recoveryListeners() {
     this.setSubmitHandler(this._submitHandler);
     this.setDeleteButtonClickHandler(this._deleteButtonClickHandler);
     this._subscribeOnEvents();
@@ -280,8 +280,8 @@ export default class PointForm extends AbstractSmartComponent {
     const point = this._point;
 
     this._isChangeFavorite = !!point.isFavorite;
-    this._activateCheckedType = new Map(this._offers.map((it) => [it.type, false])).set(point.type, true); // получу актуальный Map с нужным true
-    this._activateCheckedPurpose = new Map(this._destinations.map((it) => [it.name, false])).set(point.name, true); // получу актуальный Map с нужным true
+    this._activateCheckedType = new Map(this._offers.map((it) => [it.type, false])).set(point.type, true);
+    this._activateCheckedPurpose = new Map(this._destinations.map((it) => [it.name, false])).set(point.name, true);
     this._activateExtraOptions = new Map(point.offers);
     this._activateDescription = point.description;
     this._activateExtraOptionsPrice = point.offersPrice;

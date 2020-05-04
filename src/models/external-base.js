@@ -34,8 +34,8 @@ export default class ExternalBase {
 
   setFilter(filterType) {
     this._activeFilterType = filterType;
-    this._callHandlers(this._filterChangeHandlers); // _onFilterChange с контекстом table-controller, чтобы запустить updatePoints
-    this._callHandlers(this._dataChangeHandlers); // _onDataChange с контекстом filter-controller, чтобы запустить renderFilters
+    this._callHandlers(this._filterChangeHandlers);
+    this._callHandlers(this._dataChangeHandlers);
   }
 
   removePoint(id) {

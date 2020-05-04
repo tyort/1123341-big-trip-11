@@ -158,7 +158,7 @@ export default class TableController {
       this._creatingPoint = null;
       itemController.destroy();
 
-      this._api.createPoint(newData) // экземпляр Point в удобном для мня формате
+      this._api.createPoint(newData)
           .then((item) => {
             this._externalBase.addPoint(item);
             this._updatePoints();
@@ -170,7 +170,7 @@ export default class TableController {
 
     } else if (newData === null) {
 
-      this._api.deletePoint(oldData.id) // свойство id экземпляра Point
+      this._api.deletePoint(oldData.id)
         .then(() => {
           this._externalBase.removePoint(oldData.id);
           this. _updatePoints();
@@ -180,7 +180,7 @@ export default class TableController {
         });
 
     } else {
-      this._api.updatePoint(oldData.id, newData) // находится необходимый id и сохраняются измененные данные
+      this._api.updatePoint(oldData.id, newData)
         .then((item) => {
           const isSuccess = this._externalBase.updatePoint(oldData.id, item);
 
