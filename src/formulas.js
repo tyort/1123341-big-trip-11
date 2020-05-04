@@ -1,11 +1,7 @@
 import moment from 'moment';
 
 export const getRandomIntegerNumber = (min, max) => {
-<<<<<<< HEAD
   const rand = min + Math.random() * (max + 1 - min);
-=======
-  let rand = min + Math.random() * (max + 1 - min);
->>>>>>> 9660486227da763a628df2cc5fea05f37748fc9e
   return Math.floor(rand);
 };
 
@@ -62,7 +58,6 @@ export const replace = (newComponent, oldComponent) => {
   }
 };
 
-<<<<<<< HEAD
 export const getDaysCount = (startDate) => {
   return startDate.map((it) => moment(it))
     .map((it, index, array) => 1 + it.diff(array[0], `days`));
@@ -71,16 +66,6 @@ export const getDaysCount = (startDate) => {
 export const createPeriodsName = (startTime, endTime) => {
   const startDate = moment(startTime);
   const endDate = moment(endTime);
-=======
-export const dayCounter = (arr) => {
-  return arr.map((it) => moment(it))
-    .map((it, index, array) => 1 + it.diff(array[0], `days`));
-};
-
-export const itemTimePeriod = (arr1, arr2) => {
-  const startDate = moment(arr1);
-  const endDate = moment(arr2);
->>>>>>> 9660486227da763a628df2cc5fea05f37748fc9e
 
   let daysDiff = endDate.diff(startDate, `days`);
   startDate.add(daysDiff, `days`);
@@ -96,7 +81,6 @@ export const itemTimePeriod = (arr1, arr2) => {
   return `${daysDiff}${hoursDiff}${minDiff}`;
 };
 
-<<<<<<< HEAD
 export const VISUALLY_HIDDEN = `visually-hidden`;
 
 export const showComponent = (neededClassName) => {
@@ -126,5 +110,3 @@ export const enableComponent = (neededClassName) => {
     component.removeAttribute(`disabled`);
   }
 };
-=======
->>>>>>> 9660486227da763a628df2cc5fea05f37748fc9e

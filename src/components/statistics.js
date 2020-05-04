@@ -1,14 +1,9 @@
-<<<<<<< HEAD
 import AbstractSmartComponent from './abstract-smart-component.js';
-=======
-import AbstractSmartComponent from './abstract_smart_component.js';
->>>>>>> 9660486227da763a628df2cc5fea05f37748fc9e
 import Chart from 'chart.js';
 import moment from 'moment';
 
 const createRandomColor = () => {
   const value = Math.floor(Math.random() * 0xffffff);
-<<<<<<< HEAD
   return `#${value.toString(16)}`;
 };
 
@@ -58,15 +53,6 @@ const createOption = (textContent, symbol) => {
 
 const renderMoneyChart = (container, points) => {
   const originalPurpose = [...new Set(points.map((it) => it.type))];
-=======
-
-  return `#${value.toString(16)}`;
-};
-
-const renderMoneyChart = (container, points) => {
-  const originalPurpose = points.map((it) => it.type)
-    .filter((item, index, array) => array.indexOf(item) === index);
->>>>>>> 9660486227da763a628df2cc5fea05f37748fc9e
 
   return new Chart(container, {
     type: `horizontalBar`,
@@ -82,61 +68,12 @@ const renderMoneyChart = (container, points) => {
         backgroundColor: originalPurpose.map(createRandomColor)
       }]
     },
-<<<<<<< HEAD
     options: createOption(`MONEY`, ` €`)
-=======
-    options: {
-      plugins: {
-        datalabels: {
-          display: false,
-        }
-      },
-      tooltips: {
-        callbacks: {
-          label: (tooltipItem, data) => {
-            const allData = data.datasets[tooltipItem.datasetIndex].data;
-            const tooltipData = allData[tooltipItem.index];
-            return `€ ${tooltipData}`;
-          }
-        },
-        displayColors: false,
-        backgroundColor: `#ffffff`,
-        bodyFontColor: `#000000`,
-        borderColor: `#000000`,
-        borderWidth: 1,
-        cornerRadius: 0,
-        xPadding: 15,
-        yPadding: 15
-      },
-      title: {
-        display: true,
-        position: `left`,
-        text: `MONEY`,
-        fontSize: 24,
-        fontColor: `#000000`
-      },
-      legend: {
-        display: false
-      },
-      scales: {
-        xAxes: [{
-          ticks: {
-            beginAtZero: true,
-          }
-        }]
-      }
-    }
->>>>>>> 9660486227da763a628df2cc5fea05f37748fc9e
   });
 };
 
 const renderTimeSpentChart = (container, points) => {
-<<<<<<< HEAD
   const originalPurpose = [...new Set(points.map((it) => it.name))];
-=======
-  const originalPurpose = points.map((it) => it.name)
-    .filter((item, index, array) => array.indexOf(item) === index);
->>>>>>> 9660486227da763a628df2cc5fea05f37748fc9e
 
   return new Chart(container, {
     type: `horizontalBar`,
@@ -154,62 +91,13 @@ const renderTimeSpentChart = (container, points) => {
         backgroundColor: originalPurpose.map(createRandomColor)
       }]
     },
-<<<<<<< HEAD
     options: createOption(`TIME SPENT`, `H`)
-=======
-    options: {
-      plugins: {
-        datalabels: {
-          display: false,
-        }
-      },
-      tooltips: {
-        callbacks: {
-          label: (tooltipItem, data) => {
-            const allData = data.datasets[tooltipItem.datasetIndex].data;
-            const tooltipData = allData[tooltipItem.index];
-            return `${tooltipData}H`;
-          }
-        },
-        displayColors: false,
-        backgroundColor: `#ffffff`,
-        bodyFontColor: `#000000`,
-        borderColor: `#000000`,
-        borderWidth: 1,
-        cornerRadius: 0,
-        xPadding: 15,
-        yPadding: 15
-      },
-      title: {
-        display: true,
-        position: `left`,
-        text: `TIME SPENT`,
-        fontSize: 24,
-        fontColor: `#000000`
-      },
-      legend: {
-        display: false
-      },
-      scales: {
-        xAxes: [{
-          ticks: {
-            beginAtZero: true,
-          }
-        }]
-      }
-    }
->>>>>>> 9660486227da763a628df2cc5fea05f37748fc9e
   });
 };
 
 const renderTransportChart = (container, points) => {
   const inappropriateType = [`Check-in`, `Sightseeing`, `Restaurant`, `Trip`];
-<<<<<<< HEAD
   const originalPurpose = [...new Set(points.map((it) => it.type))]
-=======
-  const originalPurpose = points.map((it) => it.type)
-    .filter((item, index, array) => array.indexOf(item) === index)
->>>>>>> 9660486227da763a628df2cc5fea05f37748fc9e
     .filter((item) => !inappropriateType.includes(item));
 
   return new Chart(container, {
@@ -223,53 +111,7 @@ const renderTransportChart = (container, points) => {
         backgroundColor: originalPurpose.map(createRandomColor)
       }]
     },
-<<<<<<< HEAD
     options: createOption(`TRANSPORT`, `x`)
-=======
-    options: {
-      plugins: {
-        datalabels: {
-          display: false,
-        }
-      },
-      tooltips: {
-        callbacks: {
-          label: (tooltipItem, data) => {
-            const allData = data.datasets[tooltipItem.datasetIndex].data;
-            const tooltipData = allData[tooltipItem.index];
-            return `${tooltipData}x`;
-          }
-        },
-        displayColors: false,
-        backgroundColor: `#ffffff`,
-        bodyFontColor: `#000000`,
-        borderColor: `#000000`,
-        borderWidth: 1,
-        cornerRadius: 0,
-        xPadding: 15,
-        yPadding: 15
-      },
-      title: {
-        display: true,
-        position: `left`,
-        text: `TRANSPORT`,
-        fontSize: 24,
-        fontColor: `#000000`
-      },
-      legend: {
-        display: false
-      },
-      scales: {
-        xAxes: [{
-          ticks: {
-            beginAtZero: true,
-            stepSize: 1,
-            suggestedMax: 5
-          }
-        }]
-      }
-    }
->>>>>>> 9660486227da763a628df2cc5fea05f37748fc9e
   });
 };
 

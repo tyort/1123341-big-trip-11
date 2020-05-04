@@ -1,13 +1,4 @@
-<<<<<<< HEAD
 import AbstractComponent from './abstract-component.js';
-=======
-import AbstractComponent from './abstract_component.js';
-
-export const MAIN_VIEW_MODE = {
-  STATISTICS: `statistics-setbymyself`,
-  TABLE: `table-setbymyself`,
-};
->>>>>>> 9660486227da763a628df2cc5fea05f37748fc9e
 
 const createMenuTemplate = () =>
   (

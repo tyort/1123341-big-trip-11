@@ -1,10 +1,6 @@
 import moment from 'moment';
 
-<<<<<<< HEAD
 export const FilterType = {
-=======
-export const FILTER_TYPE = {
->>>>>>> 9660486227da763a628df2cc5fea05f37748fc9e
   EVERYTHING: `everything`,
   FUTURE: `future`,
   PAST: `past`,
@@ -43,7 +39,6 @@ export const getPointsByFilter = (points, filterType) => {
   const currentDate = new Date();
 
   switch (filterType) {
-<<<<<<< HEAD
     case FilterType.PAST:
       return getPastPoints(points, currentDate);
     case FilterType.FUTURE:
@@ -51,15 +46,4 @@ export const getPointsByFilter = (points, filterType) => {
     default:
       return points;
   }
-=======
-    case FILTER_TYPE.EVERYTHING:
-      return points;
-    case FILTER_TYPE.PAST:
-      return getPastPoints(points, currentDate);
-    case FILTER_TYPE.FUTURE:
-      return getFuturePoints(points, currentDate);
-  }
-
-  return points;
->>>>>>> 9660486227da763a628df2cc5fea05f37748fc9e
 };
