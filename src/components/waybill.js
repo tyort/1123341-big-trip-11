@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 import AbstractComponent from './abstract-component.js';
 import moment from 'moment';
 
@@ -26,6 +27,14 @@ const createWaybillTemplate = (points) => {
     ? moment(sortedPoints[sortedPoints.length - 1].dateTo).format(`MMM DD`)
     : `No Date`;
 
+=======
+import AbstractComponent from './abstract_component.js';
+import moment from 'moment';
+
+const createWaybillTemplate = (sortedPoints) => {
+  const addStartDate = moment(sortedPoints[0].dateFrom).format(`MMM DD`);
+  const addEndDate = moment(sortedPoints[sortedPoints.length - 1].dateTo).format(`MMM DD`);
+>>>>>>> 9660486227da763a628df2cc5fea05f37748fc9e
   const totalPrice = sortedPoints.reduce((acc, it) => {
     return acc + it.basePrice;
   }, 0);
@@ -33,7 +42,11 @@ const createWaybillTemplate = (points) => {
   return (
     `<section class="trip-main__trip-info  trip-info">
       <div class="trip-info__main">
+<<<<<<< HEAD
         <h1 class="trip-info__title">${tripInfoTitle}</h1>
+=======
+        <h1 class="trip-info__title">${sortedPoints[0].name} &mdash; ... &mdash; ${sortedPoints[sortedPoints.length - 1].name}</h1>
+>>>>>>> 9660486227da763a628df2cc5fea05f37748fc9e
         <p class="trip-info__dates">${addStartDate}&nbsp;&mdash;&nbsp;${addEndDate}</p>
       </div>
       <p class="trip-info__cost">

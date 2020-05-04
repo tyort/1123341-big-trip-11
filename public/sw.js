@@ -51,6 +51,7 @@ self.addEventListener(`activate`, (evt) => {
 });
 
 const fetchHandler = (evt) => {
+<<<<<<< HEAD
   const {request} = evt; // evt.request - запрос от браузера
 
   evt.respondWith(
@@ -60,11 +61,26 @@ const fetchHandler = (evt) => {
             return cacheResponse; // ...тогда верни ответ из кэша...
           }
           return fetch(request).then( // ...если нет, то сходи на сервер...
+=======
+  const {request} = evt;
+
+  evt.respondWith(
+      caches.match(request)
+        .then((cacheResponse) => {
+          if (cacheResponse) {
+            return cacheResponse;
+          }
+          return fetch(request).then(
+>>>>>>> 9660486227da763a628df2cc5fea05f37748fc9e
               (response) => {
                 if (!response || response.status !== 200 || response.type !== `basic`) {
                   return response;
                 } else {
+<<<<<<< HEAD
                   const clonedResponse = response.clone(); // если ответ пришел, то мы его клонируем
+=======
+                  const clonedResponse = response.clone();
+>>>>>>> 9660486227da763a628df2cc5fea05f37748fc9e
                   caches.open(CACHE_NAME).then((cache) => cache.put(request, clonedResponse));
                   return response;
                 }

@@ -1,4 +1,8 @@
+<<<<<<< HEAD
 import AbstractComponent from './abstract-component.js';
+=======
+import AbstractComponent from './abstract_component.js';
+>>>>>>> 9660486227da763a628df2cc5fea05f37748fc9e
 
 const FILTER_ID_PREFIX = `filter-`;
 const getFilterNameById = (id) => id.substring(FILTER_ID_PREFIX.length);
@@ -12,7 +16,10 @@ export const createFilterMarkup = (filter) => {
         name="trip-filter"
         value="${filter.name}"
         ${filter.checked ? `checked` : ``}
+<<<<<<< HEAD
         ${filter.disabled ? `disabled` : ``}
+=======
+>>>>>>> 9660486227da763a628df2cc5fea05f37748fc9e
       />
       <label class="trip-filters__filter-label" for="filter-${filter.name}">${filter.name}</label>
     </div>`
