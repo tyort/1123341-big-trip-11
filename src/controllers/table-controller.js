@@ -143,7 +143,9 @@ export default class TableController {
   }
 
   _updatePoints() {
+    this._assortmentComponent.setChangedData(this._sortType, this._onSortTypeChange);
     this._onSortTypeChange(this._sortType);
+    this._assortmentComponent.reRender();
     this.chooseEnvelope();
   }
 

@@ -61,9 +61,9 @@ export default class Assortment extends AbstractSmartComponent {
     super.reRender();
   }
 
-  reset() {
-    this._currentSortType = SortType.DEFAULT;
-    this.reRender();
+  setChangedData(sortType, handler) {
+    this._currentSortType = sortType;
+    this._sortTypeHandler = handler;
   }
 
   setSortTypeChangeHandler(handler) {
