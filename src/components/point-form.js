@@ -97,6 +97,7 @@ const createPointFormTemplate = (options = {}) => {
     activateDateTo,
     activatePictures
   } = options;
+
   const addExtraOptions = createExtraOptionInsert(Array.from(activateExtraOptions), activateExtraOptionsPrice);
   const addDescription = he.encode(activateDescription);
   const addPhotos = createPhotos(activatePictures);
