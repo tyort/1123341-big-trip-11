@@ -113,6 +113,8 @@ const createPointFormTemplate = (options = {}) => {
   const deleteButtonText = activateButtonText.DELETE_BUTTON_TEXT;
   const saveButtonText = activateButtonText.SAVE_BUTTON_TEXT;
 
+  const disabledSubmitButton = addDescription === `Anyway anywhere` ? `disabled` : ``;
+
   return (
     `<li class="trip-events__item">
       <form class="trip-events__item event  event--edit" action="#" method="post">
@@ -140,7 +142,15 @@ const createPointFormTemplate = (options = {}) => {
             <label class="event__label  event__type-output" for="event-destination-1">
               ${generateWaybillType(addWaybillType)}
             </label>
-            <input class="event__input  event__input--destination" id="event-destination-1" type="text" name="event-destination" value="${addWaybillPurpose}" list="destination-list-1">
+            <input
+              class="event__input  event__input--destination"
+              id="event-destination-1"
+              type="text"
+              name="event-destination"
+              value="${addWaybillPurpose}"
+              list="destination-list-1"
+              required
+            >
             <datalist id="destination-list-1">
               ${addListPurposeForChoose}
             </datalist>
@@ -167,10 +177,10 @@ const createPointFormTemplate = (options = {}) => {
               <span class="visually-hidden">Price</span>
               &euro;
             </label>
-            <input class="event__input  event__input--price" id="event-price-1" type="text" name="event-price" value="${activateBasePrice}">
+            <input class="event__input  event__input--price" id="event-price-1" type="number" name="event-price" value="${activateBasePrice}" min="0" max="2000">
           </div>
 
-          <button class="event__save-btn  btn  btn--blue" type="submit">${saveButtonText}</button>
+          <button class="event__save-btn  btn  btn--blue" type="submit" ${disabledSubmitButton}>${saveButtonText}</button>
           <button class="event__reset-btn" type="reset">${deleteButtonText}</button>
 
           <input id="event-favorite-1" class="event__favorite-checkbox  visually-hidden" type="checkbox" name="event-favorite" ${addFavorite}>
