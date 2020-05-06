@@ -4,7 +4,7 @@ import moment from 'moment';
 
 const createWaybillTemplate = (points) => {
   const sortedPoints = points.sort((a, b) => new Date(a.dateFrom).getTime() - new Date(b.dateFrom).getTime());
-  const uniqueCities = [...new Set(sortedPoints.map((it) => it.name))];
+  const uniqueCities = [...new Set(sortedPoints.map((city) => city.name))];
 
   let tripInfoTitle = ``;
 
@@ -26,9 +26,16 @@ const createWaybillTemplate = (points) => {
     ? moment(sortedPoints[sortedPoints.length - 1].dateTo).format(`MMM DD`)
     : `No Date`;
 
-  const totalPrice = sortedPoints.reduce((acc, it) => {
-    return acc + it.basePrice;
-  }, 0);
+  const totalOffersPrice = sortedPoints
+    .map((point) => {
+      const totalPrice = Array.from(point.offersPrice.values())
+        .reduce((acc, offerPrice) => acc + offerPrice, 0);
+      return totalPrice;
+    })
+    .reduce((acc, allOffersPrice) => acc + allOffersPrice, 0);
+
+  const totalMainPrice = sortedPoints.reduce((acc, point) => acc + point.basePrice, 0);
+  const totalPriceAll = totalOffersPrice + totalMainPrice;
 
   return (
     `<section class="trip-main__trip-info  trip-info">
@@ -37,7 +44,7 @@ const createWaybillTemplate = (points) => {
         <p class="trip-info__dates">${addStartDate}&nbsp;&mdash;&nbsp;${addEndDate}</p>
       </div>
       <p class="trip-info__cost">
-        Total: &euro;&nbsp;<span class="trip-info__cost-value">${totalPrice}</span>
+        Total: &euro;&nbsp;<span class="trip-info__cost-value">${totalPriceAll}</span>
       </p>
     </section>`
   );
