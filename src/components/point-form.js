@@ -1,5 +1,5 @@
 import AbstractSmartComponent from './abstract-smart-component.js';
-import {generateWaybillType} from '../formulas.js';
+import {generateWaybillType, createElement, Mode} from '../formulas.js';
 import flatpickr from 'flatpickr';
 import he from 'he';
 import moment from 'moment';
@@ -223,9 +223,10 @@ const createPointFormTemplate = (options = {}) => {
 };
 
 export default class PointForm extends AbstractSmartComponent {
-  constructor(point, externalBase) {
+  constructor(mode, point, externalBase) {
     super();
 
+    this._mode = mode;
     this._point = point;
     this._externalBase = externalBase;
     this._destinations = externalBase.destinations;
@@ -263,6 +264,15 @@ export default class PointForm extends AbstractSmartComponent {
       activateDateTo: this._activateDateTo,
       activatePictures: this._activatePictures,
     });
+  }
+
+  getElement() {
+    if (!this._element) {
+      this._element = this._mode === Mode.ADDING
+        ? createElement(this.getTemplate()).querySelector(`form`)
+        : createElement(this.getTemplate());
+    }
+    return this._element;
   }
 
   removeElement() {
@@ -305,7 +315,10 @@ export default class PointForm extends AbstractSmartComponent {
   }
 
   getChangedDataByView() {
-    const form = this.getElement().querySelector(`.event--edit`);
+    const form = this._mode === Mode.ADDING
+      ? this.getElement()
+      : this.getElement().querySelector(`.event--edit`);
+
     return new FormData(form);
   }
 
@@ -315,8 +328,11 @@ export default class PointForm extends AbstractSmartComponent {
   }
 
   setSubmitHandler(handler) {
-    this.getElement().querySelector(`form`)
-      .addEventListener(`submit`, handler);
+    const formComponent = this._mode === Mode.ADDING
+      ? this.getElement()
+      : this.getElement().querySelector(`form`);
+
+    formComponent.addEventListener(`submit`, handler);
     this._submitHandler = handler;
   }
 

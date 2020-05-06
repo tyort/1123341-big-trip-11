@@ -1,16 +1,10 @@
 import PointLineComponent from '../components/point-line.js';
 import PointFormComponent from '../components/point-form.js';
 import PointModel from '../models/point.js';
-import {renderComponent, replace, remove} from '../formulas.js';
+import {renderComponent, replace, remove, Mode} from '../formulas.js';
 import moment from 'moment';
 
 const SHAKE_ANIMATION_TIMEOUT = 600;
-
-export const Mode = {
-  ADDING: `adding`,
-  DEFAULT: `default`,
-  FORM: `form`,
-};
 
 export const EmptyPoint = {
   id: ``,
@@ -93,7 +87,7 @@ export default class ItemController {
     const oldPointFormComponent = this._pointFormComponent;
     this._mode = mode;
     this._pointLineComponent = new PointLineComponent(cardItem);
-    this._pointFormComponent = new PointFormComponent(cardItem, this._externalBase);
+    this._pointFormComponent = new PointFormComponent(mode, cardItem, this._externalBase);
 
     this._pointLineComponent.setRollupButtonClickHandler(() => {
       this._replaceItemToForm();

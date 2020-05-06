@@ -110,3 +110,9 @@ export const enableComponent = (neededClassName) => {
     component.removeAttribute(`disabled`);
   }
 };
+
+export const Mode = {
+  ADDING: `adding`,
+  DEFAULT: `default`,
+  FORM: `form`,
+};

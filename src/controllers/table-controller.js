@@ -4,8 +4,8 @@ import CardListComponent from '../components/card-list.js';
 import CardListLightComponent from '../components/card-list-light.js';
 import NoCardListComponent from '../components/no-card-list.js';
 import WaybillComponent from '../components/waybill.js';
-import {getDaysCount, renderComponent, showComponent, hideComponent, enableComponent} from '../formulas.js';
-import ItemController, {Mode, EmptyPoint} from './item-controller.js';
+import {Mode, getDaysCount, renderComponent, showComponent, hideComponent, enableComponent} from '../formulas.js';
+import ItemController, {EmptyPoint} from './item-controller.js';
 import moment from 'moment';
 
 const mainTripInfoElement = document.querySelector(`.trip-main`);
