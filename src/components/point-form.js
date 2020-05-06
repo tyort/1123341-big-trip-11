@@ -113,7 +113,6 @@ const createPointFormTemplate = (options = {}) => {
   const deleteButtonText = activateButtonText.DELETE_BUTTON_TEXT;
   const saveButtonText = activateButtonText.SAVE_BUTTON_TEXT;
 
-  const disabledSubmitButton = addDescription === `` ? `disabled` : ``;
   const hideDescriptionTitle = addDescription === `` ? `visually-hidden` : ``;
 
   return (
@@ -181,7 +180,7 @@ const createPointFormTemplate = (options = {}) => {
             <input class="event__input  event__input--price" id="event-price-1" type="number" name="event-price" value="${activateBasePrice}" min="0" max="2000">
           </div>
 
-          <button class="event__save-btn  btn  btn--blue" type="submit" ${disabledSubmitButton}>${saveButtonText}</button>
+          <button class="event__save-btn  btn  btn--blue" type="submit">${saveButtonText}</button>
           <button class="event__reset-btn" type="reset">${deleteButtonText}</button>
 
           <input id="event-favorite-1" class="event__favorite-checkbox  visually-hidden" type="checkbox" name="event-favorite" ${addFavorite}>
