@@ -113,7 +113,8 @@ const createPointFormTemplate = (options = {}) => {
   const deleteButtonText = activateButtonText.DELETE_BUTTON_TEXT;
   const saveButtonText = activateButtonText.SAVE_BUTTON_TEXT;
 
-  const disabledSubmitButton = addDescription === `Anyway anywhere` ? `disabled` : ``;
+  const disabledSubmitButton = addDescription === `` ? `disabled` : ``;
+  const hideDescriptionTitle = addDescription === `` ? `visually-hidden` : ``;
 
   return (
     `<li class="trip-events__item">
@@ -196,7 +197,7 @@ const createPointFormTemplate = (options = {}) => {
           </button>
         </header>
 
-        <section class="event__details">
+        <section class="event__details ${hideDescriptionTitle}">
 
           <section class="event__section  event__section--offers ${activateExtraOptions.size > 0 ? `` : `visually-hidden`}">
             <h3 class="event__section-title  event__section-title--offers">Offers</h3>
@@ -423,7 +424,7 @@ export default class PointForm extends AbstractSmartComponent {
       this._activateCheckedPurpose.set(evt.target.value, true);
 
       const properPoint = this._destinations.find((item) => item.name === evt.target.value);
-      this._activateDescription = properPoint ? properPoint.description : `Anyway anywhere`;
+      this._activateDescription = properPoint ? properPoint.description : ``;
       this._activatePictures = properPoint ? properPoint.pictures : [];
       this.reRender();
     });

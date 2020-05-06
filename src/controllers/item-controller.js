@@ -10,15 +10,10 @@ export const EmptyPoint = {
   id: ``,
   offers: new Map(),
   offersPrice: new Map(),
-  type: `ship`,
+  type: `sightseeing`,
   name: ``,
   description: ``,
-  pictures: new Array(5)
-    .fill(``)
-    .map(() => `http://picsum.photos/300/150?r=${Math.random()}`)
-    .map((it) => {
-      return {src: it, description: `где-то далеко`};
-    }),
+  pictures: [],
   dateFrom: new Date(),
   dateTo: new Date(),
   basePrice: Number(),
