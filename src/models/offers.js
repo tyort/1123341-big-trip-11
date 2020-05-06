@@ -1,6 +1,6 @@
 export default class Offers {
   constructor(typeOffers) {
-    this.offers = new Map(typeOffers[`offers`].map((it) => [it.title, false]));
+    this.offers = new Map(typeOffers[`offers`].map((it) => [it.title, true]));
     this.offersPrice = new Map(typeOffers[`offers`].map((it) => [it.title, it.price]));
     this.type = typeOffers[`type`];
   }

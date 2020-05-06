@@ -8,7 +8,7 @@ export default class Point {
     this.name = parameter[`destination`].name;
     this.pictures = parameter[`destination`].pictures;
     this.isFavorite = Boolean(parameter[`is_favorite`]);
-    this.offers = new Map(parameter[`offers`].map((it) => [it.title, false]));
+    this.offers = new Map(parameter[`offers`].map((it) => [it.title, true]));
     this.offersPrice = new Map(parameter[`offers`].map((it) => [it.title, it.price]));
     this.type = parameter[`type`];
   }

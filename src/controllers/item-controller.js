@@ -21,31 +21,23 @@ export const EmptyPoint = {
 };
 
 const parseFormData = (formData) => {
-  const allOffersBoolean = new Map();
   const allOffersPrice = new Map();
 
   Array.from(document.querySelectorAll(`.event__offer-selector`))
     .map((it) => {
-      allOffersBoolean.set(it.querySelector(`.event__offer-checkbox`).name.slice(12), false);
       allOffersPrice.set(it.querySelector(`.event__offer-checkbox`).name.slice(12), it.querySelector(`.event__offer-price`).textContent);
     });
 
-  const checkedExtraOptionsMap = new Map(Array.from(allOffersBoolean).filter((item) => {
+  const checkedExtraOptionsMap = new Map(Array.from(allOffersPrice).filter((item) => {
     return formData.get(`event-offer-${item[0]}`);
   }));
-
-  for (const key of allOffersBoolean.keys()) {
-    if (checkedExtraOptionsMap.has(key)) {
-      allOffersBoolean.set(key, true);
-    }
-  }
 
   const pictures = Array.from(document.querySelectorAll(`.event__photo`))
     .map((it) => {
       return {src: it.src, description: it.alt};
     });
 
-  const offersForServer = Array.from(allOffersPrice).map((it) => {
+  const offersForServer = Array.from(checkedExtraOptionsMap).map((it) => {
     return {title: it[0], price: Number(it[1])};
   });
 
