@@ -332,6 +332,9 @@ export default class PointForm extends AbstractSmartComponent {
       : this.getElement().querySelector(`form`);
 
     formComponent.addEventListener(`submit`, handler);
+    formComponent.querySelector(`.event__favorite-checkbox`)
+      .addEventListener(`click`, handler);
+
     this._submitHandler = handler;
   }
 

@@ -93,6 +93,7 @@ export default class ItemController {
       const pointModel = parseFormData(formData);
       this._onDataChange(this, cardItem, pointModel);
     });
+
     this._pointFormComponent.setDeleteButtonClickHandler(() => {
 
       this._pointFormComponent.setChangedDataByView({
