@@ -1,13 +1,13 @@
 export default class Offers {
   constructor(typeOffers) {
-    this.offers = new Map(typeOffers[`offers`].map((it) => [it.title, true]));
-    this.offersPrice = new Map(typeOffers[`offers`].map((it) => [it.title, it.price]));
+    this.offers = new Map(typeOffers[`offers`].map((offer) => [offer.title, true]));
+    this.offersPrice = new Map(typeOffers[`offers`].map((offer) => [offer.title, offer.price]));
     this.type = typeOffers[`type`];
   }
 
   toRAW() {
-    const offersForServer = Array.from(this.offersPrice).map((it) => {
-      return {title: it[0], price: it[1]};
+    const offersForServer = Array.from(this.offersPrice).map((offer) => {
+      return {title: offer[0], price: offer[1]};
     });
 
     return {

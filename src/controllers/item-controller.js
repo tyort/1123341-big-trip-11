@@ -24,8 +24,8 @@ const parseFormData = (formData) => {
   const allOffersPrice = new Map();
 
   Array.from(document.querySelectorAll(`.event__offer-selector`))
-    .map((it) => {
-      allOffersPrice.set(it.querySelector(`.event__offer-checkbox`).name.slice(12), it.querySelector(`.event__offer-price`).textContent);
+    .map((item) => {
+      allOffersPrice.set(item.querySelector(`.event__offer-checkbox`).name.slice(12), item.querySelector(`.event__offer-price`).textContent);
     });
 
   const checkedExtraOptionsMap = new Map(Array.from(allOffersPrice).filter((item) => {
@@ -33,12 +33,12 @@ const parseFormData = (formData) => {
   }));
 
   const pictures = Array.from(document.querySelectorAll(`.event__photo`))
-    .map((it) => {
-      return {src: it.src, description: it.alt};
+    .map((picture) => {
+      return {src: picture.src, description: picture.alt};
     });
 
-  const offersForServer = Array.from(checkedExtraOptionsMap).map((it) => {
-    return {title: it[0], price: Number(it[1])};
+  const offersForServer = Array.from(checkedExtraOptionsMap).map((checkedOffer) => {
+    return {title: checkedOffer[0], price: Number(checkedOffer[1])};
   });
 
   return new PointModel({

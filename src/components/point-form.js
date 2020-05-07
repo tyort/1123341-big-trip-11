@@ -41,7 +41,7 @@ const createPhotos = (array) => {
 
 const createWaybillTypeList = (newmap) => {
   return Array.from(newmap)
-    .filter((it) => it[0] !== `check-in` && it[0] !== `sightseeing` && it[0] !== `restaurant`)
+    .filter((typeName) => typeName[0] !== `check-in` && typeName[0] !== `sightseeing` && typeName[0] !== `restaurant`)
     .map((item) => {
       const isChecked = item[1] ? `checked` : ``;
       return (
@@ -58,7 +58,7 @@ const createWaybillTypeList = (newmap) => {
 
 const createWaybillTypeListTwo = (newmap) => {
   return Array.from(newmap)
-    .filter((it) => it[0] === `check-in` || it[0] === `sightseeing` || it[0] === `restaurant`)
+    .filter((typeName) => typeName[0] === `check-in` || typeName[0] === `sightseeing` || typeName[0] === `restaurant`)
     .map((item) => {
       const isChecked = item[1] ? `checked` : ``;
       return (
@@ -101,8 +101,8 @@ const createPointFormTemplate = (options = {}) => {
   const addExtraOptions = createExtraOptionInsert(Array.from(activateExtraOptions), activateExtraOptionsPrice);
   const addDescription = he.encode(activateDescription);
   const addPhotos = createPhotos(activatePictures);
-  const addWaybillType = Array.from(activateCheckedType).find((it) => it[1])[0];
-  const addWaybillPurpose = Array.from(activateCheckedPurpose).find((it) => it[1])[0];
+  const addWaybillType = Array.from(activateCheckedType).find((type) => type[1])[0];
+  const addWaybillPurpose = Array.from(activateCheckedPurpose).find((purpose) => purpose[1])[0];
   const addFavorite = isChangeFavorite ? `checked` : ``;
   const addListTypeForChoose = createWaybillTypeList(activateCheckedType);
   const addListTypeForChooseTwo = createWaybillTypeListTwo(activateCheckedType);
@@ -233,8 +233,8 @@ export default class PointForm extends AbstractSmartComponent {
     this._offers = externalBase.offers;
     this._allPoints = externalBase.points;
     this._isChangeFavorite = !!point.isFavorite;
-    this._activateCheckedType = new Map(this._offers.map((it) => [it.type, false])).set(point.type, true);
-    this._activateCheckedPurpose = new Map(this._destinations.map((it) => [it.name, false])).set(point.name, true);
+    this._activateCheckedType = new Map(this._offers.map((offer) => [offer.type, false])).set(point.type, true);
+    this._activateCheckedPurpose = new Map(this._destinations.map((destination) => [destination.name, false])).set(point.name, true);
     this._activateExtraOptions = new Map(point.offers);
     this._activateDescription = point.description;
     this._activateExtraOptionsPrice = point.offersPrice;
@@ -300,8 +300,8 @@ export default class PointForm extends AbstractSmartComponent {
   reset() {
     const point = this._point;
 
-    this._activateCheckedType = new Map(this._offers.map((it) => [it.type, false])).set(point.type, true);
-    this._activateCheckedPurpose = new Map(this._destinations.map((it) => [it.name, false])).set(point.name, true);
+    this._activateCheckedType = new Map(this._offers.map((offer) => [offer.type, false])).set(point.type, true);
+    this._activateCheckedPurpose = new Map(this._destinations.map((destination) => [destination.name, false])).set(point.name, true);
     this._activateExtraOptions = new Map(point.offers);
     this._activateDescription = point.description;
     this._activateExtraOptionsPrice = point.offersPrice;
@@ -408,8 +408,8 @@ export default class PointForm extends AbstractSmartComponent {
       });
 
     const eventTypeGroup = Array.from(element.querySelectorAll(`.event__type-group`));
-    eventTypeGroup.forEach((it) => {
-      it.addEventListener(`change`, (evt) => {
+    eventTypeGroup.forEach((typeGroup) => {
+      typeGroup.addEventListener(`change`, (evt) => {
         this._activateCheckedType = new Map(this._offers.map((item) => [item.type, false]));
         this._activateCheckedType.set(evt.target.value, evt.target.checked);
         const properPoint = this._offers.find((item) => item.type === evt.target.value);
@@ -421,7 +421,7 @@ export default class PointForm extends AbstractSmartComponent {
 
     const eventInputDestination = element.querySelector(`.event__input--destination`);
     eventInputDestination.addEventListener(`change`, (evt) => {
-      this._activateCheckedPurpose = new Map(this._destinations.map((it) => [it.name, false]));
+      this._activateCheckedPurpose = new Map(this._destinations.map((destination) => [destination.name, false]));
       this._activateCheckedPurpose.set(evt.target.value, true);
 
       const properPoint = this._destinations.find((item) => item.name === evt.target.value);

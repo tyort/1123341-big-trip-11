@@ -17,11 +17,11 @@ export default class FilterController {
   renderFilters() {
     const container = this._container;
 
-    const filters = Object.values(FilterType).map((it) => {
-      const pointsCount = getPointsByFilter(this._points.getPointsOnBegining(), it);
+    const filters = Object.values(FilterType).map((type) => {
+      const pointsCount = getPointsByFilter(this._points.getPointsOnBegining(), type);
       return {
-        name: it,
-        checked: it === this._activeFilterType,
+        name: type,
+        checked: type === this._activeFilterType,
         disabled: pointsCount.length === 0
       };
     });

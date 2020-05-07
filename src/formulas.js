@@ -5,16 +5,16 @@ export const getRandomIntegerNumber = (min, max) => {
   return Math.floor(rand);
 };
 
-export const generateWaybillType = (it) => {
-  switch (it) {
+export const generateWaybillType = (type) => {
+  switch (type) {
     case `restaurant`:
-      return it + ` at`;
+      return type + ` at`;
     case `sightseeing`:
-      return it + ` at`;
+      return type + ` at`;
     case `check-in`:
-      return it;
+      return type;
     default:
-      return it + ` to`;
+      return type + ` to`;
   }
 };
 
@@ -59,8 +59,8 @@ export const replace = (newComponent, oldComponent) => {
 };
 
 export const getDaysCount = (startDate) => {
-  return startDate.map((it) => moment(it))
-    .map((it, index, array) => 1 + it.diff(array[0], `days`));
+  return startDate.map((date) => moment(date))
+    .map((date, index, array) => 1 + date.diff(array[0], `days`));
 };
 
 export const createPeriodsName = (startTime, endTime) => {

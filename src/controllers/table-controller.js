@@ -13,19 +13,19 @@ const TRIP_EVENTS_HIDDEN = `trip-events--hidden`;
 
 const renderAllPoints = (sortType, container, externalBase, onDataChange, onViewChange) => {
   if (sortType === SortType.DEFAULT) {
-    const sortedCards = externalBase.points.map((it) => moment(it.dateFrom).format(`YYYYMMDD`))
+    const sortedCards = externalBase.points.map((point) => moment(point.dateFrom).format(`YYYYMMDD`))
       .filter((item, index, array) => array.indexOf(item) === index)
       .sort((a, b) => a - b);
 
-    sortedCards.forEach((it, index) => renderComponent(container, new CardListComponent(it, getDaysCount(sortedCards)[index])));
+    sortedCards.forEach((card, index) => renderComponent(container, new CardListComponent(card, getDaysCount(sortedCards)[index])));
     const tripEventsListElements = document.querySelectorAll(`.trip-events__list`);
     const itemControllers = [];
 
     sortedCards.forEach((item, index) => {
       externalBase.points.filter((elem) => item === moment(elem.dateFrom).format(`YYYYMMDD`))
-        .forEach((i) => {
+        .forEach((point) => {
           const itemController = new ItemController(tripEventsListElements[index], onDataChange, onViewChange, externalBase);
-          itemController.renderCardItem(i, Mode.DEFAULT);
+          itemController.renderCardItem(point, Mode.DEFAULT);
           itemControllers.push(itemController);
         });
     });
@@ -35,9 +35,9 @@ const renderAllPoints = (sortType, container, externalBase, onDataChange, onView
 
     const tripEventsListElement = document.querySelector(`.trip-events__list`);
 
-    return externalBase.points.map((i) => {
+    return externalBase.points.map((point) => {
       const itemController = new ItemController(tripEventsListElement, onDataChange, onViewChange, externalBase);
-      itemController.renderCardItem(i, Mode.DEFAULT);
+      itemController.renderCardItem(point, Mode.DEFAULT);
       return itemController;
     });
   }
@@ -125,7 +125,7 @@ export default class TableController {
 
   _removePoints() {
     this._tripDaysComponent.getElement().innerHTML = ``;
-    this._showedCardItemControllers.forEach((it) => it.destroy());
+    this._showedCardItemControllers.forEach((item) => item.destroy());
     this._showedCardItemControllers = [];
   }
 
@@ -198,7 +198,7 @@ export default class TableController {
   }
 
   _onViewChange() {
-    this._showedCardItemControllers.forEach((it) => it.setDefaultView());
+    this._showedCardItemControllers.forEach((item) => item.setDefaultView());
   }
 
   _onSortTypeChange(sortType) {

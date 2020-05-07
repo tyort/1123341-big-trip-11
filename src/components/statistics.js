@@ -52,7 +52,7 @@ const createOption = (textContent, symbol) => {
 };
 
 const renderMoneyChart = (container, points) => {
-  const originalPurpose = [...new Set(points.map((it) => it.type))];
+  const originalPurpose = [...new Set(points.map((point) => point.type))];
 
   return new Chart(container, {
     type: `horizontalBar`,
@@ -73,7 +73,7 @@ const renderMoneyChart = (container, points) => {
 };
 
 const renderTimeSpentChart = (container, points) => {
-  const originalPurpose = [...new Set(points.map((it) => it.name))];
+  const originalPurpose = [...new Set(points.map((point) => point.name))];
 
   return new Chart(container, {
     type: `horizontalBar`,
@@ -97,7 +97,7 @@ const renderTimeSpentChart = (container, points) => {
 
 const renderTransportChart = (container, points) => {
   const inappropriateType = [`Check-in`, `Sightseeing`, `Restaurant`, `Trip`];
-  const originalPurpose = [...new Set(points.map((it) => it.type))]
+  const originalPurpose = [...new Set(points.map((point) => point.type))]
     .filter((item) => !inappropriateType.includes(item));
 
   return new Chart(container, {

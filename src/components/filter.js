@@ -20,7 +20,7 @@ export const createFilterMarkup = (filter) => {
 };
 
 export const createFilterTemplate = (filters) => {
-  const filtersMarkup = filters.map((it) => createFilterMarkup(it)).join(``);
+  const filtersMarkup = filters.map((filter) => createFilterMarkup(filter)).join(``);
 
   return (
     `<form class="trip-filters" action="#" method="get">

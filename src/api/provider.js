@@ -19,7 +19,7 @@ export default class Provider {
     if (this._isOnLine()) {
       return this._api.getPoints().then(
           (points) => {
-            points.forEach((it) => this._storePoints.setItem(it.id, it.toRAW())); // при наличии интернета все равно складываем в store данные
+            points.forEach((point) => this._storePoints.setItem(point.id, point.toRAW())); // при наличии интернета все равно складываем в store данные
             return points;
           }
       );
@@ -34,7 +34,7 @@ export default class Provider {
     if (this._isOnLine()) {
       return this._api.getDestinations().then(
           (destinations) => {
-            destinations.forEach((it) => this._storeDestinations.setItem(it.name, it.toRAW()));
+            destinations.forEach((point) => this._storeDestinations.setItem(point.name, point.toRAW()));
             return destinations;
           }
       );
@@ -49,7 +49,7 @@ export default class Provider {
     if (this._isOnLine()) {
       return this._api.getOffers().then(
           (types) => {
-            types.forEach((it) => this._storeOffers.setItem(it.type, it.toRAW()));
+            types.forEach((kind) => this._storeOffers.setItem(kind.type, kind.toRAW()));
             return types;
           }
       );

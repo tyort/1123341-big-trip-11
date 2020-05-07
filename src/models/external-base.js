@@ -39,7 +39,7 @@ export default class ExternalBase {
   }
 
   removePoint(id) {
-    const index = this._points.findIndex((it) => it.id === id);
+    const index = this._points.findIndex((point) => point.id === id);
 
     if (index === -1) {
       return false;
@@ -55,7 +55,7 @@ export default class ExternalBase {
   }
 
   updatePoint(id, item) {
-    const index = this._points.findIndex((it) => it.id === id);
+    const index = this._points.findIndex((point) => point.id === id);
 
     if (index === -1) {
       return false;

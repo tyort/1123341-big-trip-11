@@ -21,15 +21,15 @@ export const isOneDay = (dateA, dateB) => {
 };
 
 export const getPastPoints = (points, currentDate) => {
-  return points.filter((it) => {
-    const itemDate = new Date(it.dateFrom);
+  return points.filter((point) => {
+    const itemDate = new Date(point.dateFrom);
     return isPastDate(itemDate, currentDate);
   });
 };
 
 export const getFuturePoints = (points, currentDate) => {
-  return points.filter((it) => {
-    const itemDate = new Date(it.dateFrom);
+  return points.filter((point) => {
+    const itemDate = new Date(point.dateFrom);
     return isFutureDate(itemDate, currentDate);
   });
 };

@@ -8,14 +8,14 @@ export default class Point {
     this.name = parameter[`destination`].name;
     this.pictures = parameter[`destination`].pictures;
     this.isFavorite = Boolean(parameter[`is_favorite`]);
-    this.offers = new Map(parameter[`offers`].map((it) => [it.title, true]));
-    this.offersPrice = new Map(parameter[`offers`].map((it) => [it.title, it.price]));
+    this.offers = new Map(parameter[`offers`].map((offer) => [offer.title, true]));
+    this.offersPrice = new Map(parameter[`offers`].map((offer) => [offer.title, offer.price]));
     this.type = parameter[`type`];
   }
 
   toRAW() {
-    const offersForServer = Array.from(this.offersPrice).map((it) => {
-      return {title: it[0], price: it[1]};
+    const offersForServer = Array.from(this.offersPrice).map((offer) => {
+      return {title: offer[0], price: offer[1]};
     });
 
     return {

@@ -15,9 +15,9 @@ export default class Menu extends AbstractComponent {
 
   setActiveViewMode(mainViewId) {
     Array.from(this.getElement().querySelectorAll(`.trip-tabs__btn`))
-      .forEach((it) => {
-        if (it.classList.contains(`trip-tabs__btn--active`)) {
-          it.classList.remove(`trip-tabs__btn--active`);
+      .forEach((button) => {
+        if (button.classList.contains(`trip-tabs__btn--active`)) {
+          button.classList.remove(`trip-tabs__btn--active`);
         }
       });
 
