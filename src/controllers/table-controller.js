@@ -158,10 +158,10 @@ export default class TableController {
 
     } else if (oldData === EmptyPoint) {
       this._creatingPoint = null;
-      itemController.destroy();
 
       this._api.createPoint(newData)
           .then((item) => {
+            itemController.destroy();
             this._externalBase.addPoint(item);
             this._updatePoints();
           })
