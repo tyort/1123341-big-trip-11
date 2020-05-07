@@ -33,14 +33,14 @@ export const createFilterTemplate = (filters) => {
 export default class FIlter extends AbstractComponent {
   constructor(filters) {
     super();
-    this._filters = filters;
+    this._items = filters;
   }
 
   getTemplate() {
-    return createFilterTemplate(this._filters);
+    return createFilterTemplate(this._items);
   }
 
-  setFilterChangeHandler(handler) {
+  setChangeHandler(handler) {
     this.getElement().addEventListener(`change`, (evt) => {
       const filterName = getFilterNameById(evt.target.id);
       handler(filterName);

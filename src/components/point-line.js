@@ -69,11 +69,11 @@ const createPointLineTemplate = (point) => {
 export default class CardListItem extends AbstractComponent {
   constructor(point) {
     super();
-    this._point = point;
+    this._item = point;
   }
 
   getTemplate() {
-    return createPointLineTemplate(this._point);
+    return createPointLineTemplate(this._item);
   }
 
   setRollupButtonClickHandler(handler) {

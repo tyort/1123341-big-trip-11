@@ -27,7 +27,7 @@ export default class Provider {
 
     const storePoints = Object.values(this._storePoints.getAll());
     this._isSynchronized = false;
-    return Promise.resolve(Point.parsePoints(storePoints));
+    return Promise.resolve(Point.parseReports(storePoints));
   }
 
   getDestinations() {
@@ -42,7 +42,7 @@ export default class Provider {
 
     const storeDestinations = Object.values(this._storeDestinations.getAll());
     this._isSynchronized = false;
-    return Promise.resolve(Destination.parseDestinations(storeDestinations));
+    return Promise.resolve(Destination.parseReports(storeDestinations));
   }
 
   getOffers() {
@@ -57,7 +57,7 @@ export default class Provider {
 
     const storeOffers = Object.values(this._storeOffers.getAll());
     this._isSynchronized = false;
-    return Promise.resolve(Offers.parseTypes(storeOffers));
+    return Promise.resolve(Offers.parseReports(storeOffers));
   }
 
   createPoint(point) {
@@ -71,7 +71,7 @@ export default class Provider {
     }
 
     const fakeNewPointId = nanoid();
-    const fakeNewPoint = Point.parsePoint(Object.assign({}, point.toRAW(), {id: fakeNewPointId}));
+    const fakeNewPoint = Point.parseReport(Object.assign({}, point.toRAW(), {id: fakeNewPointId}));
 
     this._isSynchronized = false;
     this._storePoints.setItem(fakeNewPoint.id, Object.assign({}, fakeNewPoint.toRAW(), {offline: true}));
@@ -89,7 +89,7 @@ export default class Provider {
       );
     }
 
-    const fakeUpdatedPoint = Point.parsePoint(Object.assign({}, point.toRAW(), {id}));
+    const fakeUpdatedPoint = Point.parseReport(Object.assign({}, point.toRAW(), {id}));
 
     this._isSynchronized = false;
     this._storePoints.setItem(id, Object.assign({}, fakeUpdatedPoint.toRAW(), {offline: true}));

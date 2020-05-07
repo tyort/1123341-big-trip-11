@@ -26,19 +26,19 @@ export default class Api {
   getPoints() {
     return this._load({url: `points`})
       .then((response) => response.json())
-      .then(Point.parsePoints);
+      .then(Point.parseReports);
   }
 
   getDestinations() {
     return this._load({url: `destinations`})
       .then((response) => response.json())
-      .then(Destination.parseDestinations);
+      .then(Destination.parseReports);
   }
 
   getOffers() {
     return this._load({url: `offers`})
       .then((response) => response.json())
-      .then(Offers.parseTypes);
+      .then(Offers.parseReports);
   }
 
   createPoint(point) {
@@ -49,7 +49,7 @@ export default class Api {
       headers: new Headers({'Content-Type': `application/json`})
     })
       .then((response) => response.json())
-      .then(Point.parsePoint);
+      .then(Point.parseReport);
   }
 
   updatePoint(id, pointModel) {
@@ -60,7 +60,7 @@ export default class Api {
       headers: new Headers({'Content-Type': `application/json`})
     })
       .then((response) => response.json())
-      .then(Point.parsePoint);
+      .then(Point.parseReport);
   }
 
   deletePoint(id) {

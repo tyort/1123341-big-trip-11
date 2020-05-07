@@ -25,7 +25,7 @@ const renderAllPoints = (sortType, container, externalBase, onDataChange, onView
       externalBase.points.filter((elem) => item === moment(elem.dateFrom).format(`YYYYMMDD`))
         .forEach((point) => {
           const itemController = new ItemController(tripEventsListElements[index], onDataChange, onViewChange, externalBase);
-          itemController.renderCardItem(point, Mode.DEFAULT);
+          itemController.render(point, Mode.DEFAULT);
           itemControllers.push(itemController);
         });
     });
@@ -37,7 +37,7 @@ const renderAllPoints = (sortType, container, externalBase, onDataChange, onView
 
     return externalBase.points.map((point) => {
       const itemController = new ItemController(tripEventsListElement, onDataChange, onViewChange, externalBase);
-      itemController.renderCardItem(point, Mode.DEFAULT);
+      itemController.render(point, Mode.DEFAULT);
       return itemController;
     });
   }
@@ -120,7 +120,7 @@ export default class TableController {
     this._onViewChange();
     this._sortType = SortType.DEFAULT;
     this._creatingPoint = new ItemController(this._assortmentComponent.getElement(), this._onDataChange, this._onViewChange, externalBase);
-    this._creatingPoint.renderCardItem(EmptyPoint, Mode.ADDING);
+    this._creatingPoint.render(EmptyPoint, Mode.ADDING);
   }
 
   _removePoints() {
@@ -187,7 +187,7 @@ export default class TableController {
           const isSuccess = this._externalBase.updatePoint(oldData.id, item);
 
           if (isSuccess && itemController._choosedSubmitValue !== `on`) {
-            itemController.renderCardItem(item, Mode.DEFAULT);
+            itemController.render(item, Mode.DEFAULT);
             this._updatePoints();
           }
         })

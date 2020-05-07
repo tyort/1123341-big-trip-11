@@ -70,7 +70,7 @@ export default class ItemController {
     this._choosedSubmitValue = null;
   }
 
-  renderCardItem(cardItem, mode) {
+  render(cardItem, mode) {
     const oldPointLineComponent = this._pointLineComponent;
     const oldPointFormComponent = this._pointFormComponent;
     this._mode = mode;
@@ -78,7 +78,7 @@ export default class ItemController {
     this._pointFormComponent = new PointFormComponent(mode, cardItem, this._externalBase);
 
     this._pointLineComponent.setRollupButtonClickHandler(() => {
-      this._replaceItemToForm();
+      this._replaceLineToForm();
       document.addEventListener(`keydown`, this._onEscKeyDown);
       document.addEventListener(`click`, this._onButtonClick);
     });
@@ -134,7 +134,7 @@ export default class ItemController {
 
   setDefaultView() {
     if (this._mode !== Mode.DEFAULT) {
-      this._replaceFormToItem();
+      this._replaceFormToLine();
     }
   }
 
@@ -160,7 +160,7 @@ export default class ItemController {
     }, SHAKE_ANIMATION_TIMEOUT);
   }
 
-  _replaceFormToItem() {
+  _replaceFormToLine() {
     document.removeEventListener(`keydown`, this._onEscKeyDown);
     document.removeEventListener(`click`, this._onButtonClick);
     this._pointFormComponent.reset();
@@ -172,7 +172,7 @@ export default class ItemController {
     this._mode = Mode.DEFAULT;
   }
 
-  _replaceItemToForm() {
+  _replaceLineToForm() {
     this._onViewChange();
     replace(this._pointFormComponent, this._pointLineComponent);
     this._mode = Mode.FORM;
@@ -183,7 +183,7 @@ export default class ItemController {
       if (this._mode === Mode.ADDING) {
         this._onDataChange(this, EmptyPoint, null);
       }
-      this._replaceFormToItem();
+      this._replaceFormToLine();
     }
   }
 
@@ -192,7 +192,7 @@ export default class ItemController {
       if (this._mode === Mode.ADDING) {
         this._onDataChange(this, EmptyPoint, null);
       }
-      this._replaceFormToItem();
+      this._replaceFormToLine();
     }
   }
 }

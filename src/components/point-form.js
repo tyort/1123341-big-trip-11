@@ -227,7 +227,7 @@ export default class PointForm extends AbstractSmartComponent {
     super();
 
     this._mode = mode;
-    this._point = point;
+    this._itemForm = point;
     this._externalBase = externalBase;
     this._destinations = externalBase.destinations;
     this._offers = externalBase.offers;
@@ -298,7 +298,7 @@ export default class PointForm extends AbstractSmartComponent {
   }
 
   reset() {
-    const point = this._point;
+    const point = this._itemForm;
 
     this._activateCheckedType = new Map(this._offers.map((offer) => [offer.type, false])).set(point.type, true);
     this._activateCheckedPurpose = new Map(this._destinations.map((destination) => [destination.name, false])).set(point.name, true);

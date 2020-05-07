@@ -33,7 +33,7 @@ document.querySelector(`.trip-main__event-add-btn`)
   .addEventListener(`click`, () => {
     disableComponent(`trip-main__event-add-btn`);
     tableController.createPoint();
-    filterController._onFilterChange(FilterType.EVERYTHING);
+    filterController._onTypeChange(FilterType.EVERYTHING);
   });
 
 const AUTHORIZATION = `Basic eo0w590ik29889zq`;
@@ -90,7 +90,7 @@ Promise.all([apiWithProvider.getPoints(), apiWithProvider.getDestinations(), api
   .then((items) => {
     externalBase.setExternalBase(items);
     tableController.renderMap();
-    filterController.renderFilters();
+    filterController.render();
   });
 
 window.addEventListener(`online`, () => {

@@ -13,12 +13,12 @@ export default class Destination {
     };
   }
 
-  static parseDestination(item) {
+  static parseReport(item) {
     return new Destination(item);
   }
 
-  static parseDestinations(items) {
-    return items.map(Destination.parseDestination);
+  static parseReports(items) {
+    return items.map(Destination.parseReport);
   }
 
   static clone(item) {

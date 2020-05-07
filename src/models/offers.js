@@ -16,12 +16,12 @@ export default class Offers {
     };
   }
 
-  static parseType(item) {
+  static parseReport(item) {
     return new Offers(item);
   }
 
-  static parseTypes(items) {
-    return items.map(Offers.parseType);
+  static parseReports(items) {
+    return items.map(Offers.parseReport);
   }
 
   static clone(item) {
