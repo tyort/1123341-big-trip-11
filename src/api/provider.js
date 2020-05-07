@@ -138,11 +138,11 @@ export default class Provider {
     return Promise.reject(new Error(`Sync data failed`));
   }
 
-  getSynchronize() {
-    return this._isSynchronized;
-  }
-
   _isOnLine() {
     return window.navigator.onLine;
+  }
+
+  getSynchronize() {
+    return this._isSynchronized;
   }
 }

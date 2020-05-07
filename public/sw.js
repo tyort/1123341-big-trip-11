@@ -63,11 +63,11 @@ const fetchHandler = (evt) => {
               (response) => {
                 if (!response || response.status !== 200 || response.type !== `basic`) {
                   return response;
-                } else {
-                  const clonedResponse = response.clone(); // если ответ пришел, то мы его клонируем
-                  caches.open(CACHE_NAME).then((cache) => cache.put(request, clonedResponse));
-                  return response;
                 }
+
+                const clonedResponse = response.clone(); // если ответ пришел, то мы его клонируем
+                caches.open(CACHE_NAME).then((cache) => cache.put(request, clonedResponse));
+                return response;
               }
           );
         })
