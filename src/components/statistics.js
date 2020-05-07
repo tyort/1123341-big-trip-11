@@ -52,20 +52,20 @@ const createOption = (textContent, symbol) => {
 };
 
 const renderMoneyChart = (container, points) => {
-  const originalPurpose = [...new Set(points.map((point) => point.type))];
+  const originalDestinations = [...new Set(points.map((point) => point.type))];
 
   return new Chart(container, {
     type: `horizontalBar`,
     data: {
-      labels: originalPurpose,
+      labels: originalDestinations,
       datasets: [{
-        data: originalPurpose.map((currentPurpose) => {
+        data: originalDestinations.map((currentPurpose) => {
           return points.filter((point) => point.type === currentPurpose)
             .reduce((totalPrice, itemOfCurrentPurpose) => {
               return totalPrice + itemOfCurrentPurpose.basePrice;
             }, 0);
         }),
-        backgroundColor: originalPurpose.map(createRandomColor)
+        backgroundColor: originalDestinations.map(createRandomColor)
       }]
     },
     options: createOption(`MONEY`, ` €`)
@@ -73,14 +73,14 @@ const renderMoneyChart = (container, points) => {
 };
 
 const renderTimeSpentChart = (container, points) => {
-  const originalPurpose = [...new Set(points.map((point) => point.name))];
+  const originalDestinations = [...new Set(points.map((point) => point.name))];
 
   return new Chart(container, {
     type: `horizontalBar`,
     data: {
-      labels: originalPurpose,
+      labels: originalDestinations,
       datasets: [{
-        data: originalPurpose.map((currentPurpose) => {
+        data: originalDestinations.map((currentPurpose) => {
           return Math.floor(points.filter((point) => point.name === currentPurpose)
             .reduce((totalTime, itemOfPurpose) => {
               const startDate = moment(itemOfPurpose.dateFrom);
@@ -88,7 +88,7 @@ const renderTimeSpentChart = (container, points) => {
               return totalTime + endDate.diff(startDate, `minutes`);
             }, 0) / 60);
         }),
-        backgroundColor: originalPurpose.map(createRandomColor)
+        backgroundColor: originalDestinations.map(createRandomColor)
       }]
     },
     options: createOption(`TIME SPENT`, `H`)
@@ -96,19 +96,19 @@ const renderTimeSpentChart = (container, points) => {
 };
 
 const renderTransportChart = (container, points) => {
-  const inappropriateType = [`Check-in`, `Sightseeing`, `Restaurant`, `Trip`];
-  const originalPurpose = [...new Set(points.map((point) => point.type))]
-    .filter((item) => !inappropriateType.includes(item));
+  const inappropriateTypes = [`Check-in`, `Sightseeing`, `Restaurant`, `Trip`];
+  const originalDestinations = [...new Set(points.map((point) => point.type))]
+    .filter((item) => !inappropriateTypes.includes(item));
 
   return new Chart(container, {
     type: `horizontalBar`,
     data: {
-      labels: originalPurpose,
+      labels: originalDestinations,
       datasets: [{
-        data: originalPurpose.map((currentPurpose) => {
+        data: originalDestinations.map((currentPurpose) => {
           return points.filter((point) => point.type === currentPurpose).length;
         }),
-        backgroundColor: originalPurpose.map(createRandomColor)
+        backgroundColor: originalDestinations.map(createRandomColor)
       }]
     },
     options: createOption(`TRANSPORT`, `x`)
