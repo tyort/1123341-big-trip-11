@@ -61,8 +61,8 @@ const renderMoneyChart = (container, points) => {
       datasets: [{
         data: originalPurpose.map((currentPurpose) => {
           return points.filter((point) => point.type === currentPurpose)
-            .reduce((acc, itemOfCurrentPurpose) => {
-              return acc + itemOfCurrentPurpose.basePrice;
+            .reduce((totalPrice, itemOfCurrentPurpose) => {
+              return totalPrice + itemOfCurrentPurpose.basePrice;
             }, 0);
         }),
         backgroundColor: originalPurpose.map(createRandomColor)
@@ -82,10 +82,10 @@ const renderTimeSpentChart = (container, points) => {
       datasets: [{
         data: originalPurpose.map((currentPurpose) => {
           return Math.floor(points.filter((point) => point.name === currentPurpose)
-            .reduce((acc, itemOfPurpose) => {
+            .reduce((totalTime, itemOfPurpose) => {
               const startDate = moment(itemOfPurpose.dateFrom);
               const endDate = moment(itemOfPurpose.dateTo);
-              return acc + endDate.diff(startDate, `minutes`);
+              return totalTime + endDate.diff(startDate, `minutes`);
             }, 0) / 60);
         }),
         backgroundColor: originalPurpose.map(createRandomColor)

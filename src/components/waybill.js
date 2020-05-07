@@ -29,12 +29,12 @@ const createWaybillTemplate = (points) => {
   const totalOffersPrice = sortedPoints
     .map((point) => {
       const totalPrice = Array.from(point.offersPrice.values())
-        .reduce((acc, offerPrice) => acc + offerPrice, 0);
+        .reduce((commonPrice, offerPrice) => commonPrice + offerPrice, 0);
       return totalPrice;
     })
-    .reduce((acc, allOffersPrice) => acc + allOffersPrice, 0);
+    .reduce((commonPrice, allOffersPrice) => commonPrice + allOffersPrice, 0);
 
-  const totalMainPrice = sortedPoints.reduce((acc, point) => acc + point.basePrice, 0);
+  const totalMainPrice = sortedPoints.reduce((commonPrice, point) => commonPrice + point.basePrice, 0);
   const totalPriceAll = totalOffersPrice + totalMainPrice;
 
   return (
