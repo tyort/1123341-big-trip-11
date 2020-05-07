@@ -186,7 +186,7 @@ export default class TableController {
         .then((item) => {
           const isSuccess = this._externalBase.updatePoint(oldData.id, item);
 
-          if (isSuccess) {
+          if (isSuccess && itemController._choosedSubmitValue !== `on`) {
             itemController.renderCardItem(item, Mode.DEFAULT);
             this._updatePoints();
           }

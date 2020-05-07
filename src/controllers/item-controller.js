@@ -67,6 +67,7 @@ export default class ItemController {
     this._pointFormComponent = null;
     this._onEscKeyDown = this._onEscKeyDown.bind(this);
     this._onButtonClick = this._onButtonClick.bind(this);
+    this._choosedSubmitValue = null;
   }
 
   renderCardItem(cardItem, mode) {
@@ -84,13 +85,21 @@ export default class ItemController {
 
     this._pointFormComponent.setSubmitHandler((evt) => {
       evt.preventDefault();
-
-      this._pointFormComponent.setChangedDataByView({
-        SAVE_BUTTON_TEXT: `Saving...`,
-      });
-
+      this._choosedSubmitValue = evt.target.value;
       const formData = this._pointFormComponent.getChangedDataByView();
-      const pointModel = parseFormData(formData);
+      let pointModel = null;
+
+      if (this._choosedSubmitValue === `on`) {
+        pointModel = cardItem;
+        pointModel.isFavorite = !pointModel.isFavorite;
+
+      } else {
+        this._pointFormComponent.setChangedDataByView({
+          SAVE_BUTTON_TEXT: `Saving...`,
+        });
+        pointModel = parseFormData(formData);
+      }
+
       this._onDataChange(this, cardItem, pointModel);
     });
 
@@ -116,7 +125,6 @@ export default class ItemController {
         if (oldPointLineComponent && oldPointFormComponent) {
           replace(this._pointFormComponent, oldPointFormComponent);
           replace(this._pointLineComponent, oldPointLineComponent);
-          this._replaceFormToItem();
         } else {
           renderComponent(this._container, this._pointLineComponent);
         }
