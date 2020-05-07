@@ -6,20 +6,6 @@ import moment from 'moment';
 
 const SHAKE_ANIMATION_TIMEOUT = 600;
 
-export const EmptyPoint = {
-  id: ``,
-  offers: new Map(),
-  offersPrice: new Map(),
-  type: `sightseeing`,
-  name: ``,
-  description: ``,
-  pictures: [],
-  dateFrom: new Date(),
-  dateTo: new Date(),
-  basePrice: Number(),
-  isFavorite: false,
-};
-
 const parseFormData = (formData) => {
   const allOffersPrice = new Map();
 
@@ -196,3 +182,17 @@ export default class ItemController {
     }
   }
 }
+
+export const EmptyPoint = {
+  id: ``,
+  offers: new Map(),
+  offersPrice: new Map(),
+  type: `sightseeing`,
+  name: ``,
+  description: ``,
+  pictures: [],
+  dateFrom: new Date(),
+  dateTo: new Date(),
+  basePrice: Number(),
+  isFavorite: false,
+};
