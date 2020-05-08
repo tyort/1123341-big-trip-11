@@ -15,6 +15,10 @@ export default class Provider {
     this._isSynchronized = true;
   }
 
+  getSynchronize() {
+    return this._isSynchronized;
+  }
+
   getPoints() {
     if (this._isOnLine()) {
       return this._api.getPoints().then(
@@ -140,9 +144,5 @@ export default class Provider {
 
   _isOnLine() {
     return window.navigator.onLine;
-  }
-
-  getSynchronize() {
-    return this._isSynchronized;
   }
 }
