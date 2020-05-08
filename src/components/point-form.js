@@ -369,7 +369,7 @@ export default class PointForm extends AbstractSmartComponent {
       altInput: true,
       allowInput: true,
       enableTime: true,
-      altFormat: `d/m/Y H:i`,
+      altFormat: `d/m/y H:i`,
       defaultDate: this._activateDateFrom,
       maxDate: this._activateDateTo,
       onClose: (selectedDates, dateStr) => {
@@ -381,7 +381,7 @@ export default class PointForm extends AbstractSmartComponent {
       altInput: true,
       allowInput: true,
       enableTime: true,
-      altFormat: `d/m/Y H:i`,
+      altFormat: `d/m/y H:i`,
       defaultDate: this._activateDateTo,
       minDate: this._activateDateFrom,
       onClose: (selectedDates, dateStr) => {
