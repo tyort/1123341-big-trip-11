@@ -156,10 +156,9 @@ export default class TableController {
       this.chooseEnvelope();
 
     } else if (oldData === EmptyPoint) {
-      this._creatingPoint = null;
-
       this._api.createPoint(newData)
           .then((item) => {
+            this._creatingPoint = null;
             itemController.destroy();
             this._externalBase.addPoint(item);
             this._updatePoints();
@@ -198,7 +197,6 @@ export default class TableController {
   }
 
   _onViewChange() {
-    console.log(this._creatingPoint);
     if (this._creatingPoint) {
       this._onDataChange(this._creatingPoint, EmptyPoint, null);
     }
