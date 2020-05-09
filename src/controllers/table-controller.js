@@ -153,6 +153,7 @@ export default class TableController {
       this._creatingPoint = null;
       itemController.destroy();
       enableComponent(`trip-main__event-add-btn`);
+      this.chooseEnvelope();
 
     } else if (oldData === EmptyPoint) {
       this._creatingPoint = null;
@@ -197,6 +198,7 @@ export default class TableController {
   }
 
   _onViewChange() {
+    console.log(this._creatingPoint);
     if (this._creatingPoint) {
       this._onDataChange(this._creatingPoint, EmptyPoint, null);
     }
