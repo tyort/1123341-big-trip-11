@@ -4,7 +4,7 @@ import CardListComponent from '../components/card-list.js';
 import CardListLightComponent from '../components/card-list-light.js';
 import NoCardListComponent from '../components/no-card-list.js';
 import WaybillComponent from '../components/waybill.js';
-import {Mode, getDaysCount, renderComponent, showComponent, hideComponent, enableComponent} from '../formulas.js';
+import {Mode, getDaysCount, renderComponent, showComponent, hideComponent, enableComponent, disableComponent} from '../formulas.js';
 import ItemController, {EmptyPoint} from './item-controller.js';
 import moment from 'moment';
 
@@ -165,6 +165,7 @@ export default class TableController {
           })
           .catch(() => {
             itemController.shake();
+            disableComponent(`trip-main__event-add-btn`);
           });
       enableComponent(`trip-main__event-add-btn`);
 
