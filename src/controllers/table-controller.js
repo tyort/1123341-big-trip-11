@@ -69,7 +69,6 @@ export default class TableController {
       showComponent(`trip-events__trip-sort`);
       showComponent(`trip-days`);
       showComponent(`trip-main__trip-info`);
-      this._creatingPoint = null;
     } else {
       showComponent(`trip-events__msg`);
       hideComponent(`trip-events__trip-sort`);
@@ -153,7 +152,6 @@ export default class TableController {
     if (oldData === EmptyPoint && newData === null) {
       this._creatingPoint = null;
       itemController.destroy();
-      this._updatePoints();
       enableComponent(`trip-main__event-add-btn`);
 
     } else if (oldData === EmptyPoint) {
@@ -198,6 +196,9 @@ export default class TableController {
   }
 
   _onViewChange() {
+    if (this._creatingPoint) {
+      this._onDataChange(this._creatingPoint, EmptyPoint, null);
+    }
     this._showedCardItemControllers.forEach((item) => item.setDefaultView());
   }
 
