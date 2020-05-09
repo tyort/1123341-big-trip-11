@@ -34,6 +34,9 @@ document.querySelector(`.trip-main__event-add-btn`)
     disableComponent(`trip-main__event-add-btn`);
     tableController.createPoint();
     filterController._onTypeChange(FilterType.EVERYTHING);
+    menuComponent.setActiveViewMode(MainViewMode.TABLE);
+    statisticsComponent.hide();
+    tableController.show();
   });
 
 const AUTHORIZATION = `Basic eo0w550ik29889zq`;
