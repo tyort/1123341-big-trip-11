@@ -101,10 +101,9 @@ const createPointFormTemplate = (offers, currentMode, options = {}) => {
   const addWaybillType = Array.from(activateCheckedType).find((type) => type[1])[0];
 
   const activatedOffers = Array.from(activateExtraOptions);
-  const allTypesOffers = Array.from(offers.filter((it) => it.type === addWaybillType)[0].offers);
+  const allTypesOffers = Array.from(offers.filter((it) => it.type === addWaybillType)[0].offers)
+    .map((it) => [it[0], false]);
   const currentOffersList = new Map([...allTypesOffers, ...activatedOffers]);
-  console.log(activatedOffers);
-  console.log(allTypesOffers);
 
   const addExtraOptions = createExtraOptionInsert(Array.from(currentOffersList), activateExtraOptionsPrice);
   const addDescription = he.encode(activateDescription);
@@ -430,9 +429,14 @@ export default class PointForm extends AbstractSmartComponent {
       typeGroup.addEventListener(`change`, (evt) => {
         this._activateCheckedType = new Map(this._offers.map((item) => [item.type, false]));
         this._activateCheckedType.set(evt.target.value, evt.target.checked);
-        const properPoint = this._offers.find((item) => item.type === evt.target.value);
-        this._activateExtraOptions = properPoint.offers;
-        this._activateExtraOptionsPrice = properPoint.offersPrice;
+
+        const properType = this._offers.find((item) => item.type === evt.target.value);
+        for (const key of properType.offers.keys()) {
+          properType.offers.set(key, false);
+        }
+
+        this._activateExtraOptions = properType.offers;
+        this._activateExtraOptionsPrice = properType.offersPrice;
         this.reRender();
       });
     });
