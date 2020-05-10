@@ -60,7 +60,7 @@ export default class ItemController {
     const oldPointLineComponent = this._pointLineComponent;
     const oldPointFormComponent = this._pointFormComponent;
     this._mode = mode;
-    this._pointLineComponent = new PointLineComponent(cardItem);
+    this._pointLineComponent = new PointLineComponent(cardItem, this._externalBase);
     this._pointFormComponent = new PointFormComponent(mode, cardItem, this._externalBase);
 
     this._pointLineComponent.setRollupButtonClickHandler(() => {

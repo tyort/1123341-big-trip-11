@@ -2,7 +2,7 @@ import AbstractComponent from './abstract-component.js';
 import moment from 'moment';
 
 
-const createWaybillTemplate = (points) => {
+const createWaybillTemplate = (points, externalBase) => {
   const sortedPoints = points.sort((a, b) => new Date(a.dateFrom).getTime() - new Date(b.dateFrom).getTime());
   const uniqueCities = [...new Set(sortedPoints.map((city) => city.name))];
 
@@ -28,8 +28,11 @@ const createWaybillTemplate = (points) => {
 
   const totalOffersPrice = sortedPoints
     .map((point) => {
-      const totalPrice = Array.from(point.offersPrice.values())
-        .reduce((commonPrice, offerPrice) => commonPrice + offerPrice, 0);
+      const priceList = Array.from(externalBase.filter((it) => it.type === point.type)[0].offersPrice)
+        .filter((it) => point.offersPrice.has(it[0]))
+        .map((it) => it[1]);
+
+      const totalPrice = priceList.reduce((commonPrice, offerPrice) => commonPrice + offerPrice, 0);
       return totalPrice;
     })
     .reduce((commonPrice, allOffersPrice) => commonPrice + allOffersPrice, 0);
@@ -51,11 +54,12 @@ const createWaybillTemplate = (points) => {
 };
 
 export default class Waybill extends AbstractComponent {
-  constructor(sortedPoints) {
+  constructor(sortedPoints, externalBase) {
     super();
     this._sortedPoints = sortedPoints;
+    this._externalBase = externalBase;
   }
   getTemplate() {
-    return createWaybillTemplate(this._sortedPoints);
+    return createWaybillTemplate(this._sortedPoints, this._externalBase);
   }
 }

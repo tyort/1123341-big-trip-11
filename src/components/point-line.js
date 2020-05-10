@@ -17,9 +17,10 @@ const createExtraOptionInsert = (array, newmap) => {
     .join(``);
 };
 
-const createPointLineTemplate = (point) => {
-  const {offers, type, name, dateFrom, dateTo, basePrice, offersPrice} = point;
-  const addExtraOptions = createExtraOptionInsert(Array.from(offers), offersPrice);
+const createPointLineTemplate = (point, optionsPrice) => {
+  console.log(optionsPrice);
+  const {offers, type, name, dateFrom, dateTo, basePrice} = point;
+  const addExtraOptions = createExtraOptionInsert(Array.from(offers), optionsPrice);
   const addItemTimePeriod = createPeriodsName(dateFrom, dateTo);
   const addCardItemDate = moment(dateFrom).format(`YYYY-MM-DDTHH:mm`);
   const addCardItemTime = moment(dateFrom).format(`HH:mm`);
@@ -66,14 +67,15 @@ const createPointLineTemplate = (point) => {
   );
 };
 
-export default class CardListItem extends AbstractComponent {
-  constructor(point) {
+export default class PointLine extends AbstractComponent {
+  constructor(point, externalBase) {
     super();
     this._item = point;
+    this._optionsPrice = externalBase.offers.filter((it) => it.type === point.type)[0].offersPrice;
   }
 
   getTemplate() {
-    return createPointLineTemplate(this._item);
+    return createPointLineTemplate(this._item, this._optionsPrice);
   }
 
   setRollupButtonClickHandler(handler) {

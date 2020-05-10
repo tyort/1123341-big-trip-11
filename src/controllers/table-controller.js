@@ -98,7 +98,7 @@ export default class TableController {
 
     renderComponent(this._container, this._assortmentComponent);
     renderComponent(this._container, this._tripDaysComponent);
-    renderComponent(mainTripInfoElement, new WaybillComponent(points), `afterBegin`);
+    renderComponent(mainTripInfoElement, new WaybillComponent(points, this._externalBase.getOffers()), `afterBegin`);
     this._renderPoints(this._sortType, points);
 
     this.chooseEnvelope();
@@ -228,7 +228,7 @@ export default class TableController {
     mainTripInfoElement.querySelector(`.trip-main__trip-info`).remove();
     this._removePoints();
     this._renderPoints(sortType, sortedItems);
-    renderComponent(mainTripInfoElement, new WaybillComponent(sortedItems), `afterBegin`);
+    renderComponent(mainTripInfoElement, new WaybillComponent(sortedItems, this._externalBase.getOffers()), `afterBegin`);
   }
 
   _onFilterChange() {
