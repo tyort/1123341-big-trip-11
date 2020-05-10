@@ -18,7 +18,6 @@ const createExtraOptionInsert = (array, newmap) => {
 };
 
 const createPointLineTemplate = (point, optionsPrice) => {
-  console.log(optionsPrice);
   const {offers, type, name, dateFrom, dateTo, basePrice} = point;
   const addExtraOptions = createExtraOptionInsert(Array.from(offers), optionsPrice);
   const addItemTimePeriod = createPeriodsName(dateFrom, dateTo);

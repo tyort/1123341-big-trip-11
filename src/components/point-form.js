@@ -103,6 +103,8 @@ const createPointFormTemplate = (offers, currentMode, options = {}) => {
   const activatedOffers = Array.from(activateExtraOptions);
   const allTypesOffers = Array.from(offers.filter((it) => it.type === addWaybillType)[0].offers);
   const currentOffersList = new Map([...allTypesOffers, ...activatedOffers]);
+  console.log(activatedOffers);
+  console.log(allTypesOffers);
 
   const addExtraOptions = createExtraOptionInsert(Array.from(currentOffersList), activateExtraOptionsPrice);
   const addDescription = he.encode(activateDescription);
