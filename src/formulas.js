@@ -60,7 +60,7 @@ export const replace = (newComponent, oldComponent) => {
 
 export const getDaysCount = (startDate) => {
   return startDate.map((date) => moment(date))
-    .map((date, index, array) => 1 + date.diff(array[0], `days`));
+    .map((date, index, allDates) => 1 + date.diff(allDates[0], `days`));
 };
 
 export const createPeriodsName = (startTime, endTime) => {

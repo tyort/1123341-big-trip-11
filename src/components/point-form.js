@@ -11,8 +11,8 @@ const ButtonText = {
   SAVE_BUTTON_TEXT: `Save`
 };
 
-const createExtraOptionInsert = (array, newmap) => {
-  return array
+const createExtraOptionInsert = (offers, offersPrice) => {
+  return offers
     .map((item) => {
       const isChecked = item[1] ? `checked` : ``;
       return (
@@ -21,7 +21,7 @@ const createExtraOptionInsert = (array, newmap) => {
           <label class="event__offer-label" for="event-offer-${item[0]}-1">
             <span class="event__offer-title">${item[0]}</span>
             &plus;
-            &euro;&nbsp;<span class="event__offer-price">${newmap.get(item[0])}</span>
+            &euro;&nbsp;<span class="event__offer-price">${offersPrice.get(item[0])}</span>
           </label>
         </div>`
       );
@@ -29,8 +29,8 @@ const createExtraOptionInsert = (array, newmap) => {
     .join(``);
 };
 
-const createPhotos = (array) => {
-  return array
+const createPhotos = (photos) => {
+  return photos
     .map((item) => {
       return (
         `<img class="event__photo" src="${item.src}" alt="${item.description}"></img>`
@@ -39,8 +39,8 @@ const createPhotos = (array) => {
     .join(``);
 };
 
-const createWaybillTypeList = (newmap) => {
-  return Array.from(newmap)
+const createWaybillTypeList = (types) => {
+  return Array.from(types)
     .filter((typeName) => typeName[0] !== `check-in` && typeName[0] !== `sightseeing` && typeName[0] !== `restaurant`)
     .map((item) => {
       const isChecked = item[1] ? `checked` : ``;
@@ -56,8 +56,8 @@ const createWaybillTypeList = (newmap) => {
     .join(``);
 };
 
-const createWaybillTypeListTwo = (newmap) => {
-  return Array.from(newmap)
+const createWaybillTypeListTwo = (types) => {
+  return Array.from(types)
     .filter((typeName) => typeName[0] === `check-in` || typeName[0] === `sightseeing` || typeName[0] === `restaurant`)
     .map((item) => {
       const isChecked = item[1] ? `checked` : ``;
@@ -73,8 +73,8 @@ const createWaybillTypeListTwo = (newmap) => {
     .join(``);
 };
 
-const createWaybillPurposeList = (newmap) => {
-  return Array.from(newmap)
+const createWaybillPurposeList = (destinations) => {
+  return Array.from(destinations)
     .map((item) => {
       return (
         `<option value="${item[0]}"></option>`

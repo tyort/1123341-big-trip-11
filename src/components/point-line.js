@@ -2,14 +2,14 @@ import AbstractComponent from './abstract-component.js';
 import {createPeriodsName, generateWaybillType} from '../formulas.js';
 import moment from 'moment';
 
-const createExtraOptionInsert = (array, newmap) => {
-  return array
+const createExtraOptionInsert = (offers, offersPrice) => {
+  return offers
     .map((item) => {
       return (
         `<li class="event__offer">
           <span class="event__offer-title">${item[0]}</span>
           &plus;&euro;&nbsp;
-          <span class="event__offer-price">${newmap.get(item[0])}</span>
+          <span class="event__offer-price">${offersPrice.get(item[0])}</span>
         </li>`
       );
     })

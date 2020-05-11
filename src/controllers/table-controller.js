@@ -14,7 +14,7 @@ const TRIP_EVENTS_HIDDEN = `trip-events--hidden`;
 const renderAllPoints = (sortType, container, externalBase, onDataChange, onViewChange) => {
   if (sortType === SortType.DEFAULT) {
     const sortedCards = externalBase.points.map((point) => moment(point.dateFrom).format(`YYYYMMDD`))
-      .filter((item, index, array) => array.indexOf(item) === index)
+      .filter((item, index, allPoints) => allPoints.indexOf(item) === index)
       .sort((a, b) => a - b);
 
     sortedCards.forEach((card, index) => renderComponent(container, new CardListComponent(card, getDaysCount(sortedCards)[index])));
