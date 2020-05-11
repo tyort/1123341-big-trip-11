@@ -70,7 +70,7 @@ export default class PointLine extends AbstractComponent {
   constructor(point, externalBase) {
     super();
     this._item = point;
-    this._optionsPrice = externalBase.offers.filter((it) => it.type === point.type)[0].offersPrice;
+    this._optionsPrice = externalBase.offers.filter((item) => item.type === point.type)[0].offersPrice;
   }
 
   getTemplate() {

@@ -27,9 +27,9 @@ const createWaybillTemplate = (points, externalBase) => {
 
   const totalOffersPrice = sortedPoints
     .map((point) => {
-      const priceList = Array.from(externalBase.filter((it) => it.type === point.type)[0].offersPrice)
-        .filter((it) => point.offersPrice.has(it[0]))
-        .map((it) => it[1]);
+      const priceList = Array.from(externalBase.filter((item) => item.type === point.type)[0].offersPrice)
+        .filter((item) => point.offersPrice.has(item[0]))
+        .map((item) => item[1]);
 
       const totalPrice = priceList.reduce((commonPrice, offerPrice) => commonPrice + offerPrice, 0);
       return totalPrice;

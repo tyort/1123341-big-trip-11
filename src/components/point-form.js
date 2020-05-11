@@ -101,8 +101,8 @@ const createPointFormTemplate = (offers, currentMode, options = {}) => {
   const addWaybillType = Array.from(activateCheckedType).find((type) => type[1])[0];
 
   const activatedOffers = Array.from(activateExtraOptions);
-  const allTypesOffers = Array.from(offers.filter((it) => it.type === addWaybillType)[0].offers)
-    .map((it) => [it[0], false]);
+  const allTypesOffers = Array.from(offers.filter((offer) => offer.type === addWaybillType)[0].offers)
+    .map((offer) => [offer[0], false]);
   const currentOffersList = new Map([...allTypesOffers, ...activatedOffers]);
 
   const addExtraOptions = createExtraOptionInsert(Array.from(currentOffersList), activateExtraOptionsPrice);
@@ -249,7 +249,7 @@ export default class PointForm extends AbstractSmartComponent {
     this._activateCheckedPurpose = new Map(this._destinations.map((destination) => [destination.name, false])).set(point.name, true);
     this._activateExtraOptions = new Map(point.offers);
     this._activateDescription = point.description;
-    this._activateExtraOptionsPrice = this._offers.filter((it) => it.type === point.type)[0].offersPrice;
+    this._activateExtraOptionsPrice = this._offers.filter((offer) => offer.type === point.type)[0].offersPrice;
     this._activateBasePrice = point.basePrice;
     this._activateButtonText = ButtonText;
     this._activateDateFrom = point.dateFrom;
@@ -316,7 +316,7 @@ export default class PointForm extends AbstractSmartComponent {
     this._activateCheckedPurpose = new Map(this._destinations.map((destination) => [destination.name, false])).set(point.name, true);
     this._activateExtraOptions = new Map(point.offers);
     this._activateDescription = point.description;
-    this._activateExtraOptionsPrice = this._offers.filter((it) => it.type === point.type)[0].offersPrice;
+    this._activateExtraOptionsPrice = this._offers.filter((offer) => offer.type === point.type)[0].offersPrice;
     this._activateBasePrice = point.basePrice;
     this._activateDateFrom = point.dateFrom;
     this._activateDateTo = point.dateTo;
