@@ -23,7 +23,7 @@ export default class Provider {
     if (this._isOnLine()) {
       return this._api.getPoints().then(
           (points) => {
-            points.forEach((point) => this._storePoints.setItem(point.id, point.toRAW())); // при наличии интернета все равно складываем в store данные
+            points.forEach((point) => this._storePoints.setItem(point.id, point.toRAW()));
             return points;
           }
       );

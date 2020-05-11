@@ -51,21 +51,21 @@ self.addEventListener(`activate`, (evt) => {
 });
 
 const fetchHandler = (evt) => {
-  const {request} = evt; // evt.request - запрос от браузера
+  const {request} = evt;
 
   evt.respondWith(
-      caches.match(request) // ...если в кэшах есть наш запрос...
+      caches.match(request)
         .then((cacheResponse) => {
           if (cacheResponse) {
-            return cacheResponse; // ...тогда верни ответ из кэша...
+            return cacheResponse;
           }
-          return fetch(request).then( // ...если нет, то сходи на сервер...
+          return fetch(request).then(
               (response) => {
                 if (!response || response.status !== 200 || response.type !== `basic`) {
                   return response;
                 }
 
-                const clonedResponse = response.clone(); // если ответ пришел, то мы его клонируем
+                const clonedResponse = response.clone();
                 caches.open(CACHE_NAME).then((cache) => cache.put(request, clonedResponse));
                 return response;
               }
