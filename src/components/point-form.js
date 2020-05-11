@@ -120,6 +120,7 @@ const createPointFormTemplate = (offers, currentMode, options = {}) => {
   const saveButtonText = activateButtonText.SAVE_BUTTON_TEXT;
 
   const hideDescriptionTitle = addDescription === `` ? `visually-hidden` : ``;
+  const hideOffersTitle = [`transport`, `sightseeing`].includes(addWaybillType) ? `visually-hidden` : ``;
 
   return (
     `<li class="trip-events__item">
@@ -210,7 +211,7 @@ const createPointFormTemplate = (offers, currentMode, options = {}) => {
 
         <section class="event__details ${hideDescriptionTitle}">
 
-          <section class="event__section  event__section--offers" ${currentOffersList.size === 0 ? `visually-hidden` : ``}>
+          <section class="event__section  event__section--offers ${hideOffersTitle}">
             <h3 class="event__section-title  event__section-title--offers">Offers</h3>
 
             <div class="event__available-offers">
