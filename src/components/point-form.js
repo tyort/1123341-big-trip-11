@@ -459,5 +459,3 @@ export default class PointForm extends AbstractSmartComponent {
     });
   }
 }
-
-

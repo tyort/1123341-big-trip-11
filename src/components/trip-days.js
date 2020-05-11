@@ -11,4 +11,3 @@ export default class TripDays extends AbstractComponent {
     return createTripDaysTemplate();
   }
 }
-

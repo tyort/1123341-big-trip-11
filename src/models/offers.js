@@ -28,5 +28,3 @@ export default class Offers {
     return new Offers(item.toRAW());
   }
 }
-
-

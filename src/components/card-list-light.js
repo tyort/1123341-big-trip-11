@@ -17,4 +17,3 @@ export default class CardListLight extends AbstractComponent {
     return createCardListTemplate(this._card, this._dayCounter);
   }
 }
-

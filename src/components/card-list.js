@@ -30,4 +30,3 @@ export default class CardList extends AbstractComponent {
     return createCardListTemplate(this._card, this._dayCounter);
   }
 }
-

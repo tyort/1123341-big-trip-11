@@ -25,5 +25,3 @@ export default class Destination {
     return new Destination(item.toRAW());
   }
 }
-
-

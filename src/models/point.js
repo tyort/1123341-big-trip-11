@@ -46,5 +46,3 @@ export default class Point {
     return new Point(item.toRAW());
   }
 }
-
-

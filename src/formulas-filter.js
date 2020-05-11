@@ -34,7 +34,6 @@ export const getFuturePoints = (points, currentDate) => {
   });
 };
 
-
 export const getPointsByFilter = (points, filterType) => {
   const currentDate = new Date();
 
