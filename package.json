@@ -24,7 +24,7 @@
   },
   "private": true,
   "scripts": {
-    "build": "webpack",
+    "build": "webpack --mode development",
     "eslint": "eslint src/**/*.js",
     "start": "webpack-dev-server --open",
     "test": "npm run eslint"
