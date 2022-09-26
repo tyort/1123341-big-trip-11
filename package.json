@@ -4,7 +4,7 @@
     "chartjs-plugin-datalabels": "0.7.0",
     "flatpickr": "4.6.3",
     "he": "1.2.0",
-    "lodash": "4.17.15",
+    "lodash": "4.17.21",
     "nanoid": "3.1.31",
     "moment": "2.29.4"
   },
